@@ -9,7 +9,7 @@
 import datetime
 import sys
 
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScreen, QTreeWidgetItem
 
@@ -31,6 +31,7 @@ __appname__ = "Eordre"
 __module__ = "main"
 
 
+# noinspection PyMethodMayBeStatic
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Main Application Window"""
 
@@ -38,9 +39,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Initialize MainWindow class"""
         super(MainWindow, self).__init__()
         self.setupUi(self)
-
-        self.importCustomers = object
-        self.importProducts = object
 
         configfn.check_config_folder()  # Check app folder in users home
         dbtablefn.create_tables()  # Create the needed tables
@@ -104,7 +102,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                          "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses.")
             self.settings_dialog_action()
 
-        self.populate_customer_list()
+        # self.populate_customer_list()
 
     def close_event(self, event):
         """Slot for close event signal
@@ -243,13 +241,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_customers_action(self):
         """Slot for getCustomers triggered signal"""
-        self.importCustomers = HttpCustImportDialog()  # Create dialog object
-        self.importCustomers.exec_()  # Execute the dialog - show it
+        import_customers = HttpCustImportDialog()  # Create dialog object
+        import_customers.exec_()  # Execute the dialog - show it
 
     def get_products_action(self):
         """Slot for getProducts triggered signal"""
-        self.importProducts = HttpProdImportDialog()  # Create dialog object
-        self.importProducts.exec_()  # Execute the dialog - show it
+        import_products = HttpProdImportDialog()  # Create dialog object
+        import_products.exec_()  # Execute the dialog - show it
 
     def master_data_action(self):
         """Slot for masterData triggered signal"""
@@ -282,7 +280,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def settings_dialog_action(self):
         """Slot for settingsDialog triggered signal"""
-        settings_dialog = SettingsDialog(self.Settings.__settings)
+        settings_dialog = SettingsDialog(self.Settings.currentsettings)
         if settings_dialog.exec_():
             # do check if password has been changed
             # and hash it if necessary
@@ -329,14 +327,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.setAutoSipEnabled(True)
+    app.setDesktopSettingsAware(True)
+    app.setAttribute(Qt.AA_EnableHighDpiScaling)
     pixmap = QPixmap(":/graphics/splash/splash.png")
     splash = QSplashScreen(pixmap)
     splash.show()
 
     app.processEvents()
 
-    # app.setAutoSipEnabled(True)
-    # app.setDesktopSettingsAware(False)
     window = MainWindow()
     window.show()
 
