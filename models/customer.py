@@ -61,7 +61,8 @@ class Customer:
             db = sqlite3.connect(config.DBPATH)
             with db:
                 cur = db.cursor()
-                self.__customer = self.find_id(cur.execute("select last_insert_rowid();"))
+                cid = cur.execute("select last_insert_rowid();")
+                self.find_id(cid)
 
     def find_id(self, customerid):
         """Find customer by id"""
@@ -71,7 +72,7 @@ class Customer:
             cur = db.cursor()
             cur.execute(sql, (customerid,))
             customer = cur.fetchone()
-            return dict(zip(self.model, customer))
+            self.__customer = dict(zip(self.model, customer))
 
     def find_name_account(self, company, account):
         """Look up customer
