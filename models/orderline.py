@@ -10,7 +10,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbtablefn
+from util import dbfn
 
 
 class OrderLine:
@@ -21,28 +21,32 @@ class OrderLine:
         self.__orderlines = []
         self.__orderline = {}
 
-    def import_csv(self, filename, headers=False):
-        """Import orderlines from file
+    def csv_import(self, filename, headers=False):
+        """Import orderline from file
         :param filename:
         :param headers:
         """
-        sql = "INSERT INTO " \
-              "orderlines (lineid, orderid, pcs, sku, infotext, price, sas, discount) " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-        tablename = "orderline"
-        dbtablefn.drop_table(tablename)
-        dbtablefn.create_table(tablename)
-        conn = sqlite3.connect(config.DBPATH)
+        dbfn.recreate_table("orderline")
         filename.encode("utf8")
-        with conn:
-            with open(filename) as csvdata:
-                reader = csv.reader(csvdata)
-                line = 0
-                for row in reader:
-                    line += 1
-                    if headers and line == 1:
-                        continue
-                    processed = [row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7]]
-                    conn.execute(sql, processed)
+        with open(filename) as csvdata:
+            reader = csv.reader(csvdata)
+            line = 0
+            for row in reader:
+                line += 1
+                if headers and line == 1:
+                    continue
+                processed = [row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7]]
+                self.insert_values(processed)
 
-        conn.commit()
+    def insert_values(self, values):
+        sql = "INSERT INTO orderline (" \
+              "lineid, orderid, pcs, sku, infotext, price, sas, discount) " \
+              "VALUES (" \
+              "?, ?, ?, ?, ?, ?, ?, ?);"
+        if not values:
+            values = list(self.__orderline.values())
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            cur = db.cursor()
+            cur.execute(sql, values)
+            db.commit()

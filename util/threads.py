@@ -18,7 +18,7 @@ class Communicate(QObject):
 
 
 class ImportCustomersThread(QThread):
-    """Thread for importing customers through http"""
+    """Thread for importing customer through http"""
 
     def __init__(self, settings, employee, parent=None):
         super(ImportCustomersThread, self).__init__(parent)
@@ -42,7 +42,7 @@ class ImportCustomersThread(QThread):
 
 
 class ImportProductsThread(QThread):
-    """Thread for importing products through http"""
+    """Thread for importing product through http"""
 
     def __init__(self, settings, parent=None):
         super(ImportProductsThread, self).__init__(parent)
@@ -56,7 +56,7 @@ class ImportProductsThread(QThread):
         self.Product.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
         # fetching datafile from http server
-        data = httpfn.get_products(self.settings)
+        data = httpfn.get_product(self.settings)
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))

@@ -14,9 +14,9 @@ HOME = os.path.expanduser("~")
 APP_DATA = "./.appdata"
 DBPATH = APP_DATA + "/app.db"
 LOGPATH = APP_DATA + "/app.log"
-TABLES = ["contacts", "customers", "employees", "visits", "orderlines", "products", "reports", "settings"]
-CSVDATA = [("Kontakter", "contacts"), ("Kunder", "customers"), ("Ordrer", "visits"), ("Ordrelinjer", "orderlines"),
-           ("Rapporter", "reports")]
+TABLES = ["contact", "customer", "employee", "visit", "orderline", "product", "report", "settings"]
+CSVDATA = [("Kontakter", "contact"), ("Kunder", "customer"), ("Ordrer", "visit"), ("Ordrelinjer", "orderline"),
+           ("Rapporter", "report")]
 DECODE = "ISO-8859-1"
 
 

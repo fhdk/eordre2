@@ -10,7 +10,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbtablefn
+from util import dbfn
 
 
 # noinspection PyMethodMayBeStatic
@@ -19,11 +19,12 @@ class Report:
         """Initilize Report class"""
         # model for zipping dictionary
         self.model = (
-            "reportid", "repno", "repdate", "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
+            "reportid", "repno", "repdate",
+            "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
             "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
             "sasday", "sasturnoverday", "demoday", "saleday",
-            "kmmorning", "kmevening", "supervisor", "territory", "workday",
-            "infotext", "sent", "offday", "offtext", "kmprivate")
+            "kmmorning", "kmevening", "supervisor", "territory",
+            "workday", "infotext", "sent", "offday", "offtext", "kmprivate")
         self.__reports = []
         self.__report = {}
 
@@ -36,7 +37,7 @@ class Report:
         try:
             _ = self.__report["repdate"]
         except KeyError:
-            self.__report = self.load_report(workdate=workdate)
+            self.load_report(workdate=workdate)
 
     @property
     def reportlist(self):
@@ -52,9 +53,9 @@ class Report:
         :param employee: object
         :param workdate: iso str representing the date for the report to be created
         """
-        # we need to find the number of reports for the month of the supplied date
+        # we need to find the number of report for the month of the supplied date
         # then add 1 to that number
-        # we need to calculate the sums for the previous reports for month
+        # we need to calculate the sums for the previous report for month
         # those sums will be stored in seperate table
         # creating a new table with
         #           sum demoes & sum sales
@@ -93,10 +94,33 @@ class Report:
             cur = db.cursor()
             cur.execute(sql, (workmonth, employee["employeeid"]))
             totals = cur.fetchone()
-            print("report -> create -> select from reports -> totals: {}".format(totals))
+            print("report -> create -> select from report -> totals: {}".format(totals))
+
+    def insert_(self, values):
+        """Insert new report in table"""
+        sql = "INSERT INTO report (" \
+              "reportid, repno, repdate, " \
+              "newvisitday, newdemoday, newsaleday, newturnoverday, " \
+              "recallvisitday, recalldemoday, recallsaleday, recallturnoverday, " \
+              "sasday, sasturnoverday, demoday, saleday, " \
+              "kmmorning, kmevening, supervisor, territory, " \
+              "workday, infotext, sent, offday, offtext, kmprivate) " \
+              "VALUES (" \
+              "?, ?, ?, " \
+              "?, ?, ?, ?, " \
+              "?, ?, ?, ?, " \
+              "?, ?, ?, ?, " \
+              "?, ?, ?, ?, " \
+              "?, ?, ?, ?, ?, ?);"
+        if not values:
+            values = list(self.current_report.values())
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            db.execute(sql, values)
+            db.commit()
 
     def insert_csv(self, filename, headers=False):
-        """Import reports from file
+        """Import report from file
         :param filename:
         :param headers:
         """
@@ -113,34 +137,23 @@ class Report:
         #      19        20         21     22       23        24
         #      "workday","infotext","sent","offday","offtext","kmprivate"
         #
-        sql = "INSERT INTO report (reportid, repno, repdate, newvisitday, newdemoday, " \
-              "newsaleday, newturnoverday, recallvisitday, recalldemoday, recallsaleday, " \
-              "recallturnoverday, sasday, sasturnoverday, demoday, saleday, " \
-              "kmmorning, kmevening, supervisor, territory, workday, " \
-              "infotext, sent, offday, offtext, kmprivate) " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " \
-              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " \
-              "?, ?, ?, ?, ?);"
-        tablename = "report"
-        dbtablefn.drop_table(tablename)
-        dbtablefn.create_table(tablename)
-        db = sqlite3.connect(config.DBPATH)
+        dbfn.recreate_table("report")
         filename.encode("utf8")
-        with db:
-            with open(filename) as csvdata:
-                reader = csv.reader(csvdata)
-                line = 0
-                for row in reader:
-                    line += 1
-                    if headers and line == 1:
-                        continue
-                    processed = [row[0].strip(), row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(),
-                                 row[5].strip(), row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
-                                 row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
-                                 row[15].strip(), row[16].strip(), row[17].strip(), row[18].strip(), row[19].strip(),
-                                 row[20].strip(), row[21].strip(), row[22].strip(), row[23].strip(), row[24].strip()]
-                    db.execute(sql, processed)
-            db.commit()
+        # open and read the file
+        with open(filename) as csvdata:
+            reader = csv.reader(csvdata)
+            line = 0
+            for row in reader:
+                line += 1
+                if headers and line == 1:
+                    continue
+                processed = [row[0].strip(), row[1], row[2].strip(),
+                             row[3], row[4], row[5], row[6],
+                             row[7], row[8], row[9], row[10],
+                             row[11], row[12], row[13], row[14],
+                             row[15], row[16], row[17].strip(), row[18].strip(),
+                             row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24]]
+                self.insert_(processed)
 
     def load_report(self, workdate):
         """Load report for supplied date
@@ -148,7 +161,6 @@ class Report:
         """
         sql = "SELECT * FROM report WHERE repdate LIKE ?"
         db = sqlite3.connect(config.DBPATH)
-        data = {}
         with db:
             cur = db.cursor()
             cur.execute(sql, (workdate,))
@@ -157,7 +169,7 @@ class Report:
                 self.__report = dict(zip(self.model, report))
 
     def load_reports(self, year=None, month=None):
-        """Load reports matching year and month
+        """Load report matching year and month or all if no params are given
         :type year: str
         :type month: str
         """
@@ -174,5 +186,7 @@ class Report:
             cur = db.cursor()
             cur.execute(sql, (value,))
             reports = cur.fetchall()
-            for report in reports:
-                self.__reports.append(dict(zip(self.model, report)))
+            if reports:
+                self.__reports = [dict(zip(self.model, row)) for row in reports]
+            else:
+                self.__reports = []

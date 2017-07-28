@@ -5,12 +5,17 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
 from models import employee
-from models import setting
+from models import settings
 from resources.http_cust_import_dialog_rc import Ui_HttpCustImportDialog
 from util import threads
+
+
+class Communicate(QObject):
+    finished = pyqtSignal()
 
 
 class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
@@ -19,8 +24,10 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
         super(HttpCustImportDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.employee = employee.Employee().currentemployee  # Create employe object
-        self.settings = setting.Setting().currentsettings  # Create settings object
+        self.c = Communicate()
+
+        self.employee = employee.Employee().current_employee  # Create employe object
+        self.settings = settings.Setting().current_settings  # Create settings object
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
         self.progresscount = 0
@@ -69,3 +76,4 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
         self.buttonStart.setEnabled(True)
         self.buttonClose.setEnabled(True)
         self.progress_bar.setValue(100)
+        self.c.finished.emit()

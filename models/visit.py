@@ -10,13 +10,13 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbtablefn
+from util import dbfn
 
 
 # noinspection PyMethodMayBeStatic
 class Visit:
     def __init__(self):
-        """Initialize visits class"""
+        """Initialize visit class"""
         # model for zipping dictionary
         self.model = (
             "visitid", "reportid", "employeeid", "customerid", "podate", "posent", "pocontact", "ponum", "pocompany",
@@ -35,22 +35,26 @@ class Visit:
         return self.__visit_list_customer
 
     @visit_list_customer.setter
-    def visit_list_customer(self, orderid):
+    def visit_list_customer(self, customerid):
         try:
-            _ = self.__visit_list_customer[0]
+            cid = self.__visit_list_customer[0]["customerid"]
+            if not cid == customerid:
+                self.load_for_customer(customerid=customerid)
         except IndexError:
-            self.__visit_list_customer = self.load_for_customer(customerid=orderid)
+            self.load_for_customer(customerid=customerid)
 
     @property
     def visit_list_report(self):
         return self.__visit_list_report
 
     @visit_list_report.setter
-    def visit_list_report(self, orderid):
+    def visit_list_report(self, reportid):
         try:
-            _ = self.__visit_list_report[0]
+            rid = self.__visit_list_report[0]["reportid"]
+            if not rid == reportid:
+                self.load_for_report(reportid)
         except IndexError:
-            self.__visit_list_report = self.load_for_report(reportid=orderid)
+            self.load_for_report(reportid=reportid)
 
     def add_(self):
         pass
@@ -80,17 +84,20 @@ class Visit:
             "turnsas": "",
             "turntotal": ""
         }
+        self.insert_(self.__current_visit.values())
 
-    def find_(self, orderid):
+    def find_(self, visitid):
         pass
 
-    def insert_(self):
-        """Save visits"""
-        sql = "INSERT INTO visits VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        values = self.currentVisit.values()
+    def insert_(self, values=None):
+        """Save visit"""
+        sql = "INSERT INTO visit VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        if not values:
+            values = self.__current_visit.values()
         db = sqlite3.connect(config.DBPATH)
         with db:
-            db.execute(sql, values)
+            cur = db.cursor()
+            cur.execute(sql, values)
             db.commit()
 
     def insert_csv(self, filename, headers=False):
@@ -98,63 +105,55 @@ class Visit:
         :param filename:
         :param headers:
         """
-        sql = "INSERT INTO " \
-              "visits (visitid, reportid, employeeid, customerid, podate, " \
-              "posent, pocontact, ponum, pocompany, poaddress1, " \
-              "poaddress2, popostcode, popostoffice, pocountry, infotext, " \
-              "proddemo, prodsale, ordertype, turnsas, turnsale, " \
-              "turntotal, approved) " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        dbtablefn.drop_table("visits")
-        dbtablefn.create_table("visits")
-        db = sqlite3.connect(config.DBPATH)
+        dbfn.recreate_table("visit")  # recreate an empty table
         filename.encode("utf8")
-        with db:
-            with open(filename) as csvdata:
-                reader = csv.reader(csvdata)
-                line = 0
-                for row in reader:
-                    line += 1
-                    if headers and line == 1:
-                        continue
-                    processed = [row[0], row[1], row[2], row[3], row[4].strip(),
-                                 row[5], row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
-                                 row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
-                                 row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
-                                 row[20], row[21]]
-                    db.execute(sql, processed)
-        db.commit()
+        with open(filename) as csvdata:
+            reader = csv.reader(csvdata)
+            line = 0
+            for row in reader:
+                line += 1
+                if headers and line == 1:
+                    continue
+                processed = [row[0], row[1], row[2], row[3], row[4].strip(),
+                             row[5], row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
+                             row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
+                             row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
+                             row[20], row[21]]
+                self.insert_(processed)  # call insert function
 
     def load_for_customer(self, customerid):
         """Load orders for specified customer"""
-        sql = "SELECT * FROM visits WHERE customerid=?"
+        sql = "SELECT * FROM visit WHERE customerid=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             cur.execute(sql, (customerid,))
-            visitss = cur.fetchall()
-            if visitss:
-                return [dict(zip(self.model, row)) for row in visitss]
+            visits = cur.fetchall()
+            if visits:
+                self.visit_list_customer = [dict(zip(self.model, row)) for row in visits]
 
     def load_for_report(self, reportid):
         """Load orders for specified customer"""
-        sql = "SELECT * FROM visits WHERE reportid=?"
+        sql = "SELECT * FROM visit WHERE reportid=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             cur.execute(sql, (reportid,))
-            visitss = cur.fetchall()
-            if visitss:
-                return [dict(zip(self.model, row)) for row in visitss]
+            visits = cur.fetchall()
+            if visits:
+                self.visit_list_report = [dict(zip(self.model, row)) for row in visits]
 
-    def update_(self, values):
-        """Save current visits"""
-        sql = "UPDATE visits SET orderid=?, reportid=?, employeeid=?, customerid=?, podate=?, " \
+    def update_(self, values=None):
+        """Save current visit"""
+        sql = "UPDATE visit SET visitid=?, reportid=?, employeeid=?, customerid=?, podate=?, " \
               "posent=?, pocontact=?, ponum=?, pocompany=?, poaddress1=?, poaddress2=?, " \
               "pozipcode=?, pocity=?, pocountry=?, infotext=?, proddemo=?, prodsale=?, " \
-              "ordertype=?, turnsas=?, turnsale=?, turntotal=?, approved=? WHERE orderid=?;"
-        values = values + [values[0]]
+              "ordertype=?, turnsas=?, turnsale=?, turntotal=?, approved=? WHERE visitid=?;"
+        if not values:
+            values = self.__current_visit.values()
+        values += [values[0]]  # attach select clause parameter
         db = sqlite3.connect(config.DBPATH)
         with db:
-            db.execute(sql, values)
+            cur = db.cursor()
+            cur.execute(sql, values)
             db.commit()

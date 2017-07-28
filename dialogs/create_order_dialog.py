@@ -21,12 +21,12 @@ class CreateOrderDialog(QDialog, Ui_OrderDialog):
         self.product = product.Product()  # Create Product object
         self.report = report
         self.employee = employee
-        self.product.load_()  # Load products into list
+        self.product.load_()  # Load product into list
         self.orderVisit = visit.Visit()  # Create an OrderVisit object
         # If customer need special settings on prices
         factor = customer["factor"]
         if factor > 0.0:
-            for item in self.product.products:
+            for item in self.product.product:
                 item["price"] = item["price"] * factor
                 if not item["d2"] == 0.0:
                     item["d2"] = item["d2"] * factor

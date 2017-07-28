@@ -21,7 +21,7 @@ class Employee:
         self.__employee = {}
 
     @property
-    def currentemployee(self):
+    def current_employee(self):
         """Return current and only employee"""
         try:
             _ = self.__employee["fullname"]
@@ -31,7 +31,7 @@ class Employee:
 
     def insert_(self, data):
         """Insert employee in database"""
-        sql = "INSERT INTO employees VALUES (?, ?, ?, ?, ?, ?)"
+        sql = "INSERT INTO employee VALUES (?, ?, ?, ?, ?, ?)"
         db = sqlite3.connect(config.DBPATH)
         with db:
             db.execute(sql, data)
@@ -39,7 +39,7 @@ class Employee:
 
     def load_(self):
         """Load the employee"""
-        sql = "SELECT * FROM employees"
+        sql = "SELECT * FROM employee"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
@@ -50,10 +50,10 @@ class Employee:
 
     def update_(self):
         """Update the employee"""
-        sql = "UPDATE employees SET employeeid=?, salesrep=?, fullname=?, email=?, country=?, sas=? " \
+        sql = "UPDATE employee SET employeeid=?, salesrep=?, fullname=?, email=?, country=?, sas=? " \
               "WHERE employeeid=?;"
-        values = list(self.employee.values())
-        values.append(self.employee["employeeid"])
+        values = list(self.__employee.values())
+        values.append(self.__employee["employeeid"])
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

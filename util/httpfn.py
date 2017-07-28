@@ -61,7 +61,7 @@ def get_modified_data(settings, file, maxwait=2):
     return ""
 
 
-def get_products(settings, maxwait=2):
+def get_product(settings, maxwait=2):
     """Download a file and return content"""
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     productdata = []

@@ -9,7 +9,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbtablefn
+from util import dbfn
 
 
 class Contact:
@@ -36,7 +36,7 @@ class Contact:
             self.__contacts = self.load_(customerid)
 
     def find_(self, contactid):
-        sql = "SELECT * FROM contacts WHERE contactid=?"
+        sql = "SELECT * FROM contact WHERE contactid=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
@@ -49,7 +49,7 @@ class Contact:
         """Insert items
         :param values: contact data to insert in contact table
         """
-        sql = "INSERT INTO contacts (contactid, customerid, name, department, email, phone, infotext) " \
+        sql = "INSERT INTO contact (contactid, customerid, name, department, email, phone, infotext) " \
               "VALUES (?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
         with db:
@@ -57,13 +57,11 @@ class Contact:
             db.commit()
 
     def insert_csv(self, filename, headers=False):
-        """Import contacts from file
+        """Import contact from file
         :param filename:
         :param headers:
         """
-        tablename = "contact"
-        dbtablefn.drop_table(tablename)
-        dbtablefn.create_table(tablename)
+        dbfn.recreate_table("contact")
         filename.encode("utf8")
         conn = sqlite3.connect(config.DBPATH)
         with conn:
@@ -79,19 +77,19 @@ class Contact:
                     self.insert_(processed)
 
     def load_(self, customerid):
-        """Load contacts"""
-        sql = "SELECT * FROM contacts WHERE customerid=?"
+        """Load contact"""
+        sql = "SELECT * FROM contact WHERE customerid=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.execute(sql, (customerid,))
-            contacts = cur.fetchall()
-            if contacts:
-                return [dict(zip(self.model, row)) for row in contacts]
+            contact = cur.fetchall()
+            if contact:
+                return [dict(zip(self.model, row)) for row in contact]
             return []
 
     def update_(self, values):
         """Update item"""
-        sql = "UPDATE contacts SET name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
+        sql = "UPDATE contact SET name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
         db = sqlite3.connect(config.DBPATH)
         with db:
             db.execute(sql, values)

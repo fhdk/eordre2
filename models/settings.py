@@ -22,19 +22,24 @@ class Setting:
         self.__settings = {}
 
     @property
-    def currentsettings(self):
+    def current_settings(self):
         try:
             _ = self.__settings["usermail"]
         except KeyError:
             self.load_()
         return self.__settings
 
+    @current_settings.setter
+    def current_settings(self, settings):
+        self.__settings = settings
+
     def insert_(self, data):
         """Insert settings data"""
         sql = "INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
         with db:
-            db.execute(sql, data)
+            cur = db.cursor()
+            cur.execute(sql, data)
             db.commit()
 
     def insert_defaults(self):
@@ -42,7 +47,7 @@ class Setting:
         defaults = ["", "", "", "_", "__", ".txt",
                     "", "", "", "", "", "", "", "",
                     "customers", "invenprices", "employees", "", "", "", ""]
-        self.insert_(defaults)
+        self.insert_(defaults)  # call insert function
 
     def load_(self):
         """Load settings"""
@@ -65,5 +70,6 @@ class Setting:
               "fc=?, fp=?, fe=?, lsc=?, lsp=?, ac=?, ap=?;"
         db = sqlite3.connect(config.DBPATH)
         with db:
-            db.execute(sql, list(self.__settings.values()))
+            cur = db.cursor()
+            cur.execute(sql, list(self.__settings.values()))
             db.commit()

@@ -5,11 +5,16 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
-from models import setting
+from models import settings
 from resources.http_prod_import_dialog_rc import Ui_HttpProdImportDialog
 from util import threads
+
+
+class Communicate(QObject):
+    finished = pyqtSignal()
 
 
 class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
@@ -17,7 +22,8 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
         """Initialize Dialog"""
         super(HttpProdImportDialog, self).__init__(parent)
         self.setupUi(self)
-        self.settings = setting.Setting().currentsettings  # Create settings object
+        self.c = Communicate()
+        self.settings = settings.Setting().current_settings  # Create settings object
         self.progresscount = 1  # Used when setting progress values
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
@@ -65,3 +71,4 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
         self.buttonStart.setEnabled(True)
         self.buttonClose.setEnabled(True)
         self.progress_bar.setValue(100)
+        self.c.finished.emit()

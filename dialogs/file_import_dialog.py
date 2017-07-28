@@ -76,7 +76,7 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
                 self.listImported.addItem(notice)
             # import selected file to orderline table
             if self.selectedTable == "orderline":
-                self.OrderLine.import_csv(self.selectedFile, self.checkHeaders.isChecked())
+                self.OrderLine.csv_import(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
             # import selected file to report table
             if self.selectedTable == "report":
