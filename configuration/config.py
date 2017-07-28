@@ -9,7 +9,7 @@
 import os
 
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
-COUNTRIES = ["dk", "no", "s"]
+COUNTRIES = [("dk", "Danmark"), ("no", "Norge"), ("s", "Sverige")]
 HOME = os.path.expanduser("~")
 APP_DATA = "./.appdata"
 DBPATH = APP_DATA + "/app.db"
@@ -18,11 +18,3 @@ TABLES = ["contact", "customer", "employee", "visit", "orderline", "product", "r
 CSVDATA = [("Kontakter", "contact"), ("Kunder", "customer"), ("Ordrer", "visit"), ("Ordrelinjer", "orderline"),
            ("Rapporter", "report")]
 DECODE = "ISO-8859-1"
-
-
-
-
-
-
-
-

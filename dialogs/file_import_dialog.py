@@ -68,7 +68,7 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
                 self.listImported.addItem(notice)
             # import selected file to contact table
             if self.selectedTable == "contact":
-                self.Contact.insert_csv(self.selectedFile, self.checkHeaders.isChecked())
+                self.Contact.import_csv(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
             # import selected file to ordervisit table
             if self.selectedTable == "orderhead":

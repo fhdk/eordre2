@@ -29,12 +29,15 @@ class Employee:
             self.load_()
         return self.__employee
 
-    def insert_(self, data):
+    def insert_(self, values):
         """Insert employee in database"""
         sql = "INSERT INTO employee VALUES (?, ?, ?, ?, ?, ?)"
         db = sqlite3.connect(config.DBPATH)
+        if not type(values) == list or type(values) == tuple:
+            list(values)
         with db:
-            db.execute(sql, data)
+            cur = db.cursor()
+            cur.execute(sql, values)
             db.commit()
 
     def load_(self):
@@ -48,11 +51,14 @@ class Employee:
             if row:
                 self.__employee = dict(zip(self.model, row))
 
-    def update_(self):
+    def update_(self, values=None):
         """Update the employee"""
         sql = "UPDATE employee SET employeeid=?, salesrep=?, fullname=?, email=?, country=?, sas=? " \
               "WHERE employeeid=?;"
-        values = list(self.__employee.values())
+        if not values:
+            values = self.__employee.values()
+        if not type(values) == list or type(values) == tuple:
+            values = list(values)
         values.append(self.__employee["employeeid"])
         db = sqlite3.connect(config.DBPATH)
         with db:

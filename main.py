@@ -247,7 +247,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_customers_finished(self):
         """Slot for getCustomers finished signal"""
-        self.populate_customer_list()  # load customers
+        self.populate_customer_list()  # load_ customers
 
     def get_product_action(self):
         """Slot for getProducts triggered signal"""
@@ -256,7 +256,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_product_finished(self):
         """Slot for getProducts finished signal"""
-        self.Product.load_()  # load products
+        self.Product.load_()  # load_ products
 
     def master_data_action(self):
         """Slot for masterData triggered signal"""
@@ -275,7 +275,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.customerList.setSortingEnabled(True)  # enable sorting
         items = []  # temporary list
         for c in self.Customer.customer_list:
-            # create Widget
+            # create_ Widget
             item = QTreeWidgetItem([c["company"], c["account"]])
             items.append(item)
         # assign Widgets to Tree
@@ -327,7 +327,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.currentCustomer["factor"] = self.txtFactor.text()
         self.currentCustomer["infotext"] = self.txtInfoText.toPlainText()
         self.currentCustomer["modified"] = 1
-        self.Customer.update_values(list(self.currentCustomer.values()))
+        self.Customer.update_(list(self.currentCustomer.values()))
 
     def visit_data_action(self):
         """Slot for visitData triggered signal"""

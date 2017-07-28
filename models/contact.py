@@ -21,19 +21,30 @@ class Contact:
         self.__contacts = []
 
     @property
-    def currentcontact(self):
+    def current_contact(self):
         return self.__contact
 
     @property
-    def contactlist(self):
+    def contact_list(self):
         return self.__contacts
 
-    @contactlist.setter
-    def contactlist(self, customerid):
+    @contact_list.setter
+    def contact_list(self, customerid):
         try:
-            _ = self.__contacts[0]
+            custid = self.__contacts[0]["customerid"]
+            if not custid == customerid:
+                self.load_(customerid)
         except IndexError:
-            self.__contacts = self.load_(customerid)
+            self.load_(customerid)
+
+    def create(self, customerid, name):
+        """Create a contact"""
+        values = (None, customerid, name, "", "", "", "")
+        self.insert_(values)
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            cur = db.cursor()
+            self.find_(cur.execute("select last_insert_rowid();"))
 
     def find_(self, contactid):
         sql = "SELECT * FROM contact WHERE contactid=?"
@@ -45,36 +56,33 @@ class Contact:
             if contact:
                 self.__contact = dict(zip(self.model, contact))
 
-    def insert_(self, values):
-        """Insert items
-        :param values: contact data to insert in contact table
-        """
-        sql = "INSERT INTO contact (contactid, customerid, name, department, email, phone, infotext) " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?);"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            db.executemany(sql, (values,))
-            db.commit()
-
-    def insert_csv(self, filename, headers=False):
+    def import_csv(self, filename, headers=False):
         """Import contact from file
         :param filename:
         :param headers:
         """
         dbfn.recreate_table("contact")
         filename.encode("utf8")
-        conn = sqlite3.connect(config.DBPATH)
-        with conn:
-            with open(filename) as csvdata:
-                reader = csv.reader(csvdata)
-                line = 0
-                for row in reader:
-                    line += 1
-                    if headers and line == 1:
-                        continue
-                    processed = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
-                                 row[6].strip()]
-                    self.insert_(processed)
+        with open(filename) as csvdata:
+            reader = csv.reader(csvdata)
+            line = 0
+            for row in reader:
+                line += 1
+                if headers and line == 1:
+                    continue
+                processed = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
+                             row[6].strip()]
+                self.insert_(processed)
+
+    def insert_(self, values):
+        """Insert items
+        :param values: contact data to insert in contact table
+        """
+        sql = "INSERT INTO contact VALUES (?, ?, ?, ?, ?, ?, ?);"
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            db.executemany(sql, list(values))
+            db.commit()
 
     def load_(self, customerid):
         """Load contact"""
@@ -82,15 +90,17 @@ class Contact:
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.execute(sql, (customerid,))
-            contact = cur.fetchall()
-            if contact:
-                return [dict(zip(self.model, row)) for row in contact]
-            return []
+            contacts = cur.fetchall()
+            if contacts:
+                self.__contacts = [dict(zip(self.model, row)) for row in contacts]
+            else:
+                self.__contacts = []
 
     def update_(self, values):
         """Update item"""
-        sql = "UPDATE contact SET name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
+        sql = "UPDATE contact SET contactid=?, name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
+        values += [values[0]]
         db = sqlite3.connect(config.DBPATH)
         with db:
-            db.execute(sql, values)
+            db.execute(sql, list(values))
             db.commit()

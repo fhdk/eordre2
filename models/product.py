@@ -23,16 +23,16 @@ class Product:
         self.model = (
             "sku", "name1", "name2", "name3", "item",
             "price", "d2", "d4", "d6", "d8", "d12", "d24", "d48", "d99", "min", "net", "group")
-        self.__product_list = []
+        self.__products = []
         self.__product = {}
 
     @property
-    def productlist(self):
+    def product_list(self):
         try:
-            _ = self.__product_list[0]
+            _ = self.__products[0]
         except IndexError:
             self.load_()
-        return self.__product_list
+        return self.__products
 
     def drop_table(self):
         """Drop the product table
@@ -45,12 +45,13 @@ class Product:
 
     def insert_(self, values):
         """Insert a product in database"""
-        sql = "INSERT INTO product (sku, name1, name2, name3, item, " \
-              "price, d2, d4, d6, d8, d12, d24, d48, d96, min, net, groupid) " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        sql = "INSERT INTO product VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
+        if not type(values) == list:
+            values = list(values)
         with db:
-            db.execute(sql, values)
+            cur = db.cursor()
+            cur.execute(sql, values)
             db.commit()
 
     def load_(self):
@@ -62,6 +63,6 @@ class Product:
             cur.execute(sql)
             products = cur.fetchall()
             if products:
-                self.__product_list = [dict(zip(self.model, row)) for row in products]
+                self.__products = [dict(zip(self.model, row)) for row in products]
             else:
-                self.__product_list = []
+                self.__products = []

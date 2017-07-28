@@ -51,14 +51,14 @@ class Customer:
             self.load_()
         return self.__customer_list
 
-    def create_(self, company, phone, workdate, country, salesrep):
-        found = self.find_(phone,company)
+    def create_(self, company, phone, createdate, country, salesrep):
+        found = self.find_(phone, company)
         if found:
             self.__customer = found
         else:
-            row = (None, "NY", company, "", "", "", "", country,
-                   salesrep, phone, "", "", 0, 0, workdate, "", "", "", 0.0)
-            self.__customer = dict(zip(self.model, row))
+            new = (None, "NY", company, "", "", "", "", country,
+                   salesrep, phone, "", "", 0, 0, createdate, "", "", "", 0.0)
+            self.__customer = dict(zip(self.model, new))
 
     def find_(self, account, company):
         """Look up customer
@@ -83,14 +83,17 @@ class Customer:
         # return empty
         return {}
 
-    def insert_values(self, values):
+    def insert_(self, values):
         """Insert a new customer
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
         sql = "INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
+        if not type(values) == list or type(values) == tuple:
+            values = list(values)
         with db:
-            db.execute(sql, values)
+            cur = db.cursor()
+            cur.execute(sql, values)
             db.commit()
 
     def insert_csv(self, filename, headers=False):
@@ -112,12 +115,12 @@ class Customer:
                 line += 1
                 if headers and line == 1:
                     continue
-                values = [row[0],
+                values = (row[0],
                           row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
                           row[11].strip(), row[12], row[13], row[14], row[15].strip(),
-                          "", "", 0.0]
-                self.insert_values(values)
+                          "", "", 0.0)
+                self.insert_(values)
 
     def insert_http(self, values):
         """Insert a new customer
@@ -134,9 +137,9 @@ class Customer:
         # eg '2200  København K' or '4430 Kirke Hyllinge'
         # it is necessary to find the first occurence of space
         # and insert '|' and use it to split zip and city
-        p = values[4].find(" ")
-        n = values[4][:p] + "|" + values[4][p:]
-        zipcity = n.split("|")
+        loc = values[4].find(" ")
+        zipcity = values[4][:loc] + "|" + values[4][loc:]
+        zipcity = zipcity.split("|")
         zipcode = zipcity[0].strip()
         city = zipcity[1].strip()
         # lookup existing customer
@@ -157,27 +160,14 @@ class Customer:
             found["email"] = values[9]
             found["att"] = values[10]
             found["phone2"] = values[11]
-            # extract values from customer
-            row_values = list(found.values())
-            # call update function
-            self.update_values(row_values)
+            self.update_(found.values())  # call update function
         else:
-            # sql = "SELECT customerid FROM customer ORDER BY customerid DESC LIMIT 1;"
-            # db = sqlite3.connect(config.DBPATH)
-            # with db:
-            #     cur = db.cursor()
-            #     cur.execute(sql)
-            #     lastid = cur.fetchone()
-            #     if lastid:
-            #         newid = lastid[0] + 1
-            #     else:
-            #         newid = 1
             # in :    acc comp add1 add2   zipcity    country s_rep phon1 vat email att phon2
             # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
-            row_values = [None, values[0], values[1], values[2], values[3], zipcode, city, values[5],
-                          values[6], values[7], values[8], values[9], 0, 0, 0, "", values[10], values[11], 0.0]
+            row_values = (None, values[0], values[1], values[2], values[3], zipcode, city, values[5],
+                          values[6], values[7], values[8], values[9], 0, 0, 0, "", values[10], values[11], 0.0)
             # call insert function
-            self.insert_values(row_values)
+            self.insert_(row_values)
 
     def load_(self):
         """Load customers into primary customer list"""
@@ -190,9 +180,9 @@ class Customer:
 
     def save_(self):
         """Save current customer changes"""
-        self.update_values(self.current_customer.values())
+        self.update_(self.current_customer.values())
 
-    def update_values(self, values):
+    def update_(self, values):
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
@@ -201,8 +191,10 @@ class Customer:
               "country=?, salesrep=?, phone1=?, vat=?, email=?, deleted=?, modified=?, created=?, " \
               "infotext=?, att=?, phone2=?, factor=? " \
               "WHERE company=? AND phone1=?"
+        if not type(values) == list or type(values) == tuple:
+            values = list(values)
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            cur.execute(sql, values)
+            cur.execute(sql, list(values))
             db.commit()
