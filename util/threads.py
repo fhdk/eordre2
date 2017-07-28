@@ -36,7 +36,7 @@ class ImportCustomersThread(QThread):
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.Customer.insert_http(row)  # add row to database
+            self.Customer.import_http(row)  # add row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
 

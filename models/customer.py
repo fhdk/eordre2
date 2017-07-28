@@ -33,7 +33,6 @@ class Customer:
                       "salesrep", "phone1", "vat", "email",
                       "deleted", "modified", "created",
                       "infotext", "att", "phone2", "factor")
-
         self.__customer_list = []
         self.__customer = {}
 
@@ -52,15 +51,29 @@ class Customer:
         return self.__customer_list
 
     def create_(self, company, phone, createdate, country, salesrep):
-        found = self.find_(phone, company)
+        found = self.find_name_account(company, phone)
         if found:
             self.__customer = found
         else:
             new = (None, "NY", company, "", "", "", "", country,
                    salesrep, phone, "", "", 0, 0, createdate, "", "", "", 0.0)
-            self.__customer = dict(zip(self.model, new))
+            self.insert_(new)
+            db = sqlite3.connect(config.DBPATH)
+            with db:
+                cur = db.cursor()
+                self.__customer = self.find_id(cur.execute("select last_insert_rowid();"))
 
-    def find_(self, account, company):
+    def find_id(self, customerid):
+        """Find customer by id"""
+        sql = "SELECT * FROM customer WHERE customerid=?"
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            cur = db.cursor()
+            cur.execute(sql, (customerid,))
+            customer = cur.fetchone()
+            return dict(zip(self.model, customer))
+
+    def find_name_account(self, company, account):
         """Look up customer
         :param account:
         :param company:
@@ -69,34 +82,21 @@ class Customer:
         sql_2 = "SELECT * FROM customer WHERE account=? AND company=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
-            # does the row exist with an account
+            # does the row exist with account
             cur = db.cursor()
             cur.execute(sql_1, [account])
             cust = cur.fetchone()
-            if cust:
+            if cust:  # found by account
                 return dict(zip(self.model, cust))
             # does the row exist as 'NY'
             cur.execute(sql_2, ['NY', company])
             cust = cur.fetchone()
-            if cust:
+            if cust:  # found as new customer
                 return dict(zip(self.model, cust))
         # return empty
         return {}
 
-    def insert_(self, values):
-        """Insert a new customer
-        db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
-        """
-        sql = "INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        db = sqlite3.connect(config.DBPATH)
-        if not type(values) == list or type(values) == tuple:
-            values = list(values)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
-
-    def insert_csv(self, filename, headers=False):
+    def import_csv(self, filename, headers=False):
         """Import customer from csv file
         :param filename:
         :param headers:
@@ -122,7 +122,7 @@ class Customer:
                           "", "", 0.0)
                 self.insert_(values)
 
-    def insert_http(self, values):
+    def import_http(self, values):
         """Insert a new customer
         :param values: List with values from http request
         expected incoming fields: acc comp add1 add2 zipcity country s_rep phone1 vat email att phon2
@@ -143,31 +143,48 @@ class Customer:
         zipcode = zipcity[0].strip()
         city = zipcity[1].strip()
         # lookup existing customer
-        found = self.find_(values[0], values[1])
+        found = self.find_name_account(values[1], values[0])
         if found:  # this is a complet customer with all fields
+            # sanitize and assign values
             if found["account"] == 'NY':
                 found["account"] = values[0]
             if found["modified"] == 1:
                 found["modified"] = 0
-            found["company"] = values[1]
-            found["address1"] = values[2]
-            found["address2"] = values[3]
+            found["company"] = values[1].strip()
+            found["address1"] = values[2].strip()
+            found["address2"] = values[3].strip()
             found["zipcode"] = zipcode  # zipcity[4]
             found["city"] = city  # zipcity[4]
             # skip over country[5] and salesrep[6]
-            found["phone1"] = values[7]
-            found["vat"] = values[8]
-            found["email"] = values[9]
-            found["att"] = values[10]
-            found["phone2"] = values[11]
+            found["phone1"] = values[7].strip()
+            found["vat"] = values[8].strip()
+            found["email"] = values[9].strip()
+            found["att"] = values[10].strip()
+            found["phone2"] = values[11].strip()
             self.update_(found.values())  # call update function
         else:
+            # sanitize values
             # in :    acc comp add1 add2   zipcity    country s_rep phon1 vat email att phon2
             # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
-            row_values = (None, values[0], values[1], values[2], values[3], zipcode, city, values[5],
-                          values[6], values[7], values[8], values[9], 0, 0, 0, "", values[10], values[11], 0.0)
+            row_values = (None, values[0].strip(), values[1].strip(), values[2], values[3].strip(), zipcode, city,
+                          values[5].strip(), values[6].strip(), values[7].strip(), values[8].strip(),
+                          values[9].strip(), 0, 0, 0, "", values[10].strip(), values[11].strip(), 0.0)
             # call insert function
             self.insert_(row_values)
+
+    def insert_(self, values):
+        """Insert a new customer
+        db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
+        """
+        sql = "INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        db = sqlite3.connect(config.DBPATH)
+        # sanitize parameter
+        if not type(values) == list or type(values) == tuple:
+            values = list(values)
+        with db:
+            cur = db.cursor()
+            cur.execute(sql, values)
+            db.commit()
 
     def load_(self):
         """Load customers into primary customer list"""
@@ -191,10 +208,11 @@ class Customer:
               "country=?, salesrep=?, phone1=?, vat=?, email=?, deleted=?, modified=?, created=?, " \
               "infotext=?, att=?, phone2=?, factor=? " \
               "WHERE company=? AND phone1=?"
+        # sanitize parameter
         if not type(values) == list or type(values) == tuple:
             values = list(values)
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            cur.execute(sql, list(values))
+            cur.execute(sql, values)
             db.commit()

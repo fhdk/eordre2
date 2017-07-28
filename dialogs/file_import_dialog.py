@@ -64,7 +64,7 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
             notice = self.comboImport.currentText() + " er importeret."
             # import selected file to customer table
             if self.selectedTable == "customer":
-                self.Customer.insert_csv(self.selectedFile, self.checkHeaders.isChecked())
+                self.Customer.import_csv(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
             # import selected file to contact table
             if self.selectedTable == "contact":

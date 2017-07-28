@@ -44,7 +44,7 @@ class Contact:
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            self.find_(cur.execute("select last_insert_rowid();"))
+            self.find_(cur.execute("SELECT last_insert_rowid();"))
 
     def find_(self, contactid):
         sql = "SELECT * FROM contact WHERE contactid=?"
@@ -70,9 +70,10 @@ class Contact:
                 line += 1
                 if headers and line == 1:
                     continue
-                processed = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
-                             row[6].strip()]
-                self.insert_(processed)
+                # sanitize row values
+                values = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
+                          row[6].strip()]
+                self.insert_(values)
 
     def insert_(self, values):
         """Insert items
@@ -80,8 +81,11 @@ class Contact:
         """
         sql = "INSERT INTO contact VALUES (?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
+        # sanitize parameter
+        if not type(values) == list or type(values) == tuple:
+            values = list(values)
         with db:
-            db.executemany(sql, list(values))
+            db.executemany(sql, values)
             db.commit()
 
     def load_(self, customerid):
@@ -99,7 +103,10 @@ class Contact:
     def update_(self, values):
         """Update item"""
         sql = "UPDATE contact SET contactid=?, name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
-        values += [values[0]]
+        # sanitize parameter
+        if not type(values) == list or type(values) == tuple:
+            values = list(values)
+        values += values[0]
         db = sqlite3.connect(config.DBPATH)
         with db:
             db.execute(sql, list(values))
