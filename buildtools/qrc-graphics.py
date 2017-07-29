@@ -7,7 +7,6 @@
 import os
 import sys
 
-
 graphics = "/graphics/"
 graphic_res_path = os.getenv("PWD")
 graphic_dirs = ["splash"]

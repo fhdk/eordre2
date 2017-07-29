@@ -25,4 +25,3 @@ def create_dir(dirname):
     :param dirname:
     """
     os.makedirs(dirname, mode=0o744, exist_ok=True)
-

@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_SettingsDialog(object):
     def setupUi(self, SettingsDialog):
         SettingsDialog.setObjectName("SettingsDialog")
@@ -15,13 +16,14 @@ class Ui_SettingsDialog(object):
         SettingsDialog.resize(510, 242)
         SettingsDialog.setMinimumSize(QtCore.QSize(0, 0))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/settings/preferences-system-network.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/icons/settings/preferences-system-network.png"), QtGui.QIcon.Normal,
+                       QtGui.QIcon.Off)
         SettingsDialog.setWindowIcon(icon)
         SettingsDialog.setWindowOpacity(1.0)
         SettingsDialog.setModal(True)
         self.buttonBox = QtWidgets.QDialogButtonBox(SettingsDialog)
         self.buttonBox.setGeometry(QtCore.QRect(10, 200, 481, 41))
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setCenterButtons(False)
         self.buttonBox.setObjectName("buttonBox")
         self.settingsStack = QtWidgets.QTabWidget(SettingsDialog)
@@ -127,16 +129,20 @@ class Ui_SettingsDialog(object):
         self.editUserMail.setPlaceholderText(_translate("SettingsDialog", "brugers mail adresse: email@domæne.tld"))
         self.editUserPass.setPlaceholderText(_translate("SettingsDialog", "din adgangs frase"))
         self.editUserCountry.setPlaceholderText(_translate("SettingsDialog", "landkode: dk"))
-        self.settingsStack.setTabText(self.settingsStack.indexOf(self.settingsUser), _translate("SettingsDialog", "Bruger"))
+        self.settingsStack.setTabText(self.settingsStack.indexOf(self.settingsUser),
+                                      _translate("SettingsDialog", "Bruger"))
         self.editHttp.setPlaceholderText(_translate("SettingsDialog", "webserver: http://localhost:8080"))
         self.editSmtp.setPlaceholderText(_translate("SettingsDialog", "post server: mail.domain.tld"))
         self.editMailTo.setPlaceholderText(_translate("SettingsDialog", "modtager email: email@domain.tld"))
         self.editPort.setPlaceholderText(_translate("SettingsDialog", "port: 25"))
-        self.settingsStack.setTabText(self.settingsStack.indexOf(self.settingsStackPage2), _translate("SettingsDialog", "Ordrer"))
+        self.settingsStack.setTabText(self.settingsStack.indexOf(self.settingsStackPage2),
+                                      _translate("SettingsDialog", "Ordrer"))
         self.editMailServer.setPlaceholderText(_translate("SettingsDialog", "post server: server.domain.tld"))
         self.editMailPort.setPlaceholderText(_translate("SettingsDialog", "port: 25"))
         self.editMailUser.setPlaceholderText(_translate("SettingsDialog", "post server: brugernavn"))
         self.editMailPass.setPlaceholderText(_translate("SettingsDialog", "post server: adgangskode"))
-        self.settingsStack.setTabText(self.settingsStack.indexOf(self.settingsStackPage3), _translate("SettingsDialog", "E-post"))
+        self.settingsStack.setTabText(self.settingsStack.indexOf(self.settingsStackPage3),
+                                      _translate("SettingsDialog", "E-post"))
+
 
 from . import system_rc

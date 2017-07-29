@@ -61,7 +61,7 @@ class Customer:
             db = sqlite3.connect(config.DBPATH)
             with db:
                 cur = db.cursor()
-                cid = cur.execute("select last_insert_rowid();")
+                cid = cur.execute("SELECT last_insert_rowid();")
                 self.find_id(cid)
 
     def find_id(self, customerid):
