@@ -7,13 +7,12 @@
 import os
 import sys
 
-
 icons = "/icons/"
 icon_res_path = os.getenv("PWD")
 icon_dirs = ["system"]
 
 for icon_dir in icon_dirs:
-    walk_path = icon_res_path  + "/" + icon_dir
+    walk_path = icon_res_path + "/" + icon_dir
     f = []
     for (dirpath, dirnames, filenames) in os.walk(walk_path):
         f.extend(filenames)
@@ -24,4 +23,3 @@ for icon_dir in icon_dirs:
         for icon_name in f:
             resfile.write("    <file>{}/{}</file>\n".format(icon_dir, icon_name))
         resfile.write("  </qresource>\n</RCC>\n")
-

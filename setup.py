@@ -8,5 +8,6 @@ setup(
     license='AGPL',
     author='Frede Hundewadt',
     author_email='fh@uex.dk',
-    description='Eordre app build with python and pyqt'
+    description='Eordre app build with python and pyqt',
+    requires=['PyQt5', 'sqlite']
 )

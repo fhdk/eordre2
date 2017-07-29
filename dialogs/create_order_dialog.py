@@ -66,4 +66,3 @@ class CreateOrderDialog(QDialog, Ui_OrderDialog):
                                 self.employee["employeeid"],
                                 self.customer["customerid"],
                                 self.workdate)
-

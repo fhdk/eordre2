@@ -12,6 +12,7 @@ from resources import settings_dialog_rc as settingsui
 
 class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
     """Settings dialog class"""
+
     def __init__(self, settings, parent=None):
         """Initialize the dialog"""
         super(SettingsDialog, self).__init__(parent)
