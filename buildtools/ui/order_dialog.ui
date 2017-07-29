@@ -1,343 +1,343 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>OrderDialog</class>
-    <widget class="QDialog" name="OrderDialog">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>636</width>
-                <height>568</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>Indkøbs ordre</string>
-        </property>
-        <widget class="QWidget" name="formLayoutWidget">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>60</y>
-                    <width>321</width>
-                    <height>232</height>
-                </rect>
-            </property>
-            <layout class="QFormLayout" name="formOrderVisit">
-                <item row="0" column="1">
-                    <widget class="QLineEdit" name="txtOrderVisitDate">
-                        <property name="enabled">
-                            <bool>false</bool>
-                        </property>
-                        <property name="placeholderText">
-                            <string>Ordre dato</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="1">
-                    <widget class="QLineEdit" name="txtBuyer">
-                        <property name="placeholderText">
-                            <string>Indkøber</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <widget class="QLineEdit" name="txtPurchaseOrder">
-                        <property name="placeholderText">
-                            <string>Rekvisition</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="1">
-                    <widget class="QLineEdit" name="txtProductDemo">
-                        <property name="placeholderText">
-                            <string>Produkt demo</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="1">
-                    <widget class="QLineEdit" name="txtProductSale">
-                        <property name="placeholderText">
-                            <string>Produkt salg</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="1">
-                    <widget class="QTextEdit" name="txtNote"/>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QTableWidget" name="orderLinesWidget">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>320</y>
-                    <width>620</width>
-                    <height>192</height>
-                </rect>
-            </property>
-            <property name="editTriggers">
-                <set>QAbstractItemView::AllEditTriggers</set>
-            </property>
-            <property name="selectionMode">
-                <enum>QAbstractItemView::SingleSelection</enum>
-            </property>
-            <attribute name="horizontalHeaderDefaultSectionSize">
-                <number>70</number>
-            </attribute>
-            <attribute name="horizontalHeaderMinimumSectionSize">
-                <number>10</number>
-            </attribute>
-            <attribute name="verticalHeaderStretchLastSection">
-                <bool>true</bool>
-            </attribute>
-            <column>
-                <property name="text">
-                    <string>Antal</string>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>Produkt</string>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>Varenr</string>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>Tekst</string>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>Pris</string>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>%</string>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>Beløb</string>
-                </property>
-            </column>
-            <column>
-                <property name="text">
-                    <string>SAS</string>
-                </property>
-            </column>
-        </widget>
-        <widget class="QWidget" name="formLayoutWidget_2">
-            <property name="geometry">
-                <rect>
-                    <x>339</x>
-                    <y>60</y>
-                    <width>291</width>
-                    <height>191</height>
-                </rect>
-            </property>
-            <layout class="QFormLayout" name="formDeliveryAddress">
-                <item row="0" column="1">
-                    <widget class="QLineEdit" name="txtDeliverCompany">
-                        <property name="placeholderText">
-                            <string>Leveres til</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="1">
-                    <widget class="QLineEdit" name="txtDeliverAddress1">
-                        <property name="placeholderText">
-                            <string>Leverings adresse 1</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="2" column="1">
-                    <widget class="QLineEdit" name="txtDeliverAddress2">
-                        <property name="placeholderText">
-                            <string>Leverings adresse 2</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="3" column="1">
-                    <widget class="QLineEdit" name="txtZipCode">
-                        <property name="placeholderText">
-                            <string>Leverings adresse postnummer</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="4" column="1">
-                    <widget class="QLineEdit" name="txtCityName">
-                        <property name="placeholderText">
-                            <string>Leverings adresse bynavn</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="5" column="1">
-                    <widget class="QLineEdit" name="txtDeliverCountry">
-                        <property name="placeholderText">
-                            <string>Leverings adresse land</string>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QWidget" name="gridLayoutWidget">
-            <property name="geometry">
-                <rect>
-                    <x>350</x>
-                    <y>260</y>
-                    <width>281</width>
-                    <height>31</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridOrderTotals">
-                <item row="1" column="0">
-                    <widget class="QLabel" name="label">
-                        <property name="text">
-                            <string>Salg</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="2">
-                    <widget class="QLabel" name="label_2">
-                        <property name="text">
-                            <string>SAS</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="1">
-                    <widget class="QLineEdit" name="txtOrderSale">
-                        <property name="enabled">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="3">
-                    <widget class="QLineEdit" name="txtOrderSas">
-                        <property name="enabled">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="4">
-                    <widget class="QLabel" name="label_3">
-                        <property name="text">
-                            <string>Total</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="1" column="5">
-                    <widget class="QLineEdit" name="txtOrderTotal">
-                        <property name="enabled">
-                            <bool>false</bool>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="Line" name="line">
-            <property name="geometry">
-                <rect>
-                    <x>330</x>
-                    <y>60</y>
-                    <width>16</width>
-                    <height>240</height>
-                </rect>
-            </property>
-            <property name="orientation">
-                <enum>Qt::Vertical</enum>
-            </property>
-        </widget>
-        <widget class="QWidget" name="gridLayoutWidget_2">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>10</y>
-                    <width>621</width>
-                    <height>33</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridOrderVisitAt">
-                <item row="0" column="0">
-                    <widget class="QLabel" name="lblCompany">
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>75</weight>
-                                <bold>true</bold>
-                            </font>
-                        </property>
-                        <property name="text">
-                            <string>Besøg / Ordre:</string>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="1">
-                    <widget class="QLineEdit" name="txtCompany">
-                        <property name="font">
-                            <font>
-                                <pointsize>12</pointsize>
-                                <weight>75</weight>
-                                <bold>true</bold>
-                            </font>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-        <widget class="QWidget" name="gridLayoutWidget_3">
-            <property name="geometry">
-                <rect>
-                    <x>10</x>
-                    <y>520</y>
-                    <width>621</width>
-                    <height>41</height>
-                </rect>
-            </property>
-            <layout class="QGridLayout" name="gridOrderButtons">
-                <item row="0" column="0">
-                    <widget class="QPushButton" name="buttonAddOrderLine">
-                        <property name="text">
-                            <string>Ny ordrelinje</string>
-                        </property>
-                        <property name="default">
-                            <bool>true</bool>
-                        </property>
-                    </widget>
-                </item>
-                <item row="0" column="1">
-                    <widget class="QPushButton" name="buttonCreateOrderVisit">
-                        <property name="text">
-                            <string>Opret</string>
-                        </property>
-                    </widget>
-                </item>
-            </layout>
-        </widget>
-    </widget>
-    <tabstops>
-        <tabstop>txtOrderVisitDate</tabstop>
-        <tabstop>txtBuyer</tabstop>
-        <tabstop>txtPurchaseOrder</tabstop>
-        <tabstop>txtProductDemo</tabstop>
-        <tabstop>txtProductSale</tabstop>
-        <tabstop>txtNote</tabstop>
-        <tabstop>txtDeliverCompany</tabstop>
-        <tabstop>txtDeliverAddress1</tabstop>
-        <tabstop>txtDeliverAddress2</tabstop>
-        <tabstop>txtZipCode</tabstop>
-        <tabstop>txtCityName</tabstop>
-        <tabstop>txtDeliverCountry</tabstop>
-        <tabstop>txtOrderSale</tabstop>
-        <tabstop>txtOrderSas</tabstop>
-        <tabstop>txtOrderTotal</tabstop>
-        <tabstop>orderLinesWidget</tabstop>
-        <tabstop>buttonAddOrderLine</tabstop>
-    </tabstops>
-    <resources/>
-    <connections/>
+ <class>OrderDialog</class>
+ <widget class="QDialog" name="OrderDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>636</width>
+    <height>568</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Indkøbs ordre</string>
+  </property>
+  <widget class="QWidget" name="formLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>60</y>
+     <width>321</width>
+     <height>252</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formOrderVisit">
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="txtOrderVisitDate">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="placeholderText">
+       <string>Ordre dato</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="txtBuyer">
+      <property name="placeholderText">
+       <string>Indkøber</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="txtPurchaseOrder">
+      <property name="placeholderText">
+       <string>Rekvisition</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="txtProductDemo">
+      <property name="placeholderText">
+       <string>Produkt demo</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="txtProductSale">
+      <property name="placeholderText">
+       <string>Produkt salg</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QTextEdit" name="txtNote"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QTableWidget" name="orderLinesWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>320</y>
+     <width>620</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::AllEditTriggers</set>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <attribute name="horizontalHeaderDefaultSectionSize">
+    <number>70</number>
+   </attribute>
+   <attribute name="horizontalHeaderMinimumSectionSize">
+    <number>10</number>
+   </attribute>
+   <attribute name="verticalHeaderStretchLastSection">
+    <bool>true</bool>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>Antal</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Produkt</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Varenr</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Tekst</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Pris</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>%</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Beløb</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>SAS</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QWidget" name="formLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>339</x>
+     <y>60</y>
+     <width>291</width>
+     <height>206</height>
+    </rect>
+   </property>
+   <layout class="QFormLayout" name="formDeliveryAddress">
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="txtDeliverCompany">
+      <property name="placeholderText">
+       <string>Leveres til</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="txtDeliverAddress1">
+      <property name="placeholderText">
+       <string>Leverings adresse 1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="txtDeliverAddress2">
+      <property name="placeholderText">
+       <string>Leverings adresse 2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="txtZipCode">
+      <property name="placeholderText">
+       <string>Leverings adresse postnummer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="txtCityName">
+      <property name="placeholderText">
+       <string>Leverings adresse bynavn</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="txtDeliverCountry">
+      <property name="placeholderText">
+       <string>Leverings adresse land</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>280</y>
+     <width>290</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridOrderTotals">
+    <item row="1" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Salg</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>SAS</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="txtOrderSale">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="3">
+     <widget class="QLineEdit" name="txtOrderSas">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="4">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Total</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="5">
+     <widget class="QLineEdit" name="txtOrderTotal">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>60</y>
+     <width>16</width>
+     <height>240</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>621</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridOrderVisitAt">
+    <item row="0" column="0">
+     <widget class="QLabel" name="lblCompany">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Besøg / Ordre:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="txtCompany">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="gridLayoutWidget_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>520</y>
+     <width>621</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridOrderButtons">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="buttonAddOrderLine">
+      <property name="text">
+       <string>Ny ordrelinje</string>
+      </property>
+      <property name="default">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="buttonCreateOrderVisit">
+      <property name="text">
+       <string>Arkiver</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>txtOrderVisitDate</tabstop>
+  <tabstop>txtBuyer</tabstop>
+  <tabstop>txtPurchaseOrder</tabstop>
+  <tabstop>txtProductDemo</tabstop>
+  <tabstop>txtProductSale</tabstop>
+  <tabstop>txtNote</tabstop>
+  <tabstop>txtDeliverCompany</tabstop>
+  <tabstop>txtDeliverAddress1</tabstop>
+  <tabstop>txtDeliverAddress2</tabstop>
+  <tabstop>txtZipCode</tabstop>
+  <tabstop>txtCityName</tabstop>
+  <tabstop>txtDeliverCountry</tabstop>
+  <tabstop>txtOrderSale</tabstop>
+  <tabstop>txtOrderSas</tabstop>
+  <tabstop>txtOrderTotal</tabstop>
+  <tabstop>orderLinesWidget</tabstop>
+  <tabstop>buttonAddOrderLine</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
 </ui>

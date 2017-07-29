@@ -4,7 +4,9 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
+import os
 
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QFileDialog
 
 from configuration import config
@@ -12,10 +14,16 @@ from models import contact, customer, visit, orderline, report
 from resources import file_import_dialog_rc
 
 
+class Communication(QObject):
+    customersdone = pyqtSignal()
+
+
 class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
     def __init__(self, table_list, parent=None):
         """Initialize Dialog"""
         super(FileImportDialog, self).__init__(parent)
+        self.file_dialog = QFileDialog()  # Create FileDialog object
+        self.c = Communication()
         self.setupUi(self)
 
         self.buttonImport.enabled = False
@@ -40,13 +48,14 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
 
     def button_browse_action(self):
         """Slot for buttonBrowse clicked signal"""
-        file_obj = QFileDialog()  # Create FileDialog object
-        # connect to signals
-        file_obj.directoryEntered.connect(self.directory_entered_action)
-        file_obj.fileSelected.connect(self.file_selected_action)
         # browse for import file
-        file_obj.getOpenFileName(self,
-                                 "Vælg import fil", self.browseDir, "Text files (*.csv)")
+        data = self.file_dialog.getOpenFileName(self,
+                                                "Vælg import fil",
+                                                self.browseDir,
+                                                "Text files (*.csv)")
+        self.selectedFile = data[0]
+        self.browseDir = os.path.dirname(data[0])
+        self.txtSelectedFile.setText(self.selectedFile)
 
     def button_close_action(self):
         """Slot for buttonClose clicked signal"""
@@ -62,26 +71,37 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
         if self.selectedFile:
             # notice to add to list box
             notice = self.comboImport.currentText() + " er importeret."
-            # import selected file to customer table
-            if self.selectedTable == "customer":
-                self.Customer.import_csv(self.selectedFile, self.checkHeaders.isChecked())
-                self.listImported.addItem(notice)
+
             # import selected file to contact table
             if self.selectedTable == "contact":
                 self.Contact.import_csv(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
-            # import selected file to ordervisit table
-            if self.selectedTable == "orderhead":
-                self.OrderVisit.insert_csv(self.selectedFile, self.checkHeaders.isChecked())
+                self.c.customersdone.emit()
+
+            # import selected file to customer table
+            if self.selectedTable == "customer":
+                self.Customer.import_csv(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
+
+            # import selected file to ordervisit table
+            if self.selectedTable == "visit":
+                self.OrderVisit.import_csv(self.selectedFile, self.checkHeaders.isChecked())
+                self.listImported.addItem(notice)
+
             # import selected file to orderline table
             if self.selectedTable == "orderline":
                 self.OrderLine.csv_import(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
+
             # import selected file to report table
             if self.selectedTable == "report":
-                self.Report.insert_csv(self.selectedFile, self.checkHeaders.isChecked())
+                self.Report.import_csv(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
+
+            self.selectedFile = ""
+            self.txtSelectedFile.setText(self.selectedFile)
+            self.comboImport.removeItem(self.comboImport.currentIndex())
+            self.comboImport.setCurrentIndex(0)
 
         self.buttonImport.enabled = False  # disable the button till next file is selected
         self.buttonBrowse.enabled = True  # enable browse button
@@ -90,13 +110,3 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
     def combo_current_index_changed_action(self):
         """Slot for ComboBox currentIndexChanged signal"""
         self.selectedTable = self.comboImport.itemData(self.comboImport.currentIndex())
-
-    def directory_entered_action(self, directory):
-        """Slot for QFileDialog directoryEntered signal"""
-        self.browseDir = directory
-
-    def file_selected_action(self, file):
-        """Slot for QFileDialog fileSelected signal"""
-        self.selectedFile = file
-        self.txtSelectedFile.setText(self.selectedFile)
-        self.buttonImport.enabled = True

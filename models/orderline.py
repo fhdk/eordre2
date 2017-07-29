@@ -44,18 +44,22 @@ class OrderLine:
         :param filename: csv file
         :param headers: flag first row as fieldnames
         """
+        csv_field_count = 8
         dbfn.recreate_table("orderline")
         filename.encode("utf8")
         with open(filename) as csvdata:
             reader = csv.reader(csvdata)
             line = 0
             for row in reader:
+                if not len(row) == csv_field_count:
+                    return False
                 line += 1
                 if headers and line == 1:
                     continue
                 # sanitize line
                 processed = [row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7]]
                 self.insert_values(processed)
+            return True
 
     def insert_values(self, values=None):
         sql = "INSERT INTO orderline VALUES (?, ?, ?, ?, ?, ?, ?, ?);"

@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -52,7 +51,7 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
         self.label_7 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_7.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        self.label_7.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.label_7.setObjectName("label_7")
         self.gridLayout.addWidget(self.label_7, 0, 0, 1, 1)
         self.txtWorkdate = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -89,7 +88,7 @@ class Ui_MainWindow(object):
         self.label_3.setObjectName("label_3")
         self.lastUpdateGrid.addWidget(self.label_3, 0, 1, 1, 1)
         self.lblCustomer = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.lblCustomer.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.lblCustomer.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.lblCustomer.setObjectName("lblCustomer")
         self.lastUpdateGrid.addWidget(self.lblCustomer, 1, 0, 1, 1)
         self.label = QtWidgets.QLabel(self.verticalLayoutWidget)
@@ -97,7 +96,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.lastUpdateGrid.addWidget(self.label, 0, 0, 1, 1)
         self.lblCatalog = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.lblCatalog.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.lblCatalog.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.lblCatalog.setObjectName("lblCatalog")
         self.lastUpdateGrid.addWidget(self.lblCatalog, 2, 0, 1, 1)
         self.txtCustServer = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -182,7 +181,6 @@ class Ui_MainWindow(object):
         self.txtCompany.setObjectName("txtCompany")
         self.gridLayoutCustomerrMasterData.addWidget(self.txtCompany, 1, 1, 1, 1)
         self.lblInfoText = QtWidgets.QLabel(self.layoutWidget)
-        self.lblInfoText.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.lblInfoText.setWordWrap(True)
         self.lblInfoText.setObjectName("lblInfoText")
         self.gridLayoutCustomerrMasterData.addWidget(self.lblInfoText, 12, 0, 1, 1)
@@ -283,10 +281,13 @@ class Ui_MainWindow(object):
         self.actionUpdateCustomer.setObjectName("actionUpdateCustomer")
         self.actionCreateReport = QtWidgets.QAction(MainWindow)
         self.actionCreateReport.setObjectName("actionCreateReport")
+        self.actionZeroDatabase = QtWidgets.QAction(MainWindow)
+        self.actionZeroDatabase.setObjectName("actionZeroDatabase")
         self.menuExit.addAction(self.actionExit)
         self.menuSettings.addAction(self.actionSettings)
         self.menuSettings.addSeparator()
         self.menuSettings.addAction(self.actionCsvFileImport)
+        self.menuSettings.addAction(self.actionZeroDatabase)
         self.menuKunde.addAction(self.actionShowMasterData)
         self.menuKunde.addAction(self.actionShowContactData)
         self.menuKunde.addAction(self.actionShowVisitData)
@@ -373,7 +374,7 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "TODO: Vis tidligere ordrer"))
         self.menuExit.setTitle(_translate("MainWindow", "Afslut"))
         self.menuSettings.setTitle(_translate("MainWindow", "Indstillinger"))
-        self.menu_Data.setTitle(_translate("MainWindow", " Data"))
+        self.menu_Data.setTitle(_translate("MainWindow", "Data"))
         self.menuKunde.setTitle(_translate("MainWindow", "Kunde"))
         self.menuHelp.setTitle(_translate("MainWindow", "Hjælp"))
         self.menuAbout.setTitle(_translate("MainWindow", "Om"))
@@ -404,3 +405,5 @@ class Ui_MainWindow(object):
         self.actionCreateCustomer.setText(_translate("MainWindow", "Opret kunde"))
         self.actionUpdateCustomer.setText(_translate("MainWindow", "Gem rettelser"))
         self.actionCreateReport.setText(_translate("MainWindow", "Opret dagsrapport"))
+        self.actionZeroDatabase.setText(_translate("MainWindow", "Nulstil database"))
+

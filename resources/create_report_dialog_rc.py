@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_CreateReportDialog(object):
     def setupUi(self, CreateReportDialog):
         CreateReportDialog.setObjectName("CreateReportDialog")
@@ -16,7 +15,7 @@ class Ui_CreateReportDialog(object):
         self.buttonBox = QtWidgets.QDialogButtonBox(CreateReportDialog)
         self.buttonBox.setGeometry(QtCore.QRect(290, 20, 81, 241))
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayoutWidget = QtWidgets.QWidget(CreateReportDialog)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 20, 271, 61))
@@ -43,3 +42,4 @@ class Ui_CreateReportDialog(object):
         CreateReportDialog.setWindowTitle(_translate("CreateReportDialog", "Eordre"))
         self.lineEdit.setPlaceholderText(_translate("CreateReportDialog", "2017-12-31"))
         self.label.setText(_translate("CreateReportDialog", "Arbejdsdato (åååå-mm-dd)"))
+

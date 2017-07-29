@@ -8,13 +8,12 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_OrderDialog(object):
     def setupUi(self, OrderDialog):
         OrderDialog.setObjectName("OrderDialog")
         OrderDialog.resize(636, 568)
         self.formLayoutWidget = QtWidgets.QWidget(OrderDialog)
-        self.formLayoutWidget.setGeometry(QtCore.QRect(10, 60, 321, 232))
+        self.formLayoutWidget.setGeometry(QtCore.QRect(10, 60, 321, 252))
         self.formLayoutWidget.setObjectName("formLayoutWidget")
         self.formOrderVisit = QtWidgets.QFormLayout(self.formLayoutWidget)
         self.formOrderVisit.setContentsMargins(0, 0, 0, 0)
@@ -65,7 +64,7 @@ class Ui_OrderDialog(object):
         self.orderLinesWidget.horizontalHeader().setMinimumSectionSize(10)
         self.orderLinesWidget.verticalHeader().setStretchLastSection(True)
         self.formLayoutWidget_2 = QtWidgets.QWidget(OrderDialog)
-        self.formLayoutWidget_2.setGeometry(QtCore.QRect(339, 60, 291, 191))
+        self.formLayoutWidget_2.setGeometry(QtCore.QRect(339, 60, 291, 206))
         self.formLayoutWidget_2.setObjectName("formLayoutWidget_2")
         self.formDeliveryAddress = QtWidgets.QFormLayout(self.formLayoutWidget_2)
         self.formDeliveryAddress.setContentsMargins(0, 0, 0, 0)
@@ -89,7 +88,7 @@ class Ui_OrderDialog(object):
         self.txtDeliverCountry.setObjectName("txtDeliverCountry")
         self.formDeliveryAddress.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.txtDeliverCountry)
         self.gridLayoutWidget = QtWidgets.QWidget(OrderDialog)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(350, 260, 281, 31))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(340, 280, 290, 31))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridOrderTotals = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridOrderTotals.setContentsMargins(0, 0, 0, 0)
@@ -121,7 +120,7 @@ class Ui_OrderDialog(object):
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.gridLayoutWidget_2 = QtWidgets.QWidget(OrderDialog)
-        self.gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 10, 621, 33))
+        self.gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 10, 621, 35))
         self.gridLayoutWidget_2.setObjectName("gridLayoutWidget_2")
         self.gridOrderVisitAt = QtWidgets.QGridLayout(self.gridLayoutWidget_2)
         self.gridOrderVisitAt.setContentsMargins(0, 0, 0, 0)
@@ -208,6 +207,7 @@ class Ui_OrderDialog(object):
         self.label.setText(_translate("OrderDialog", "Salg"))
         self.label_2.setText(_translate("OrderDialog", "SAS"))
         self.label_3.setText(_translate("OrderDialog", "Total"))
-        self.lblCompany.setText(_translate("OrderDialog", "Besøg / Ordre: "))
+        self.lblCompany.setText(_translate("OrderDialog", "Besøg / Ordre:"))
         self.buttonAddOrderLine.setText(_translate("OrderDialog", "Ny ordrelinje"))
-        self.buttonCreateOrderVisit.setText(_translate("OrderDialog", "Opret"))
+        self.buttonCreateOrderVisit.setText(_translate("OrderDialog", "Arkiver"))
+

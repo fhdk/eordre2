@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_HttpCustImportDialog(object):
     def setupUi(self, HttpCustImportDialog):
         HttpCustImportDialog.setObjectName("HttpCustImportDialog")
@@ -35,3 +34,4 @@ class Ui_HttpCustImportDialog(object):
         HttpCustImportDialog.setWindowTitle(_translate("HttpCustImportDialog", "Kunde import fra server"))
         self.buttonStart.setText(_translate("HttpCustImportDialog", "Start"))
         self.buttonClose.setText(_translate("HttpCustImportDialog", "Luk"))
+

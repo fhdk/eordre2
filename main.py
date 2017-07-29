@@ -70,6 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionCreateReport.triggered.connect(self.create_report_action)
         self.actionUpdateCustomer.triggered.connect(self.update_customer_action)
         self.customerList.currentItemChanged.connect(self.current_cust_changed_action)
+        self.actionZeroDatabase.triggered.connect(self.zero_database_action)
 
     def about_qt_action(self):
         """Slot for aboutQt triggered signal"""
@@ -142,9 +143,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
 
         if self.currentCustomer:
-            order_dialog = CreateOrderDialog(self, self.Report.current_report, self.Customer.current_customer,
+            order_dialog = CreateOrderDialog(self,
+                                             self.Report.current_report,
+                                             self.Customer.current_customer,
                                              self.Employee.current_employee)
             if order_dialog.exec_():
+
                 pass
         else:
             msgbox = QMessageBox()
@@ -158,10 +162,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             repdate = self.Report.current_report["repdate"]
             if not repdate == self.txtWorkdate.text():
-                infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(repdate,
-                                                                                         self.txtWorkdate.text())
+                infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
+                    repdate, self.txtWorkdate.text())
                 msgbox = QMessageBox()
                 msgbox.information(self, "Eordre NG", infotext, QMessageBox.Ok)
+
         except KeyError:
             create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
             if create_report_dialog.exec_():  # Execute dialog - show it
@@ -172,7 +177,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                    "Der er oprettet dagsrapport for <strong>{}</strong>!".format(
                                        self.txtWorkdate.text()),
                                    QMessageBox.Ok)
-                # self.Report.create_(self.Employee.employee, self.workdate)
+                self.Report.create_(self.Employee.current_employee, self.txtWorkdate.text())
+
             else:
                 msgbox = QMessageBox()
                 msgbox.information(self,
@@ -234,10 +240,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                            "at du importer alle tabeller der findes i dropned listen!",
                            QMessageBox.Ok)
         import_dialog = FileImportDialog(config.CSVDATA)  # Create import dialog
+
         if import_dialog.exec_():  # Execute the dialog - show it
             self.populate_customer_list()  # Reload the customer list
         else:
             pass
+
+    def file_import_customer_done(self):
+        """Slot for customer import done. Used to trigger populate_customer_list"""
+        self.populate_customer_list()
 
     def get_customers_action(self):
         """Slot for getCustomers triggered signal"""
@@ -333,6 +344,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Slot for visitData triggered signal"""
         self.customerInfoStack.setCurrentIndex(2)
 
+    def zero_database_action(self):
+        """Slot for zeroDatabase triggered signal"""
+        for tbl in config.CSVDATA:
+            dbfn.recreate_table(tbl[1])
+        self.customerList.clear()
+        self.Product.load_()
+        self.Customer.load_()
+        msgbox = QMessageBox()
+        msgbox.information(self,
+                           "Eordre NG",
+                           "Databasen er nulstillet!",
+                           QMessageBox.Ok)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

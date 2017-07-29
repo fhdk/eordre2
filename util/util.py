@@ -14,3 +14,8 @@ def country_name_from_iso(iso):
     for c in config.COUNTRIES:
         if c[0] == iso:
             return c[1]
+
+
+def compare_rowcount(csv, model):
+    """Compare a csv row with a model row"""
+    return len(csv) == len(model)

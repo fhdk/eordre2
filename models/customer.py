@@ -106,6 +106,7 @@ class Customer:
         """
         dbfn.recreate_table("customer")
         filename.encode("utf8")
+        csv_field_count = 16
         #      0  1   2    3    4    5       6    7         8   9     10  11    12  13  14  15   16  17    18
         # in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
@@ -113,6 +114,8 @@ class Customer:
             reader = csv.reader(csvdata)
             line = 0
             for row in reader:
+                if not len(row) == csv_field_count:
+                    return False
                 line += 1
                 if headers and line == 1:
                     continue
@@ -122,6 +125,7 @@ class Customer:
                           row[11].strip(), row[12], row[13], row[14], row[15].strip(),
                           "", "", 0.0]
                 self.insert_(values)
+            return True
 
     def import_http(self, values):
         """Insert a new customer

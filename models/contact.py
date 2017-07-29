@@ -9,7 +9,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbfn
+from util import dbfn, util
 
 
 class Contact:
@@ -63,17 +63,20 @@ class Contact:
         """
         dbfn.recreate_table("contact")
         filename.encode("utf8")
+        csv_field_count = 7
         with open(filename) as csvdata:
             reader = csv.reader(csvdata)
             line = 0
             for row in reader:
+                if not len(row) == csv_field_count:
+                    return False
                 line += 1
                 if headers and line == 1:
                     continue
-                # sanitize row values
-                values = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
-                          row[6].strip()]
+                values = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(),
+                          row[5].strip(), row[6].strip()]
                 self.insert_(values)
+            return True
 
     def insert_(self, values):
         """Insert items
@@ -82,10 +85,11 @@ class Contact:
         sql = "INSERT INTO contact VALUES (?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
         # sanitize parameter
-        if not type(values) == list or type(values) == tuple:
+        print("{}".format(values))
+        if not type(values) == list:
             values = list(values)
         with db:
-            db.executemany(sql, values)
+            db.execute(sql, values)
             db.commit()
 
     def load_(self, customerid):

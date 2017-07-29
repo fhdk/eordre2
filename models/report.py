@@ -69,21 +69,21 @@ class Report:
         # | SUM |  sum     sum   sum      sum       sum     sum    sum    sum
 
         sql = "SELECT " \
-              "sum(newvisitday) AS t_month_n_visit, " \
-              "sum(newdemoday) AS t_month_n_demo, " \
-              "sum(newsaleday) AS t_month_n_sale, " \
-              "sum(newturnoverday) AS t_month_n_turnover, " \
-              "sum(recallvisitday) AS t_month_r_visit, " \
-              "sum(recalldemoday) AS t_month_r_demo, " \
-              "sum(recallsaleday) AS t_month_r_sale, " \
-              "sum(recallturnoverday) AS t_month_r_turnover, " \
-              "sum(sasday) AS t_month_sas, " \
-              "sum(sasturnoverday) AS t_month_sas_turnover, " \
-              "(t_month_n_visit + t_month_r_visit) AS t_month_visit, " \
-              "(t_month_n_demo + t_month_r_demo) AS t_month_demo, " \
-              "(t_month_n_sale + t_month_r_sale + t_month_sas) AS t_month_sale, " \
-              "(t_month_n_turnover + t_month_r_turnover + t_month_sas_turnover) AS t_month_turnover, " \
-              "count(reportid) AS reportcount " \
+              "sum(newvisitday) AS 't_month_n_visit', " \
+              "sum(newdemoday) AS 't_month_n_demo', " \
+              "sum(newsaleday) AS 't_month_n_sale', " \
+              "sum(newturnoverday) AS 't_month_n_turnover', " \
+              "sum(recallvisitday) AS 't_month_r_visit', " \
+              "sum(recalldemoday) AS 't_month_r_demo', " \
+              "sum(recallsaleday) AS 't_month_r_sale', " \
+              "sum(recallturnoverday) AS 't_month_r_turnover', " \
+              "sum(sasday) AS 't_month_sas', " \
+              "sum(sasturnoverday) AS 't_month_sas_turnover', " \
+              "(sum(newvisitday) + sum(recallvisitday)) AS 't_month_visit', " \
+              "(sum(newdemoday) + sum(recalldemoday)) AS 't_month_demo', " \
+              "(sum(newsaleday) + sum(recallsaleday) + sum(sasday)) AS 't_month_sale', " \
+              "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 't_month_turnover', " \
+              "count(reportid) AS 'reportcount' " \
               "FROM report WHERE repdate LIKE ? AND employeeid = ? ;"
 
         workmonth = (workdate[:8] + "%",)
@@ -95,6 +95,8 @@ class Report:
             cur.execute(sql, (workmonth, employee["employeeid"]))
             totals = cur.fetchone()
             print("report -> create_ -> select from report -> totals: {}".format(totals))
+
+        print("TODO: create report in database!")
 
     def insert_(self, values):
         """Insert new report in table"""
@@ -119,7 +121,7 @@ class Report:
             db.execute(sql, values)
             db.commit()
 
-    def insert_csv(self, filename, headers=False):
+    def import_csv(self, filename, headers=False):
         """Import report from file
         :param filename:
         :param headers:
@@ -139,11 +141,14 @@ class Report:
         #
         dbfn.recreate_table("report")
         filename.encode("utf8")
+        csv_field_count = 25
         # open and read the file
         with open(filename) as csvdata:
             reader = csv.reader(csvdata)
             line = 0
             for row in reader:
+                if not len(row) == csv_field_count:
+                    return False
                 line += 1
                 if headers and line == 1:
                     continue
@@ -154,6 +159,7 @@ class Report:
                              row[15], row[16], row[17].strip(), row[18].strip(),
                              row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24]]
                 self.insert_(processed)
+            return True
 
     def load_report(self, workdate):
         """Load report for supplied date

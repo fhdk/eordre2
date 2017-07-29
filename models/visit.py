@@ -100,17 +100,20 @@ class Visit:
             cur.execute(sql, values)
             db.commit()
 
-    def insert_csv(self, filename, headers=False):
+    def import_csv(self, filename, headers=False):
         """Import orders from file
         :param filename:
         :param headers:
         """
         dbfn.recreate_table("visit")  # recreate an empty table
         filename.encode("utf8")
+        csv_field_count = 22
         with open(filename) as csvdata:
             reader = csv.reader(csvdata)
             line = 0
             for row in reader:
+                if not len(row) == csv_field_count:
+                    return False
                 line += 1
                 if headers and line == 1:
                     continue
@@ -120,6 +123,7 @@ class Visit:
                              row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
                              row[20], row[21]]
                 self.insert_(processed)  # call insert function
+            return True
 
     def load_for_customer(self, customerid):
         """Load orders for specified customer"""
