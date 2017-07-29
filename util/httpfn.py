@@ -27,7 +27,7 @@ def get_customers(settings, employee, maxwait=2):
             data = response.read()
             data = sanitizedatafn.sanitize_customer_data(data, employee["salesrep"])
     except (HTTPException, timeout, URLError) as e:
-        print("{}\n{}".format(uri, e))
+        pass
     return data
 
 
@@ -42,7 +42,7 @@ def get_employee_data(settings, maxwait=2):
             data = response.read()
             data = sanitizedatafn.sanitize_employee_data(data, settings["usermail"], settings["userpass"])
     except (HTTPException, timeout, URLError) as e:
-        print("{}\n{}".format(uri, e))
+        pass
     return data
 
 
@@ -57,7 +57,7 @@ def get_modified_data(settings, file, maxwait=2):
             # return int(time.mktime(time.strptime(data, "%Y-%m-%d %H:%M:%S")))
             return data
     except (HTTPException, timeout, URLError) as e:
-        print("{}\n{}".format(uri, e))
+        pass
     return ""
 
 
@@ -72,7 +72,7 @@ def get_product(settings, maxwait=2):
             data = response.read()
             productdata = sanitizedatafn.sanitize_product_data(data)
     except (HTTPException, timeout, URLError) as e:
-        print("{}\n{}".format(uri, e))
+        pass
     return productdata
 
 

@@ -53,10 +53,11 @@ class Employee:
 
     def update_(self, values=None):
         """Update the employee"""
-        sql = "UPDATE employee SET employeeid=?, salesrep=?, fullname=?, email=?, country=?, sas=? " \
+        sql = "UPDATE employee " \
+              "SET employeeid=?, salesrep=?, fullname=?, email=?, country=?, sas=? " \
               "WHERE employeeid=?;"
         if not values:
-            values = self.__employee.values()
+            values = list(self.__employee.values())
         if not type(values) == list or type(values) == tuple:
             values = list(values)
         values.append(self.__employee["employeeid"])

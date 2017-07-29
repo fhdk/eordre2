@@ -106,7 +106,7 @@ class Customer:
         """
         dbfn.recreate_table("customer")
         filename.encode("utf8")
-        #      0  1   2    3    4    5       6    7         8   9     10  11    12  13  14  15
+        #      0  1   2    3    4    5       6    7         8   9     10  11    12  13  14  15   16  17    18
         # in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
         with open(filename) as csvdata:
@@ -116,11 +116,11 @@ class Customer:
                 line += 1
                 if headers and line == 1:
                     continue
-                values = (row[0],
+                values = [row[0],
                           row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
                           row[11].strip(), row[12], row[13], row[14], row[15].strip(),
-                          "", "", 0.0)
+                          "", "", 0.0]
                 self.insert_(values)
 
     def import_http(self, values):
@@ -167,9 +167,9 @@ class Customer:
             # sanitize values
             # in :    acc comp add1 add2   zipcity    country s_rep phon1 vat email att phon2
             # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
-            row_values = (None, values[0].strip(), values[1].strip(), values[2], values[3].strip(), zipcode, city,
+            row_values = [None, values[0].strip(), values[1].strip(), values[2], values[3].strip(), zipcode, city,
                           values[5].strip(), values[6].strip(), values[7].strip(), values[8].strip(),
-                          values[9].strip(), 0, 0, 0, "", values[10].strip(), values[11].strip(), 0.0)
+                          values[9].strip(), 0, 0, 0, "", values[10].strip(), values[11].strip(), 0.0]
             # call insert function
             self.insert_(row_values)
 
@@ -180,7 +180,7 @@ class Customer:
         sql = "INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
         # sanitize parameter
-        if not type(values) == list or type(values) == tuple:
+        if not type(values) == list:
             values = list(values)
         with db:
             cur = db.cursor()
@@ -198,20 +198,24 @@ class Customer:
 
     def save_(self):
         """Save current customer changes"""
-        self.update_(self.current_customer.values())
+        self.update_(self.__customer.values())
 
     def update_(self, values):
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
-        sql = "UPDATE customer SET customerid=?, " \
+        sql = "UPDATE customer SET " \
               "account=?, company=?, address1=?, address2=?, zipcode=?, city=?, " \
               "country=?, salesrep=?, phone1=?, vat=?, email=?, deleted=?, modified=?, created=?, " \
               "infotext=?, att=?, phone2=?, factor=? " \
               "WHERE company=? AND phone1=?"
         # sanitize parameter
-        if not type(values) == list or type(values) == tuple:
+        if not type(values) == list:
             values = list(values)
+        # params
+        values += [values[2], values[9]]
+        # remove customerid
+        values = values[1:]
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
