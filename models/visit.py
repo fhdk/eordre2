@@ -18,10 +18,13 @@ class Visit:
     def __init__(self):
         """Initialize visit class"""
         # model for zipping dictionary
-        self.model = (
-            "visitid", "reportid", "employeeid", "customerid", "podate", "posent", "pocontact", "ponum", "pocompany",
-            "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry", "infotext", "proddemo", "prodsale",
-            "ordertype", "turnsas", "turnsale", "turntotal", "approved")
+        self.__model = (
+            "visitid", "reportid", "employeeid", "customerid",
+            "podate", "posent", "pocontact", "ponum", "pocompany",
+            "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry",
+            "infotext", "proddemo", "prodsale", "ordertype", "turnsas",
+            "turnsale", "turntotal", "approved")
+        self.__csv_field_count = 22
         self.__visit_list_customer = []
         self.__visit_list_report = []
         self.__current_visit = {}
@@ -56,49 +59,22 @@ class Visit:
         except IndexError:
             self.load_for_report(reportid=reportid)
 
-    def add_(self):
-        pass
+    def create(self, reportid, employeeid, customerid, workdate):
+        values = (0, None, reportid, employeeid, customerid,
+                  "", workdate, 0, "", "", ""
+                  , "", "", "", "", "", ""
+                  , "", "", "", 0.0, 0.0, 0.0, 0, 0)
+        self.find(self._insert_(values))
 
-    def create_(self, reportid, employeeid, customerid, workdate):
-        self.__current_visit = {
-            "approved": 0,
-            "visitid": None,
-            "reportid": reportid,
-            "employeeid": employeeid,
-            "customerid": customerid,
-            "infotext": "",
-            "podate": workdate,
-            "posent": 0,
-            "pocontact": "",
-            "ponum": "",
-            "pocompany": "",
-            "poaddress1": "",
-            "poaddress2": "",
-            "popostcode": "",
-            "popostoffice": "",
-            "pocountry": "",
-            "proddemo": "",
-            "prodsale": "",
-            "ordertype": "",
-            "turnsale": "",
-            "turnsas": "",
-            "turntotal": ""
-        }
-        self.insert_(self.__current_visit.values())
-
-    def find_(self, visitid):
-        pass
-
-    def insert_(self, values=None):
-        """Save visit"""
-        sql = "INSERT INTO visit VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        if not values:
-            values = self.__current_visit.values()
+    def find(self, visitid):
+        """Look up a visit from visitid"""
+        sql = "SELECT * FROM visit WHERE visitid=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+            cur.execute(sql, (visitid,))
+            data = cur.fetchone()
+            self.__current_visit = dict(zip(self.__model, data))
 
     def import_csv(self, filename, headers=False):
         """Import orders from file
@@ -107,12 +83,11 @@ class Visit:
         """
         dbfn.recreate_table("visit")  # recreate an empty table
         filename.encode("utf8")
-        csv_field_count = 22
         with open(filename) as csvdata:
             reader = csv.reader(csvdata)
             line = 0
             for row in reader:
-                if not len(row) == csv_field_count:
+                if not len(row) == self.__csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
@@ -122,8 +97,20 @@ class Visit:
                              row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
                              row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
                              row[20], row[21]]
-                self.insert_(processed)  # call insert function
+                self._insert_(processed)  # call insert function
             return True
+
+    def _insert_(self, values=None):
+        """Save visit"""
+        sql = "INSERT INTO visit VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        if not values:
+            values = self.__current_visit.values()
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            cur = db.cursor()
+            cur.execute(sql, values)
+            db.commit()
+            return cur.execute("select last_insert_rowid()")
 
     def load_for_customer(self, customerid):
         """Load orders for specified customer"""
@@ -134,7 +121,7 @@ class Visit:
             cur.execute(sql, (customerid,))
             visits = cur.fetchall()
             if visits:
-                self.visit_list_customer = [dict(zip(self.model, row)) for row in visits]
+                self.visit_list_customer = [dict(zip(self.__model, row)) for row in visits]
 
     def load_for_report(self, reportid):
         """Load orders for specified customer"""
@@ -145,17 +132,24 @@ class Visit:
             cur.execute(sql, (reportid,))
             visits = cur.fetchall()
             if visits:
-                self.visit_list_report = [dict(zip(self.model, row)) for row in visits]
+                self.visit_list_report = [dict(zip(self.__model, row)) for row in visits]
 
-    def update_(self, values=None):
+    def save(self):
+        """Save"""
+        self._update_()
+
+    def _update_(self, values=None):
         """Save current visit"""
-        sql = "UPDATE visit SET visitid=?, reportid=?, employeeid=?, customerid=?, podate=?, " \
+        sql = "UPDATE visit SET reportid=?, employeeid=?, customerid=?, podate=?, " \
               "posent=?, pocontact=?, ponum=?, pocompany=?, poaddress1=?, poaddress2=?, " \
               "pozipcode=?, pocity=?, pocountry=?, infotext=?, proddemo=?, prodsale=?, " \
               "ordertype=?, turnsas=?, turnsale=?, turntotal=?, approved=? WHERE visitid=?;"
         if not values:
             values = self.__current_visit.values()
+        if not type(values) == list:
+            values = list(values)
         values += [values[0]]  # attach select clause parameter
+        values = values[1:]  # remove the visitid
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

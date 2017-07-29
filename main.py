@@ -286,7 +286,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.customerList.setSortingEnabled(True)  # enable sorting
         items = []  # temporary list
         for c in self.Customer.customer_list:
-            # create_ Widget
+            # create Widget
             item = QTreeWidgetItem([c["company"], c["account"]])
             items.append(item)
         # assign Widgets to Tree

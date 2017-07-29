@@ -87,14 +87,14 @@ class Report:
               "FROM report WHERE repdate LIKE ? AND employeeid = ? ;"
 
         workmonth = (workdate[:8] + "%",)
-        print("report -> create_ -> workdate: {}".format(workdate))
-        print("report -> create_ -> workmonth: {}".format(workmonth))
+        print("report -> create -> workdate: {}".format(workdate))
+        print("report -> create -> workmonth: {}".format(workmonth))
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             cur.execute(sql, (workmonth, employee["employeeid"]))
             totals = cur.fetchone()
-            print("report -> create_ -> select from report -> totals: {}".format(totals))
+            print("report -> create -> select from report -> totals: {}".format(totals))
 
         print("TODO: create report in database!")
 

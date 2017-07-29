@@ -34,7 +34,7 @@ class OrderLine:
 
     def create_(self, visit_id):
         """Create a new orderline on visitid"""
-        # create_ new with empty values
+        # create new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
         self.insert_values(values)
         self.__current_line = dict(zip(self.model, values))

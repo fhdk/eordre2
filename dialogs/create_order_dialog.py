@@ -61,7 +61,7 @@ class CreateOrderDialog(QDialog, Ui_OrderDialog):
 
     def button_create_ordervisit_action(self):
         """Slot for Create Order Button clicked signal"""
-        self.orderVisit.create_(self.report["reportid"],
-                                self.employee["employeeid"],
-                                self.customer["customerid"],
-                                self.workdate)
+        self.orderVisit.create(self.report["reportid"],
+                               self.employee["employeeid"],
+                               self.customer["customerid"],
+                               self.workdate)
