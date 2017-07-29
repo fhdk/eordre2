@@ -22,8 +22,7 @@ class Visit:
             "visitid", "reportid", "employeeid", "customerid",
             "podate", "posent", "pocontact", "ponum", "pocompany",
             "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry",
-            "infotext", "proddemo", "prodsale", "ordertype", "turnsas",
-            "turnsale", "turntotal", "approved")
+            "infotext", "proddemo", "prodsale", "ordertype", "turnsas", "turnsale", "turntotal", "approved")
         self.__csv_field_count = 22
         self.__visit_list_customer = []
         self.__visit_list_report = []
@@ -60,11 +59,8 @@ class Visit:
             self.load_for_report(reportid=reportid)
 
     def create(self, reportid, employeeid, customerid, workdate):
-        values = (None, reportid, employeeid, customerid,
-                  workdate, 0, "", "", "",
-                  "", "", "", "", "",
-                  "", "", "", "", 0.0,
-                  0.0, 0.0, 0)
+        values = (None, reportid, employeeid, customerid, workdate,
+                  0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
         self.find(self._insert_(values))
 
     def find(self, visitid):
