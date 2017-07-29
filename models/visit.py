@@ -60,10 +60,11 @@ class Visit:
             self.load_for_report(reportid=reportid)
 
     def create(self, reportid, employeeid, customerid, workdate):
-        values = (0, None, reportid, employeeid, customerid,
-                  "", workdate, 0, "", "", ""
-                  , "", "", "", "", "", ""
-                  , "", "", "", 0.0, 0.0, 0.0, 0, 0)
+        values = (None, reportid, employeeid, customerid,
+                  workdate, 0, "", "", "",
+                  "", "", "", "", "",
+                  "", "", "", "", 0.0,
+                  0.0, 0.0, 0)
         self.find(self._insert_(values))
 
     def find(self, visitid):
