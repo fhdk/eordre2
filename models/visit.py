@@ -148,8 +148,9 @@ class Visit:
             values = self.__current_visit.values()
         if not type(values) == list:
             values = list(values)
-        values += [values[0]]  # attach select clause parameter
-        values = values[1:]  # remove the visitid
+        # move visitid to end of values list
+        values += [values[0]]
+        values = values[1:]
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
