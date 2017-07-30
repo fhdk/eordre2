@@ -108,9 +108,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings_dialog_action()
 
         self.populate_customer_list()
-        sync_status = threads.RefreshSyncStatus()
-        sync_status.c.SyncStatusDone.connect(self.sync_update_action)
-        sync_status.start()
+        # sync_status = threads.RefreshSyncStatus()
+        # sync_status.c.SyncStatusDone.connect(self.sync_update_action)
+        # sync_status.start()
 
     def sync_update_action(self):
         """Slot for """
