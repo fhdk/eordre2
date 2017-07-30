@@ -24,7 +24,7 @@ from dialogs.http_prod_import_dialog import HttpProdImportDialog
 from dialogs.settings_dialog import SettingsDialog
 from models import contact, customer, employee, visit, orderline, product, report, settings
 from resources.main_window_rc import Ui_MainWindow
-from util import httpfn, dbfn
+from util import httpfn, dbfn, util
 from util.rules import check_settings
 
 __appname__ = "Eordre NG"
@@ -53,6 +53,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Product = product.Product()  # Initialize Product object
         self.Report = report.Report()  # Initialize Report object
         self.Settings = settings.Setting()  # Initialize Settings object
+        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
+        self.txtCustServer.setText(self.Settings.current_settings["sac"])
+        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
+        self.txtProdServer.setText(self.Settings.current_settings["sap"])
+
         # connect signals
         self.actionExit.triggered.connect(self.exit_action)
         self.actionSettings.triggered.connect(self.settings_dialog_action)
@@ -104,6 +109,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings_dialog_action()
 
         self.populate_customer_list()
+        util.refresh_sync_status(self.Settings.current_settings)
 
     def close_event(self, event):
         """Slot for close event signal
@@ -235,8 +241,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             msgbox = QMessageBox()
             msgbox.warning(self,
                            "Eordre NG",
-                           "<strong>Ved import slettes alle eksisterende data</strong>!\n\n"
-                           "Af hensyn til sammenkædning af data er det bedst,\n"
+                           "<strong>Ved import slettes alle eksisterende data</strong>!<br/><br/>"
+                           "Af hensyn til sammenkædning af data er det bedst,<br/>"
                            "at du importer alle tabeller der findes i dropned listen!",
                            QMessageBox.Ok)
         import_dialog = FileImportDialog(config.CSVDATA)  # Create import dialog
@@ -259,15 +265,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def get_customers_finished(self):
         """Slot for getCustomers finished signal"""
         self.populate_customer_list()  # load_ customers
+        # get sync date
+        lsc = datetime.date.today().isoformat()
+        print("customers synced at: " + lsc)
+        print("TODO: update settings with sync date")
 
     def get_product_action(self):
         """Slot for getProducts triggered signal"""
         import_product = HttpProdImportDialog()  # Create dialog object
+        import_product.c.finished.connect(self.get_product_finished)
         import_product.exec_()  # Execute the dialog - show it
 
     def get_product_finished(self):
         """Slot for getProducts finished signal"""
         self.Product.load_()  # load_ products
+        # get sync date
+        psc = datetime.date.today().isoformat()
+        print("products synced at: " + psc)
+        print("TODO: update settings with sync date")
 
     def master_data_action(self):
         """Slot for masterData triggered signal"""

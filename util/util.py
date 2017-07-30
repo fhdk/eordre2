@@ -7,6 +7,7 @@
 """Utilities"""
 
 from configuration import config
+from util import httpfn
 
 
 def country_name_from_iso(iso):
@@ -19,3 +20,11 @@ def country_name_from_iso(iso):
 def compare_rowcount(csv, model):
     """Compare a csv row with a model row"""
     return len(csv) == len(model)
+
+
+def refresh_sync_status(settings):
+    """Refresh dates for datafiles"""
+    data_info = httpfn.update_last_sync_info(settings)
+    print("data_info[0][1]=" + data_info[0][1])
+    print("data_info[1][1]=" + data_info[1][1])
+    print("TODO: save data to database")

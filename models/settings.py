@@ -17,7 +17,7 @@ class Setting:
         self.model = (
             "usermail", "userpass", "usercountry", "pd", "pf", "sf",
             "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
-            "fc", "fp", "fe", "lsc", "lsp", "ac", "ap")
+            "fc", "fp", "fe", "lsc", "lsp", "sac", "sap")
 
         self.__settings = {}
 
@@ -67,9 +67,25 @@ class Setting:
         """Update settings"""
         sql = "UPDATE settings SET usermail=?, userpass=?, usercountry=?, pd=?, pf=?, sf=?, " \
               "http=?, smtp=?, port=?, mailto=?, mailserver=?, mailport=?, mailuser=?, mailpass=?, " \
-              "fc=?, fp=?, fe=?, lsc=?, lsp=?, ac=?, ap=?;"
+              "fc=?, fp=?, fe=?, lsc=?, lsp=?, sac=?, sap=?;"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             cur.execute(sql, list(self.__settings.values()))
+            db.commit()
+
+    def update_dates(self, data):
+        sql = "UPDATE settings SET sac=?, sap=?"
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            cur = db.cursor()
+            cur.execute(sql, (data[0], data[1]))
+            db.commit()
+
+    def update_sync(self, data):
+        sql = "UPDATE settings SET lsc=?, lsp=?"
+        db = sqlite3.connect(config.DBPATH)
+        with db:
+            cur = db.cursor()
+            cur.execute(sql, (data[0], data[1]))
             db.commit()
