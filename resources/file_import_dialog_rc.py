@@ -18,6 +18,7 @@ class Ui_FileImportDialog(object):
         self.comboImport.setObjectName("comboImport")
         self.buttonBrowse = QtWidgets.QPushButton(FileImportDialog)
         self.buttonBrowse.setGeometry(QtCore.QRect(370, 10, 229, 40))
+        self.buttonBrowse.setAutoDefault(False)
         self.buttonBrowse.setObjectName("buttonBrowse")
         self.buttonImport = QtWidgets.QPushButton(FileImportDialog)
         self.buttonImport.setGeometry(QtCore.QRect(370, 50, 229, 40))

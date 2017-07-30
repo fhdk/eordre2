@@ -664,8 +664,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionExit"/>
-   <addaction name="separator"/>
-   <addaction name="actionCreateCustomer"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -787,8 +785,33 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>customerList</tabstop>
   <tabstop>txtNewCompany</tabstop>
+  <tabstop>txtNewPhone1</tabstop>
+  <tabstop>buttonCreateCustomer</tabstop>
+  <tabstop>buttonReport</tabstop>
+  <tabstop>txtWorkdate</tabstop>
+  <tabstop>txtCustLocal</tabstop>
+  <tabstop>txtCustServer</tabstop>
+  <tabstop>txtProdLocal</tabstop>
+  <tabstop>txtProdServer</tabstop>
+  <tabstop>customerList</tabstop>
+  <tabstop>buttonMasterData</tabstop>
+  <tabstop>buttonContactData</tabstop>
+  <tabstop>buttonVisitData</tabstop>
+  <tabstop>buttonOrderData</tabstop>
+  <tabstop>buttonCreateVisit</tabstop>
+  <tabstop>txtAccount</tabstop>
+  <tabstop>txtCompany</tabstop>
+  <tabstop>txtAddress1</tabstop>
+  <tabstop>txtAddress2</tabstop>
+  <tabstop>txtZipCode</tabstop>
+  <tabstop>txtCityName</tabstop>
+  <tabstop>txtPhone1</tabstop>
+  <tabstop>txtPhone2</tabstop>
+  <tabstop>txtEmail</tabstop>
+  <tabstop>txtFactor</tabstop>
+  <tabstop>txtInfoText</tabstop>
+  <tabstop>buttonArchiveChanges</tabstop>
  </tabstops>
  <resources/>
  <connections/>

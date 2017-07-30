@@ -91,7 +91,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Slot for aboutSoftware triggered signal"""
         msgbox = QMessageBox()
         msgbox.about(self, __appname__,
-                     "Bygget med Python 3.6 og Qt framework\n\nFrede Hundewadt (c) 2017")
+                     "Bygget med Python 3.6 og Qt framework<br/><br/>Frede Hundewadt (c) 2017<br/><br/>"
+                     "<a href='https://www.gnu.org/licenses/agpl.html'>https://www.gnu.org/licenses/agpl.html</a>")
 
     def app_run(self):
         """Setup database and basic configuration"""
