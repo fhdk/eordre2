@@ -85,12 +85,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def about_qt_action(self):
         """Slot for aboutQt triggered signal"""
         msgbox = QMessageBox()
-        msgbox.aboutQt(self, "Eordre NG")
+        msgbox.aboutQt(self, __appname__)
 
     def about_software_action(self):
         """Slot for aboutSoftware triggered signal"""
         msgbox = QMessageBox()
-        msgbox.about(self, "Eordre NG",
+        msgbox.about(self, __appname__,
                      "Bygget med Python 3.6 og Qt framework\n\nFrede Hundewadt (c) 2017")
 
     def app_run(self):
@@ -109,7 +109,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             msgbox = QMessageBox()
             msgbox.about(self,
-                         "Eordre NG",
+                         __appname__,
                          "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses.")
             self.settings_dialog_action()
 
@@ -129,7 +129,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # msgbox triggered if no customer is selected
             msgbox = QMessageBox()
             msgbox.information(self,
-                               "Eordre NG",
+                               __appname__,
                                "Det kan jeg ikke på nuværende tidspunkt!",
                                QMessageBox.Ok)
             return False
@@ -162,13 +162,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.txtNewCompany.text() or not self.txtNewPhone1.text():
             msgbox = QMessageBox()
             msgbox.information(self,
-                               "Eordre NG",
+                               __appname__,
                                "Snap - Jeg mangler:\n Firma navn \n Telefon nummer",
                                QMessageBox.Ok)
         else:
             msgbox = QMessageBox()
             msgbox.information(self,
-                               "Eordre NG",
+                               __appname__,
                                "Gem kunde til database\n\n" +
                                self.txtNewCompany.text() + "\n" +
                                self.txtNewPhone1.text(),
@@ -179,7 +179,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.Report.load_report(self.txtWorkdate.text()):
             msgbox = QMessageBox()
             msgbox.information(self,
-                               "Eordre NG",
+                               __appname__,
                                "Der er ingen dagsrapport for idag!",
                                QMessageBox.Ok)
             return False
@@ -194,7 +194,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             msgbox = QMessageBox()
             msgbox.information(self,
-                               "Eordre NG",
+                               __appname__,
                                "Ingen kunder - ingen ordre!",
                                QMessageBox.Ok)
 
@@ -236,7 +236,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Slot for dataExport triggered signal"""
         msgbox = QMessageBox()
         msgbox.information(self,
-                           "Eordre NG",
+                           __appname__,
                            "Opret CSV data backup",
                            QMessageBox.Ok)
 
@@ -251,7 +251,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Warn user that import deletes existing data
             msgbox = QMessageBox()
             msgbox.warning(self,
-                           "Eordre NG",
+                           __appname__,
                            "<strong>Ved import slettes alle eksisterende data</strong>!<br/><br/>"
                            "Af hensyn til sammenkædning af data er det bedst,<br/>"
                            "at du importer alle tabeller der findes i dropned listen!",
@@ -327,7 +327,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
                     repdate, self.txtWorkdate.text())
                 msgbox = QMessageBox()
-                msgbox.information(self, "Eordre NG", infotext, QMessageBox.Ok)
+                msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
 
         except KeyError:
             create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
@@ -335,7 +335,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.txtWorkdate.setText(create_report_dialog.workdate)
                 msgbox = QMessageBox()
                 msgbox.information(self,
-                                   "Eordre NG",
+                                   __appname__,
                                    "Der er oprettet dagsrapport for <strong>{}</strong>!".format(
                                        self.txtWorkdate.text()),
                                    QMessageBox.Ok)
@@ -344,7 +344,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 msgbox = QMessageBox()
                 msgbox.information(self,
-                                   "Eordre NG",
+                                   __appname__,
                                    "Der er <strong>IKKE</strong> oprettet dagsrapport!",
                                    QMessageBox.Ok)
 
@@ -395,7 +395,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Customer.clear()
         msgbox = QMessageBox()
         msgbox.information(self,
-                           "Eordre NG",
+                           __appname__,
                            "Kunder og prisliste er nu nulstillet!",
                            QMessageBox.Ok)
 
