@@ -31,8 +31,7 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
         self.progresscount = 0
-        self.import_thread = threads.ImportCustomersThread(self.settings,
-                                                           self.employee)
+        self.import_thread = threads.ImportCustomersThread()
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_action)
         self.buttonClose.clicked.connect(self.button_close_action)

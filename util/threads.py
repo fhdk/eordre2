@@ -7,23 +7,24 @@
 
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
 
-from models import customer, product
-from util import httpfn
+from models import customer, product, settings, employee
+from util import httpfn, utility
 
 
 class Communicate(QObject):
     processing = pyqtSignal(str)  # status message signal
     rowcount = pyqtSignal(int)  # rowcount signal
     finished = pyqtSignal()  # finished signal
+    SyncStatusDone = pyqtSignal()
 
 
 class ImportCustomersThread(QThread):
     """Thread for importing customer through http"""
 
-    def __init__(self, settings, employee, parent=None):
+    def __init__(self, parent=None):
         super(ImportCustomersThread, self).__init__(parent)
-        self.settings = settings  # assign settings object
-        self.employee = employee  # assign employee object
+        self.Settings = settings.Setting()  # assign settings object
+        self.Employee = employee.Employee()  # assign employee object
         self.Customer = customer.Customer()  # create customer object
         self.c = Communicate()
 
@@ -31,7 +32,8 @@ class ImportCustomersThread(QThread):
         """The run process - activated by the QTread start() method"""
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
-        data = httpfn.get_customers(self.settings, self.employee)
+        data = httpfn.get_customers(self.Settings.current_settings,
+                                    self.Employee.current_employee)
         self.c.processing.emit("{}".format("Henter fra server ..."))
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
@@ -44,9 +46,9 @@ class ImportCustomersThread(QThread):
 class ImportProductsThread(QThread):
     """Thread for importing product through http"""
 
-    def __init__(self, settings, parent=None):
+    def __init__(self, parent=None):
         super(ImportProductsThread, self).__init__(parent)
-        self.settings = settings  # assign settings object
+        self.Settings = settings.Setting()  # create settings object
         self.Product = product.Product()  # create product object
         self.c = Communicate()
 
@@ -56,10 +58,24 @@ class ImportProductsThread(QThread):
         self.Product.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
         # fetching datafile from http server
-        data = httpfn.get_product(self.settings)
+        data = httpfn.get_product(self.Settings.current_settings)
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
             self.Product.insert_(row)  # add row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
+
+
+class RefreshSyncStatus(QThread):
+    """Thread for updating sync status"""
+    def __init__(self, parent=None):
+        super(RefreshSyncStatus, self).__init__(parent)
+        self.Settings = settings.Setting()
+        self.c = Communicate()
+
+    def run(self):
+        """The run process - activated by QThread start() methcod"""
+        status = utility.refresh_sync_status(self.Settings.current_settings)
+        self.Settings.update_avail_sync(status)
+        self.c.SyncStatusDone.emit()

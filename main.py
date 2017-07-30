@@ -14,7 +14,6 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScreen, QTreeWidgetItem
 
 # import resources.splash_rc
-import util.passwdfn
 from configuration import configfn, config
 from dialogs.create_order_dialog import CreateOrderDialog
 from dialogs.create_report_dialog import CreateReportDialog
@@ -24,7 +23,7 @@ from dialogs.http_prod_import_dialog import HttpProdImportDialog
 from dialogs.settings_dialog import SettingsDialog
 from models import contact, customer, employee, visit, orderline, product, report, settings
 from resources.main_window_rc import Ui_MainWindow
-from util import httpfn, dbfn, util
+from util import httpfn, dbfn, passwdfn, threads
 from util.rules import check_settings
 
 __appname__ = "Eordre NG"
@@ -109,7 +108,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings_dialog_action()
 
         self.populate_customer_list()
-        util.refresh_sync_status(self.Settings.current_settings)
+        sync_status = threads.RefreshSyncStatus()
+        sync_status.c.SyncStatusDone.connect(self.sync_update_action)
+        sync_status.start()
+
+    def sync_update_action(self):
+        """Slot for """
+        msgbox = QMessageBox()
+        msgbox.information(self, "Eordre NG", "Sync status opdateret", QMessageBox.Ok)
+        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
+        self.txtCustServer.setText(self.Settings.current_settings["sac"])
+        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
+        self.txtCustServer.setText(self.Settings.current_settings["sap"])
 
     def close_event(self, event):
         """Slot for close event signal
@@ -321,9 +331,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # and hash it if necessary
             check = settings_dialog.app_settings
             if len(check["userpass"]) < 97:
-                check["userpass"] = util.passwdfn.hash_password(check["userpass"])
+                check["userpass"] = passwdfn.hash_password(check["userpass"])
             if len(check["mailpass"]) < 97:
-                check["mailpass"] = util.passwdfn.hash_password(check["mailpass"])
+                check["mailpass"] = passwdfn.hash_password(check["mailpass"])
             # assign new settings
             self.Settings.current_settings = check
             # save to database

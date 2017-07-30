@@ -9,7 +9,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbfn, util
+from util import dbfn
 
 
 class Contact:

@@ -89,6 +89,7 @@ class Report:
         workmonth = (workdate[:8] + "%",)
         print("report -> create -> workdate: {}".format(workdate))
         print("report -> create -> workmonth: {}".format(workmonth))
+        print("")
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

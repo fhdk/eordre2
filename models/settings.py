@@ -74,18 +74,23 @@ class Setting:
             cur.execute(sql, list(self.__settings.values()))
             db.commit()
 
-    def update_dates(self, data):
+    def update_avail_sync(self, data):
         sql = "UPDATE settings SET sac=?, sap=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            cur.execute(sql, (data[0], data[1]))
+            cur.execute(sql, (data[0][1], data[1][1]))
             db.commit()
+        self.__settings["sac"] = data[0][1]
+        self.__settings["sap"] = data[1][1]
 
-    def update_sync(self, data):
+    def update_last_sync(self, data):
         sql = "UPDATE settings SET lsc=?, lsp=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             cur.execute(sql, (data[0], data[1]))
             db.commit()
+        self.__settings["lsc"] = data[0][1]
+        self.__settings["lsp"] = data[1][1]
+
