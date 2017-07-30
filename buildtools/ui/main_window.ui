@@ -60,24 +60,31 @@
       <layout class="QHBoxLayout" name="topGridLayout">
        <item>
         <layout class="QGridLayout" name="newCustomerGrid">
-         <item row="2" column="0">
+         <item row="1" column="1">
           <widget class="QLineEdit" name="txtNewPhone1">
            <property name="placeholderText">
-            <string>Ny kunde telefon</string>
+            <string>Telefon</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLineEdit" name="txtNewCompany">
            <property name="placeholderText">
-            <string>Nyt besøg firma navn</string>
+            <string>Firma navn</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="buttonCreateCustomer">
+           <property name="text">
+            <string>Opret kunde</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QLabel" name="label_8">
+          <widget class="QLabel" name="label">
            <property name="text">
-            <string>Basal oplysning om kunde/besøg</string>
+            <string>Opret nyt besøg/kunde</string>
            </property>
           </widget>
          </item>
@@ -268,28 +275,28 @@
          <item>
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="2">
-            <widget class="QPushButton" name="buttonVisits">
+            <widget class="QPushButton" name="buttonVisitData">
              <property name="text">
               <string>Besøg</string>
              </property>
             </widget>
            </item>
            <item row="0" column="3">
-            <widget class="QPushButton" name="buttonOrders">
+            <widget class="QPushButton" name="buttonOrderData">
              <property name="text">
               <string>Ordrer</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QPushButton" name="buttonMaster">
+            <widget class="QPushButton" name="buttonMasterData">
              <property name="text">
               <string>Stamdata</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QPushButton" name="buttonContacts">
+            <widget class="QPushButton" name="buttonContactData">
              <property name="text">
               <string>Kontakter</string>
              </property>
@@ -298,7 +305,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QPushButton" name="buttonNewVisit">
+          <widget class="QPushButton" name="buttonCreateVisit">
            <property name="text">
             <string>Opret besøg / ordre</string>
            </property>
@@ -387,7 +394,10 @@
               <item row="1" column="1">
                <widget class="QLineEdit" name="txtAccount">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -479,7 +489,7 @@
                </widget>
               </item>
               <item row="14" column="1">
-               <widget class="QPushButton" name="buttonSaveChanges">
+               <widget class="QPushButton" name="buttonArchiveChanges">
                 <property name="text">
                  <string>Arkiver rettelser</string>
                 </property>
@@ -566,32 +576,48 @@
     </property>
     <addaction name="actionSettings"/>
     <addaction name="separator"/>
-    <addaction name="actionCsvFileImport"/>
-    <addaction name="actionZeroDatabase"/>
    </widget>
-   <widget class="QMenu" name="menu_Data">
+   <widget class="QMenu" name="menuData">
     <property name="title">
      <string>Data</string>
     </property>
-    <widget class="QMenu" name="menuKunde">
+    <widget class="QMenu" name="menuCustomer">
      <property name="title">
       <string>Kunde</string>
      </property>
-     <addaction name="actionShowMasterData"/>
-     <addaction name="actionShowContactData"/>
-     <addaction name="actionShowVisitData"/>
-     <addaction name="actionShowOrderData"/>
+     <addaction name="actionMasterData"/>
+     <addaction name="actionContactData"/>
+     <addaction name="actionVisitData"/>
+     <addaction name="actionOrderData"/>
      <addaction name="separator"/>
-     <addaction name="actionUpdateCustomer"/>
+     <addaction name="actionArchiveChanges"/>
     </widget>
-    <addaction name="actionCreateReport"/>
+    <widget class="QMenu" name="menuServer">
+     <property name="title">
+      <string>Server</string>
+     </property>
+     <addaction name="actionHttpGetCatalog"/>
+     <addaction name="actionHttpGetCustomers"/>
+    </widget>
+    <widget class="QMenu" name="menuReports">
+     <property name="title">
+      <string>Rapporter</string>
+     </property>
+     <addaction name="actionReport"/>
+     <addaction name="actionReportList"/>
+    </widget>
+    <widget class="QMenu" name="menuImportEksport">
+     <property name="title">
+      <string>Import / Eksport</string>
+     </property>
+     <addaction name="actionCsvFileImport"/>
+     <addaction name="actionZeroDatabase"/>
+    </widget>
     <addaction name="actionCreateCustomer"/>
-    <addaction name="actionCreateOrder"/>
-    <addaction name="menuKunde"/>
-    <addaction name="separator"/>
-    <addaction name="actionHttpGetCustomers"/>
-    <addaction name="actionHttpGetCatalog"/>
-    <addaction name="separator"/>
+    <addaction name="menuCustomer"/>
+    <addaction name="menuReports"/>
+    <addaction name="menuServer"/>
+    <addaction name="menuImportEksport"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -608,7 +634,7 @@
    </widget>
    <addaction name="menuExit"/>
    <addaction name="menuSettings"/>
-   <addaction name="menu_Data"/>
+   <addaction name="menuData"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -640,14 +666,6 @@
    <addaction name="actionExit"/>
    <addaction name="separator"/>
    <addaction name="actionCreateCustomer"/>
-   <addaction name="actionCreateOrder"/>
-   <addaction name="separator"/>
-   <addaction name="actionUpdateCustomer"/>
-   <addaction name="separator"/>
-   <addaction name="actionShowMasterData"/>
-   <addaction name="actionShowContactData"/>
-   <addaction name="actionShowVisitData"/>
-   <addaction name="actionShowOrderData"/>
   </widget>
   <action name="actionExit">
    <property name="text">
@@ -717,27 +735,27 @@
     <string>Fil import</string>
    </property>
   </action>
-  <action name="actionShowMasterData">
+  <action name="actionMasterData">
    <property name="text">
     <string>Stamdata</string>
    </property>
   </action>
-  <action name="actionShowContactData">
+  <action name="actionContactData">
    <property name="text">
     <string>Kontakter</string>
    </property>
   </action>
-  <action name="actionShowVisitData">
+  <action name="actionVisitData">
    <property name="text">
     <string>Besøg</string>
    </property>
   </action>
-  <action name="actionShowOrderData">
+  <action name="actionOrderData">
    <property name="text">
     <string>Ordrer</string>
    </property>
   </action>
-  <action name="actionCreateOrder">
+  <action name="actionCreateVisit">
    <property name="text">
     <string>Opret ordre</string>
    </property>
@@ -747,14 +765,14 @@
     <string>Opret kunde</string>
    </property>
   </action>
-  <action name="actionUpdateCustomer">
+  <action name="actionArchiveChanges">
    <property name="text">
-    <string>Gem rettelser</string>
+    <string>Arkiver rettelser</string>
    </property>
   </action>
-  <action name="actionCreateReport">
+  <action name="actionReport">
    <property name="text">
-    <string>Opret dagsrapport</string>
+    <string>Dagsrapport</string>
    </property>
   </action>
   <action name="actionZeroDatabase">
@@ -762,11 +780,15 @@
     <string>Nulstil database</string>
    </property>
   </action>
+  <action name="actionReportList">
+   <property name="text">
+    <string>Rapport oversigt</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>customerList</tabstop>
   <tabstop>txtNewCompany</tabstop>
-  <tabstop>txtNewPhone1</tabstop>
  </tabstops>
  <resources/>
  <connections/>

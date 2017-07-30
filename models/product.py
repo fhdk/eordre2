@@ -26,6 +26,10 @@ class Product:
         self.__products = []
         self.__product = {}
 
+    def clear(self):
+        self.__product = {}
+        self.__products = []
+
     @property
     def product_list(self):
         try:

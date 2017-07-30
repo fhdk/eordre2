@@ -42,8 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         configfn.check_config_folder()  # Check app folder in users home
         dbfn.create_tables()  # Create the needed tables
 
-        self.txtWorkdate.setText(datetime.date.today().isoformat())  # set workdate
-        self.currentCustomer = {}  # Initialize an empty customer dict
+        self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
         self.Contact = contact.Contact()  # Initialize Contact object
         self.Customer = customer.Customer()  # Initialize Customer object
         self.Employee = employee.Employee()  # Initialize Employee object
@@ -53,24 +52,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Report = report.Report()  # Initialize Report object
         self.Settings = settings.Setting()  # Initialize Settings object
 
-        # connect signals
-        self.actionExit.triggered.connect(self.exit_action)
-        self.actionSettings.triggered.connect(self.settings_dialog_action)
-        self.actionCsvFileImport.triggered.connect(self.file_import_action)
-        self.actionHttpGetCatalog.triggered.connect(self.get_product_action)
-        self.actionHttpGetCustomers.triggered.connect(self.get_customers_action)
+        # connect menu trigger signals
         self.actionAboutQt.triggered.connect(self.about_qt_action)
         self.actionAboutSoftware.triggered.connect(self.about_software_action)
-        self.actionShowContactData.triggered.connect(self.contact_data_action)
-        self.actionShowMasterData.triggered.connect(self.master_data_action)
-        self.actionShowOrderData.triggered.connect(self.order_data_action)
-        self.actionShowVisitData.triggered.connect(self.visit_data_action)
+        self.actionArchiveChanges.triggered.connect(self.archive_customer_action())
+        self.actionContactData.triggered.connect(self.contact_data_action)
         self.actionCreateCustomer.triggered.connect(self.create_customer_action)
-        self.actionCreateOrder.triggered.connect(self.create_order_action)
-        self.actionCreateReport.triggered.connect(self.create_report_action)
-        self.actionUpdateCustomer.triggered.connect(self.update_customer_action)
-        self.customerList.currentItemChanged.connect(self.current_cust_changed_action)
+        self.actionCreateVisit.triggered.connect(self.create_visit_action)
+        self.actionCsvFileImport.triggered.connect(self.file_import_action)
+        self.actionExit.triggered.connect(self.exit_action)
+        self.actionHttpGetCatalog.triggered.connect(self.get_http_product_action)
+        self.actionHttpGetCustomers.triggered.connect(self.get_http_customers_action)
+        self.actionMasterData.triggered.connect(self.master_data_action)
+        self.actionOrderData.triggered.connect(self.order_data_action)
+        self.actionReport.triggered.connect(self.report_action)
+        self.actionReportList.triggered.connect(self.report_list_action)
+        self.actionSettings.triggered.connect(self.settings_dialog_action)
+        self.actionVisitData.triggered.connect(self.visit_data_action)
         self.actionZeroDatabase.triggered.connect(self.zero_database_action)
+        # connect list change
+        self.customerList.currentItemChanged.connect(self.customer_changed_action)
+        # connect buttons
+        self.buttonArchiveChanges.clicked.connect(self.archive_customer_action)
+        self.buttonContactData.clicked.connect(self.contact_data_action)
+        self.buttonCreateCustomer.clicked.connect(self.create_customer_action)
+        self.buttonCreateVisit.clicked.connect(self.create_visit_action)
+        self.buttonMasterData.clicked.connect(self.master_data_action)
+        self.buttonOrderData.clicked.connect(self.order_data_action)
+        self.buttonReport.clicked.connect(self.report_action)
+        self.buttonVisitData.clicked.connect(self.visit_data_action)
 
     def about_qt_action(self):
         """Slot for aboutQt triggered signal"""
@@ -113,13 +123,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Settings.update_()
         self.update_sync_status()
 
-    def update_sync_status(self):
-        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
-        self.txtCustServer.setText(self.Settings.current_settings["sac"])
-        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
-        self.txtProdServer.setText(self.Settings.current_settings["sap"])
-        # msgbox = QMessageBox()
-        # msgbox.information(self, "Eordre NG", "Sync status opdateret", QMessageBox.Ok)
+    def archive_customer_action(self):
+        """Slot for updateCustomer triggered signal"""
+        if not self.Customer.current_customer:
+            # msgbox triggered if no customer is selected
+            msgbox = QMessageBox()
+            msgbox.information(self,
+                               "Eordre NG",
+                               "Det kan jeg ikke på nuværende tidspunkt!",
+                               QMessageBox.Ok)
+            return False
+        # assign input field values to customer object
+        self.currentCustomer["company"] = self.txtCompany.text()
+        self.currentCustomer["address1"] = self.txtAddress1.text()
+        self.currentCustomer["address2"] = self.txtAddress2.text()
+        self.currentCustomer["zipcode"] = self.txtZipCode.text()
+        self.currentCustomer["city"] = self.txtCityName.text()
+        self.currentCustomer["phone1"] = self.txtPhone1.text()
+        self.currentCustomer["phone2"] = self.txtPhone2.text()
+        self.currentCustomer["email"] = self.txtEmail.text()
+        self.currentCustomer["factor"] = self.txtFactor.text()
+        self.currentCustomer["infotext"] = self.txtInfoText.toPlainText()
+        self.currentCustomer["modified"] = 1
+        self.Customer.update_(list(self.currentCustomer.values()))
 
     def close_event(self, event):
         """Slot for close event signal
@@ -148,7 +174,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                self.txtNewPhone1.text(),
                                QMessageBox.Ok)
 
-    def create_order_action(self):
+    def create_visit_action(self):
         """Slot for createOrder triggered signal"""
         if not self.Report.load_report(self.txtWorkdate.text()):
             msgbox = QMessageBox()
@@ -158,13 +184,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                QMessageBox.Ok)
             return False
 
-        if self.currentCustomer:
+        if self.Customer.current_customer:
             order_dialog = CreateOrderDialog(self,
                                              self.Report.current_report,
                                              self.Customer.current_customer,
                                              self.Employee.current_employee)
             if order_dialog.exec_():
-
                 pass
         else:
             msgbox = QMessageBox()
@@ -173,36 +198,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                "Ingen kunder - ingen ordre!",
                                QMessageBox.Ok)
 
-    def create_report_action(self):
-        """Slot for createReport triggered signal"""
-        try:
-            repdate = self.Report.current_report["repdate"]
-            if not repdate == self.txtWorkdate.text():
-                infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
-                    repdate, self.txtWorkdate.text())
-                msgbox = QMessageBox()
-                msgbox.information(self, "Eordre NG", infotext, QMessageBox.Ok)
-
-        except KeyError:
-            create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
-            if create_report_dialog.exec_():  # Execute dialog - show it
-                self.txtWorkdate.setText(create_report_dialog.workdate)
-                msgbox = QMessageBox()
-                msgbox.information(self,
-                                   "Eordre NG",
-                                   "Der er oprettet dagsrapport for <strong>{}</strong>!".format(
-                                       self.txtWorkdate.text()),
-                                   QMessageBox.Ok)
-                self.Report.create_(self.Employee.current_employee, self.txtWorkdate.text())
-
-            else:
-                msgbox = QMessageBox()
-                msgbox.information(self,
-                                   "Eordre NG",
-                                   "Der er <strong>IKKE</strong> oprettet dagsrapport!",
-                                   QMessageBox.Ok)
-
-    def current_cust_changed_action(self, current, previous):
+    def customer_changed_action(self, current, previous):
         """Slot for listbox current item changed signal
         propagate changes to currently selected customer
         to related customer info pages
@@ -271,7 +267,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Slot for customer import done. Used to trigger populate_customer_list"""
         self.populate_customer_list()
 
-    def get_customers_action(self):
+    def get_http_customers_action(self):
         """Slot for getCustomers triggered signal"""
         import_customers = HttpCustImportDialog()  # Create dialog object
         import_customers.c.finished.connect(self.get_customers_finished)
@@ -286,7 +282,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("{}".format(list(self.Settings.current_settings.values())))
         # self.Settings.update_()  # save settings
 
-    def get_product_action(self):
+    def get_http_product_action(self):
         """Slot for getProducts triggered signal"""
         import_product = HttpProdImportDialog()  # Create dialog object
         import_product.c.finished.connect(self.get_product_finished)
@@ -323,6 +319,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # assign Widgets to Tree
         self.customerList.addTopLevelItems(items)
 
+    def report_action(self):
+        """Slot for Report triggered signal"""
+        try:
+            repdate = self.Report.current_report["repdate"]
+            if not repdate == self.txtWorkdate.text():
+                infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
+                    repdate, self.txtWorkdate.text())
+                msgbox = QMessageBox()
+                msgbox.information(self, "Eordre NG", infotext, QMessageBox.Ok)
+
+        except KeyError:
+            create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
+            if create_report_dialog.exec_():  # Execute dialog - show it
+                self.txtWorkdate.setText(create_report_dialog.workdate)
+                msgbox = QMessageBox()
+                msgbox.information(self,
+                                   "Eordre NG",
+                                   "Der er oprettet dagsrapport for <strong>{}</strong>!".format(
+                                       self.txtWorkdate.text()),
+                                   QMessageBox.Ok)
+                self.Report.create_(self.Employee.current_employee, self.txtWorkdate.text())
+
+            else:
+                msgbox = QMessageBox()
+                msgbox.information(self,
+                                   "Eordre NG",
+                                   "Der er <strong>IKKE</strong> oprettet dagsrapport!",
+                                   QMessageBox.Ok)
+
+    def report_list_action(self):
+        """Slot for Report List triggered signal"""
+        pass
+
     def resizeEvent(self, event):
         """Slot for the resize event signal
         intended use is resize content to window
@@ -347,29 +376,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             pass
 
-    def update_customer_action(self):
-        """Slot for updateCustomer triggered signal"""
-        if not self.currentCustomer:
-            # msgbox triggered if no customer is selected
-            msgbox = QMessageBox()
-            msgbox.information(self,
-                               "Eordre NG",
-                               "Hvad vil du opdatere?",
-                               QMessageBox.Ok)
-            return False
-        # assign input field values to customer object
-        self.currentCustomer["company"] = self.txtCompany.text()
-        self.currentCustomer["address1"] = self.txtAddress1.text()
-        self.currentCustomer["address2"] = self.txtAddress2.text()
-        self.currentCustomer["zipcode"] = self.txtZipCode.text()
-        self.currentCustomer["city"] = self.txtCityName.text()
-        self.currentCustomer["phone1"] = self.txtPhone1.text()
-        self.currentCustomer["phone2"] = self.txtPhone2.text()
-        self.currentCustomer["email"] = self.txtEmail.text()
-        self.currentCustomer["factor"] = self.txtFactor.text()
-        self.currentCustomer["infotext"] = self.txtInfoText.toPlainText()
-        self.currentCustomer["modified"] = 1
-        self.Customer.update_(list(self.currentCustomer.values()))
+    def update_sync_status(self):
+        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
+        self.txtCustServer.setText(self.Settings.current_settings["sac"])
+        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
+        self.txtProdServer.setText(self.Settings.current_settings["sap"])
 
     def visit_data_action(self):
         """Slot for visitData triggered signal"""
@@ -380,12 +391,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for tbl in config.CSVDATA:
             dbfn.recreate_table(tbl[1])
         self.customerList.clear()
-        self.Product.load_()
-        self.Customer.load_()
+        self.Product.clear()
+        self.Customer.clear()
         msgbox = QMessageBox()
         msgbox.information(self,
                            "Eordre NG",
-                           "Databasen er nulstillet!",
+                           "Kunder og prisliste er nu nulstillet!",
                            QMessageBox.Ok)
 
 if __name__ == '__main__':

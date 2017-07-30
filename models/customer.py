@@ -36,6 +36,10 @@ class Customer:
         self.__customer_list = []
         self.__customer = {}
 
+    def clear(self):
+        self.__customer = {}
+        self.__customer_list = []
+
     @property
     def current_customer(self):
         """Return current customer"""
