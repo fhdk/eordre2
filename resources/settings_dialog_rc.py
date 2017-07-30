@@ -31,6 +31,9 @@ class Ui_SettingsDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.settingsStack.sizePolicy().hasHeightForWidth())
         self.settingsStack.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.settingsStack.setFont(font)
         self.settingsStack.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.settingsStack.setAutoFillBackground(False)
         self.settingsStack.setStyleSheet("")
@@ -108,7 +111,7 @@ class Ui_SettingsDialog(object):
         self.settingsStack.addTab(self.settingsStackPage3, icon3, "")
 
         self.retranslateUi(SettingsDialog)
-        self.settingsStack.setCurrentIndex(1)
+        self.settingsStack.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(SettingsDialog)
         SettingsDialog.setTabOrder(self.settingsStack, self.editUserMail)
         SettingsDialog.setTabOrder(self.editUserMail, self.editUserPass)
