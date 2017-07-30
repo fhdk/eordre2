@@ -58,6 +58,11 @@ class Visit:
         except IndexError:
             self.load_for_report(reportid=reportid)
 
+    def clear(self):
+        self.__current_visit = {}
+        self.__visit_list_customer = []
+        self.__visit_list_report = []
+
     def create(self, reportid, employeeid, customerid, workdate):
         values = (None, reportid, employeeid, customerid, workdate,
                   0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)

@@ -33,9 +33,13 @@ class Contact:
         try:
             custid = self.__contacts[0]["customerid"]
             if not custid == customerid:
-                self.load_(customerid)
+                self.load_for_customer(customerid)
         except IndexError:
-            self.load_(customerid)
+            self.load_for_customer(customerid)
+
+    def clear(self):
+        self.__contact = {}
+        self.__contacts = []
 
     def create(self, customerid, name):
         """Create a contact"""
@@ -92,7 +96,7 @@ class Contact:
             db.execute(sql, values)
             db.commit()
 
-    def load_(self, customerid):
+    def load_for_customer(self, customerid):
         """Load contact"""
         sql = "SELECT * FROM contact WHERE customerid=?"
         db = sqlite3.connect(config.DBPATH)

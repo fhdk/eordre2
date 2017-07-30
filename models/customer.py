@@ -208,9 +208,9 @@ class Customer:
 
     def save_(self):
         """Save current customer changes"""
-        self.update_(self.__customer.values())
+        self.update_(list(self.__customer.values()))
 
-    def update_(self, values):
+    def update_(self, values=None):
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
@@ -218,13 +218,13 @@ class Customer:
               "account=?, company=?, address1=?, address2=?, zipcode=?, city=?, " \
               "country=?, salesrep=?, phone1=?, vat=?, email=?, deleted=?, modified=?, created=?, " \
               "infotext=?, att=?, phone2=?, factor=? " \
-              "WHERE company=? AND phone1=?"
+              "WHERE customerid=?"
         # sanitize parameter
         if not type(values) == list:
             values = list(values)
-        # params
-        values += [values[2], values[9]]
-        # remove customerid
+        # move customerid to last value
+        values = values + [values[0]]
+        # remove customerid as first value
         values = values[1:]
         db = sqlite3.connect(config.DBPATH)
         with db:

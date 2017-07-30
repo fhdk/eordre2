@@ -43,19 +43,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dbfn.create_tables()  # Create the needed tables
 
         self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
-        self.Contact = contact.Contact()  # Initialize Contact object
-        self.Customer = customer.Customer()  # Initialize Customer object
+        self.Contacts = contact.Contact()  # Initialize Contact object
+        self.Customers = customer.Customer()  # Initialize Customer object
         self.Employee = employee.Employee()  # Initialize Employee object
-        self.OrderVisit = visit.Visit()  # Initialize OrderVisit object
-        self.OrderLine = orderline.OrderLine()  # Initialize OrderLine object 
-        self.Product = product.Product()  # Initialize Product object
-        self.Report = report.Report()  # Initialize Report object
+        self.Visits = visit.Visit()  # Initialize OrderVisit object
+        self.OrderLines = orderline.OrderLine()  # Initialize OrderLine object
+        self.Products = product.Product()  # Initialize Product object
+        self.Reports = report.Report()  # Initialize Report object
         self.Settings = settings.Setting()  # Initialize Settings object
 
         # connect menu trigger signals
         self.actionAboutQt.triggered.connect(self.about_qt_action)
         self.actionAboutSoftware.triggered.connect(self.about_software_action)
-        self.actionArchiveChanges.triggered.connect(self.archive_customer_action())
+        self.actionArchiveChanges.triggered.connect(self.archive_customer_action)
         self.actionContactData.triggered.connect(self.contact_data_action)
         self.actionCreateCustomer.triggered.connect(self.create_customer_action)
         self.actionCreateVisit.triggered.connect(self.create_visit_action)
@@ -119,13 +119,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             status = utility.refresh_sync_status(self.Settings.current_settings)
             self.Settings.current_settings["sac"] = status[0][1].split()[0]
             self.Settings.current_settings["sap"] = status[1][1].split()[0]
-            print("{}".format(list(self.Settings.current_settings.values())))
-        self.Settings.update_()
-        self.update_sync_status()
+            self.Settings.update_()
+        # update display
+        self.display_sync_status()
 
     def archive_customer_action(self):
         """Slot for updateCustomer triggered signal"""
-        if not self.Customer.current_customer:
+        if not self.Customers.current_customer:
             # msgbox triggered if no customer is selected
             msgbox = QMessageBox()
             msgbox.information(self,
@@ -134,18 +134,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                QMessageBox.Ok)
             return False
         # assign input field values to customer object
-        self.currentCustomer["company"] = self.txtCompany.text()
-        self.currentCustomer["address1"] = self.txtAddress1.text()
-        self.currentCustomer["address2"] = self.txtAddress2.text()
-        self.currentCustomer["zipcode"] = self.txtZipCode.text()
-        self.currentCustomer["city"] = self.txtCityName.text()
-        self.currentCustomer["phone1"] = self.txtPhone1.text()
-        self.currentCustomer["phone2"] = self.txtPhone2.text()
-        self.currentCustomer["email"] = self.txtEmail.text()
-        self.currentCustomer["factor"] = self.txtFactor.text()
-        self.currentCustomer["infotext"] = self.txtInfoText.toPlainText()
-        self.currentCustomer["modified"] = 1
-        self.Customer.update_(list(self.currentCustomer.values()))
+        self.Customers.current_customer["company"] = self.txtCompany.text()
+        self.Customers.current_customer["address1"] = self.txtAddress1.text()
+        self.Customers.current_customer["address2"] = self.txtAddress2.text()
+        self.Customers.current_customer["zipcode"] = self.txtZipCode.text()
+        self.Customers.current_customer["city"] = self.txtCityName.text()
+        self.Customers.current_customer["phone1"] = self.txtPhone1.text()
+        self.Customers.current_customer["phone2"] = self.txtPhone2.text()
+        self.Customers.current_customer["email"] = self.txtEmail.text()
+        self.Customers.current_customer["factor"] = self.txtFactor.text()
+        self.Customers.current_customer["infotext"] = self.txtInfoText.toPlainText()
+        self.Customers.current_customer["modified"] = 1
+        self.Customers.save_()
 
     def close_event(self, event):
         """Slot for close event signal
@@ -176,7 +176,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def create_visit_action(self):
         """Slot for createOrder triggered signal"""
-        if not self.Report.load_report(self.txtWorkdate.text()):
+        if not self.Reports.load_report(self.txtWorkdate.text()):
             msgbox = QMessageBox()
             msgbox.information(self,
                                __appname__,
@@ -184,10 +184,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                QMessageBox.Ok)
             return False
 
-        if self.Customer.current_customer:
+        if self.Customers.current_customer:
             order_dialog = CreateOrderDialog(self,
-                                             self.Report.current_report,
-                                             self.Customer.current_customer,
+                                             self.Reports.current_report,
+                                             self.Customers.current_customer,
                                              self.Employee.current_employee)
             if order_dialog.exec_():
                 pass
@@ -205,20 +205,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :param current: currently selected item
         :param previous: previous selected item
         """
-        self.Customer.find_name_account(current.text(0), current.text(1))
+        self.Customers.find_name_account(current.text(0), current.text(1))
         try:
-            self.txtAccount.setText(self.Customer.current_customer["account"])
-            self.txtCompany.setText(self.Customer.current_customer["company"])
-            self.txtAddress1.setText(self.Customer.current_customer["address1"])
-            self.txtAddress2.setText(self.Customer.current_customer["address2"])
-            self.txtZipCode.setText(self.Customer.current_customer["zipcode"])
-            self.txtCityName.setText(self.Customer.current_customer["city"])
-            self.txtPhone1.setText(self.Customer.current_customer["phone1"])
-            self.txtPhone2.setText(self.Customer.current_customer["phone2"])
-            self.txtEmail.setText(self.Customer.current_customer["email"])
-            self.txtFactor.setText(str(self.Customer.current_customer["factor"]))
+            self.txtAccount.setText(self.Customers.current_customer["account"])
+            self.txtCompany.setText(self.Customers.current_customer["company"])
+            self.txtAddress1.setText(self.Customers.current_customer["address1"])
+            self.txtAddress2.setText(self.Customers.current_customer["address2"])
+            self.txtZipCode.setText(self.Customers.current_customer["zipcode"])
+            self.txtCityName.setText(self.Customers.current_customer["city"])
+            self.txtPhone1.setText(self.Customers.current_customer["phone1"])
+            self.txtPhone2.setText(self.Customers.current_customer["phone2"])
+            self.txtEmail.setText(self.Customers.current_customer["email"])
+            self.txtFactor.setText(str(self.Customers.current_customer["factor"]))
             self.txtInfoText.clear()
-            self.txtInfoText.insertPlainText(self.Customer.current_customer["infotext"])
+            self.txtInfoText.insertPlainText(self.Customers.current_customer["infotext"])
+            self.Contacts.load_for_customer(self.Customers.current_customer["customerid"])
+            self.Visits.load_for_customer(self.Customers.current_customer["customerid"])
+
         except KeyError:
             self.txtAccount.clear()
             self.txtCompany.clear()
@@ -231,14 +234,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txtEmail.clear()
             self.txtFactor.clear()
             self.txtInfoText.clear()
+            self.Visits.clear()
+            self.OrderLines.clear()
+            self.Contacts.clear()
 
     def data_export_action(self):
         """Slot for dataExport triggered signal"""
         msgbox = QMessageBox()
-        msgbox.information(self,
-                           __appname__,
-                           "Opret CSV data backup",
-                           QMessageBox.Ok)
+        msgbox.information(self, __appname__, "Opret CSV data backup", QMessageBox.Ok)
+
+    def display_sync_status(self):
+        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
+        self.txtCustServer.setText(self.Settings.current_settings["sac"])
+        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
+        self.txtProdServer.setText(self.Settings.current_settings["sap"])
 
     def exit_action(self):
         """Slot for exit triggered signal"""
@@ -247,14 +256,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def file_import_action(self):
         """Slot for fileImport triggered signal"""
-        if self.Customer.customer_list or self.Report.current_report:
+        if self.Customers.customer_list or self.Reports.current_report:
             # Warn user that import deletes existing data
             msgbox = QMessageBox()
             msgbox.warning(self,
                            __appname__,
                            "<strong>Ved import slettes alle eksisterende data</strong>!<br/><br/>"
-                           "Af hensyn til sammenkædning af data er det bedst,<br/>"
-                           "at du importer alle tabeller der findes i dropned listen!",
+                           "Det er alt eller intet. <br/>"
+                           "Af hensyn til sammenkædning af data <strong>SKAL</strong>,<br/>"
+                           "du importere <strong>ALLE<strong> tabeller der findes i listen!<br/><br/>"
+                           "<strong>Importerer du ikke alle vil det give problemer</strong>!",
                            QMessageBox.Ok)
         import_dialog = FileImportDialog(config.CSVDATA)  # Create import dialog
 
@@ -275,7 +286,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_customers_finished(self):
         """Slot for getCustomers finished signal"""
-        self.populate_customer_list()  # load_ customers
+        self.populate_customer_list()  # load_for_customer customers
         lsc = datetime.date.today().isoformat()  # get sync date
         self.txtCustLocal.setText(lsc)  # get update display
         self.Settings.current_settings["lsc"] = lsc  # update settings
@@ -290,7 +301,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_product_finished(self):
         """Slot for getProducts finished signal"""
-        self.Product.load_()  # load_ products
+        self.Products.load_()  # load_for_customer products
         lsp = datetime.date.today().isoformat()  # get sync date
         self.txtProdLocal.setText(lsp)  # update display
         self.Settings.current_settings["lsp"] = lsp  # update settings
@@ -312,17 +323,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.customerList.setHeaderLabels(["Firma", "Konto"])
         self.customerList.setSortingEnabled(True)  # enable sorting
         items = []  # temporary list
-        for c in self.Customer.customer_list:
+        for c in self.Customers.customer_list:
             # create Widget
             item = QTreeWidgetItem([c["company"], c["account"]])
             items.append(item)
         # assign Widgets to Tree
         self.customerList.addTopLevelItems(items)
+        self.customerList.scrollToTop()
 
     def report_action(self):
         """Slot for Report triggered signal"""
         try:
-            repdate = self.Report.current_report["repdate"]
+            repdate = self.Reports.current_report["repdate"]
             if not repdate == self.txtWorkdate.text():
                 infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
                     repdate, self.txtWorkdate.text())
@@ -339,7 +351,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                    "Der er oprettet dagsrapport for <strong>{}</strong>!".format(
                                        self.txtWorkdate.text()),
                                    QMessageBox.Ok)
-                self.Report.create_(self.Employee.current_employee, self.txtWorkdate.text())
+                self.Reports.create_(self.Employee.current_employee, self.txtWorkdate.text())
 
             else:
                 msgbox = QMessageBox()
@@ -376,12 +388,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             pass
 
-    def update_sync_status(self):
-        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
-        self.txtCustServer.setText(self.Settings.current_settings["sac"])
-        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
-        self.txtProdServer.setText(self.Settings.current_settings["sap"])
-
     def visit_data_action(self):
         """Slot for visitData triggered signal"""
         self.customerInfoStack.setCurrentIndex(2)
@@ -391,13 +397,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for tbl in config.CSVDATA:
             dbfn.recreate_table(tbl[1])
         self.customerList.clear()
-        self.Product.clear()
-        self.Customer.clear()
+        self.Products.clear()
+        self.Customers.clear()
         msgbox = QMessageBox()
         msgbox.information(self,
                            __appname__,
                            "Kunder og prisliste er nu nulstillet!",
                            QMessageBox.Ok)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

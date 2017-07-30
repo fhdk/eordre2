@@ -18,19 +18,23 @@ class OrderLine:
         """Initialize OrderLine class"""
         # model for zipping dictionary
         self.model = ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount")
-        self.__orderlines = []
+        self.__order_lines = []
         self.__current_line = {}
 
     @property
     def orderlines_list(self):
-        return self.__orderlines
+        return self.__order_lines
 
     @orderlines_list.setter
     def orderlines_list(self, visitid):
         try:
-            _ = self.__orderlines[0]
+            _ = self.__order_lines[0]
         except IndexError:
             self.load_(visitid)
+
+    def clear(self):
+        self.__current_line = {}
+        self.__order_lines = []
 
     def create_(self, visit_id):
         """Create a new orderline on visitid"""
