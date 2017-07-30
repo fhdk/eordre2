@@ -20,3 +20,26 @@ def country_name_from_iso(iso):
 def refresh_sync_status(settings):
     """Refresh dates for datafiles"""
     return httpfn.update_last_sync_info(settings)
+
+
+def conv2bool(arg):
+    """Conversion"""
+    return str(arg.lower() in ["true", 1, "1", "ok"])
+
+
+def int2bool(arg):
+    return arg > 0
+
+
+def bool2int(arg):
+    """Convert bool to int"""
+    if arg:
+        return 1
+    return 0
+
+
+def bool2str(arg):
+    """Conversion"""
+    if arg:
+        return "True"
+    return "False"

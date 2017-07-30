@@ -153,7 +153,7 @@ def create_table_settings():
           "usermail TEXT, userpass TEXT, usercountry TEXT, pd TEXT, pf TEXT, sf TEXT, " \
           "http TEXT, smtp TEXT, port INTEGER, mailto TEXT, " \
           "mailserver TEXT, mailport TEXT, mailuser TEXT, mailpass TEXT, " \
-          "fc TEXT, fp TEXT, fe TEXT, lsc TEXT, lsp TEXT, sac TEXT, sap TEXT);"
+          "fc TEXT, fp TEXT, fe TEXT, lsc TEXT, lsp TEXT, sac TEXT, sap TEXT, sc INTEGER);"
 
     db = sqlite3.connect(config.DBPATH)
     with db:

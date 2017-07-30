@@ -79,6 +79,7 @@ class Customer:
         :param account:
         :param company:
         """
+        data = {}
         sql_1 = "SELECT * FROM customer WHERE account=?"
         sql_2 = "SELECT * FROM customer WHERE account=? AND company=?"
         db = sqlite3.connect(config.DBPATH)
@@ -88,14 +89,15 @@ class Customer:
             cur.execute(sql_1, [account])
             cust = cur.fetchone()
             if cust:  # found by account
-                return dict(zip(self.model, cust))
-            # does the row exist as 'NY'
-            cur.execute(sql_2, ['NY', company])
-            cust = cur.fetchone()
-            if cust:  # found as new customer
-                return dict(zip(self.model, cust))
-        # return empty
-        return {}
+                data = dict(zip(self.model, cust))
+            else:  # search again
+                # does the row exist as 'NY'
+                cur.execute(sql_2, ['NY', company])
+                cust = cur.fetchone()
+                if cust:  # found as new customer
+                    data = dict(zip(self.model, cust))
+        self.__customer = data
+        return self.__customer
 
     def import_csv(self, filename, headers=False):
         """Import customer from csv file

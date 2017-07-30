@@ -15,9 +15,11 @@ class Setting:
         """Initialize the Settings class"""
         # model for zipping dictionary
         self.model = (
-            "usermail", "userpass", "usercountry", "pd", "pf", "sf",
-            "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
-            "fc", "fp", "fe", "lsc", "lsp", "sac", "sap")
+            "usermail", "userpass", "usercountry",
+            "pd", "pf", "sf",
+            "http", "smtp", "port", "mailto",
+            "mailserver", "mailport", "mailuser", "mailpass",
+            "fc", "fp", "fe", "lsc", "lsp", "sac", "sap", "sc")
 
         self.__settings = {}
 
@@ -35,7 +37,8 @@ class Setting:
 
     def insert_(self, data):
         """Insert settings data"""
-        sql = "INSERT INTO settings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        sql = "INSERT INTO settings " \
+              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
@@ -46,7 +49,7 @@ class Setting:
         """Create default settings in database"""
         defaults = ["", "", "", "_", "__", ".txt",
                     "", "", "", "", "", "", "", "",
-                    "customers", "invenprices", "employees", "", "", "", ""]
+                    "customers", "invenprices", "employees", "", "", "", "", 0]
         self.insert_(defaults)  # call insert function
 
     def load_(self):
@@ -65,32 +68,15 @@ class Setting:
 
     def update_(self):
         """Update settings"""
-        sql = "UPDATE settings SET usermail=?, userpass=?, usercountry=?, pd=?, pf=?, sf=?, " \
-              "http=?, smtp=?, port=?, mailto=?, mailserver=?, mailport=?, mailuser=?, mailpass=?, " \
-              "fc=?, fp=?, fe=?, lsc=?, lsp=?, sac=?, sap=?;"
+        sql = "UPDATE settings SET " \
+              "usermail=?, userpass=?, usercountry=?, " \
+              "pd=?, pf=?, sf=?, " \
+              "http=?, smtp=?, port=?, mailto=?, " \
+              "mailserver=?, mailport=?, mailuser=?, mailpass=?, " \
+              "fc=?, fp=?, fe=?, lsc=?, lsp=?, sac=?, sap=?, sc=?;"
+        values = list(self.__settings.values())
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            cur.execute(sql, list(self.__settings.values()))
+            cur.execute(sql, values)
             db.commit()
-
-    def update_avail_sync(self, data):
-        sql = "UPDATE settings SET sac=?, sap=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (data[0][1], data[1][1]))
-            db.commit()
-        self.__settings["sac"] = data[0][1]
-        self.__settings["sap"] = data[1][1]
-
-    def update_last_sync(self, data):
-        sql = "UPDATE settings SET lsc=?, lsp=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (data[0], data[1]))
-            db.commit()
-        self.__settings["lsc"] = data[0][1]
-        self.__settings["lsp"] = data[1][1]
-

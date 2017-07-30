@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScree
 
 # import resources.splash_rc
 from configuration import configfn, config
-from dialogs.create_order_dialog import CreateOrderDialog
+from dialogs.visit_dialog import CreateOrderDialog
 from dialogs.create_report_dialog import CreateReportDialog
 from dialogs.file_import_dialog import FileImportDialog
 from dialogs.http_cust_import_dialog import HttpCustImportDialog
@@ -23,7 +23,7 @@ from dialogs.http_prod_import_dialog import HttpProdImportDialog
 from dialogs.settings_dialog import SettingsDialog
 from models import contact, customer, employee, visit, orderline, product, report, settings
 from resources.main_window_rc import Ui_MainWindow
-from util import httpfn, dbfn, passwdfn, threads
+from util import httpfn, dbfn, passwdfn, utility
 from util.rules import check_settings
 
 __appname__ = "Eordre NG"
@@ -52,10 +52,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Product = product.Product()  # Initialize Product object
         self.Report = report.Report()  # Initialize Report object
         self.Settings = settings.Setting()  # Initialize Settings object
-        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
-        self.txtCustServer.setText(self.Settings.current_settings["sac"])
-        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
-        self.txtProdServer.setText(self.Settings.current_settings["sap"])
 
         # connect signals
         self.actionExit.triggered.connect(self.exit_action)
@@ -108,18 +104,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings_dialog_action()
 
         self.populate_customer_list()
-        # sync_status = threads.RefreshSyncStatus()
-        # sync_status.c.SyncStatusDone.connect(self.sync_update_action)
-        # sync_status.start()
+        if utility.int2bool(self.Settings.current_settings["sc"]):
+            self.statusbar.setToolTip("Checker server for opdateringer ...")
+            status = utility.refresh_sync_status(self.Settings.current_settings)
+            self.Settings.current_settings["sac"] = status[0][1].split()[0]
+            self.Settings.current_settings["sap"] = status[1][1].split()[0]
+            print("{}".format(list(self.Settings.current_settings.values())))
+        self.Settings.update_()
+        self.update_sync_status()
 
-    def sync_update_action(self):
-        """Slot for """
-        msgbox = QMessageBox()
-        msgbox.information(self, "Eordre NG", "Sync status opdateret", QMessageBox.Ok)
+    def update_sync_status(self):
         self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
         self.txtCustServer.setText(self.Settings.current_settings["sac"])
         self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
-        self.txtCustServer.setText(self.Settings.current_settings["sap"])
+        self.txtProdServer.setText(self.Settings.current_settings["sap"])
+        # msgbox = QMessageBox()
+        # msgbox.information(self, "Eordre NG", "Sync status opdateret", QMessageBox.Ok)
 
     def close_event(self, event):
         """Slot for close event signal
@@ -209,27 +209,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :param current: currently selected item
         :param previous: previous selected item
         """
-        for found in self.Customer.customer_list:
-            try:
-                if found["company"] == current.text(0):
-                    if found["account"] == current.text(1):
-                        # set current customer
-                        self.currentCustomer = found
-                        # customer master data
-                        self.txtAccount.setText(found["account"])
-                        self.txtCompany.setText(found["company"])
-                        self.txtAddress1.setText(found["address1"])
-                        self.txtAddress2.setText(found["address2"])
-                        self.txtZipCode.setText(found["zipcode"])
-                        self.txtCityName.setText(found["city"])
-                        self.txtPhone1.setText(found["phone1"])
-                        self.txtPhone2.setText(found["phone2"])
-                        self.txtEmail.setText(found["email"])
-                        self.txtFactor.setText(str(found["factor"]))
-                        self.txtInfoText.clear()
-                        self.txtInfoText.insertPlainText(found["infotext"])
-            except AttributeError:
-                pass
+        self.Customer.find_name_account(current.text(0), current.text(1))
+        try:
+            self.txtAccount.setText(self.Customer.current_customer["account"])
+            self.txtCompany.setText(self.Customer.current_customer["company"])
+            self.txtAddress1.setText(self.Customer.current_customer["address1"])
+            self.txtAddress2.setText(self.Customer.current_customer["address2"])
+            self.txtZipCode.setText(self.Customer.current_customer["zipcode"])
+            self.txtCityName.setText(self.Customer.current_customer["city"])
+            self.txtPhone1.setText(self.Customer.current_customer["phone1"])
+            self.txtPhone2.setText(self.Customer.current_customer["phone2"])
+            self.txtEmail.setText(self.Customer.current_customer["email"])
+            self.txtFactor.setText(str(self.Customer.current_customer["factor"]))
+            self.txtInfoText.clear()
+            self.txtInfoText.insertPlainText(self.Customer.current_customer["infotext"])
+        except KeyError:
+            self.txtAccount.clear()
+            self.txtCompany.clear()
+            self.txtAddress1.clear()
+            self.txtAddress2.clear()
+            self.txtZipCode.clear()
+            self.txtCityName.clear()
+            self.txtPhone1.clear()
+            self.txtPhone2.clear()
+            self.txtEmail.clear()
+            self.txtFactor.clear()
+            self.txtInfoText.clear()
 
     def data_export_action(self):
         """Slot for dataExport triggered signal"""
@@ -275,10 +280,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def get_customers_finished(self):
         """Slot for getCustomers finished signal"""
         self.populate_customer_list()  # load_ customers
-        # get sync date
-        lsc = datetime.date.today().isoformat()
-        print("customers synced at: " + lsc)
-        print("TODO: update settings with sync date")
+        lsc = datetime.date.today().isoformat()  # get sync date
+        self.txtCustLocal.setText(lsc)  # get update display
+        self.Settings.current_settings["lsc"] = lsc  # update settings
+        print("{}".format(list(self.Settings.current_settings.values())))
+        # self.Settings.update_()  # save settings
 
     def get_product_action(self):
         """Slot for getProducts triggered signal"""
@@ -289,10 +295,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def get_product_finished(self):
         """Slot for getProducts finished signal"""
         self.Product.load_()  # load_ products
-        # get sync date
-        psc = datetime.date.today().isoformat()
-        print("products synced at: " + psc)
-        print("TODO: update settings with sync date")
+        lsp = datetime.date.today().isoformat()  # get sync date
+        self.txtProdLocal.setText(lsp)  # update display
+        self.Settings.current_settings["lsp"] = lsp  # update settings
+        self.Settings.update_()  # save settings
 
     def master_data_action(self):
         """Slot for masterData triggered signal"""
@@ -335,7 +341,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if len(check["mailpass"]) < 97:
                 check["mailpass"] = passwdfn.hash_password(check["mailpass"])
             # assign new settings
-            self.Settings.current_settings = check
+            self.Settings.current_settings(check)
             # save to database
             self.Settings.update_()
         else:

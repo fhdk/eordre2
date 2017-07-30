@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
-    <height>733</height>
+    <width>800</width>
+    <height>770</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -52,7 +52,7 @@
       <x>10</x>
       <y>10</y>
       <width>781</width>
-      <height>631</height>
+      <height>671</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -93,7 +93,7 @@
        <item>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <widget class="QLabel" name="label_7">
+          <widget class="QLabel" name="labelWorkdate">
            <property name="text">
             <string>Arbejdsdato</string>
            </property>
@@ -102,7 +102,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="2" column="0">
           <widget class="QLineEdit" name="txtWorkdate">
            <property name="enabled">
             <bool>true</bool>
@@ -121,6 +121,13 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="buttonReport">
+           <property name="text">
+            <string>Dagsrapport</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -133,9 +140,9 @@
        <item>
         <layout class="QGridLayout" name="lastUpdateGrid">
          <item row="0" column="2">
-          <widget class="QLabel" name="label_4">
+          <widget class="QLabel" name="lblAvailable">
            <property name="text">
-            <string>Server</string>
+            <string>Server dato</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -147,6 +154,9 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -156,6 +166,9 @@
           <widget class="QLineEdit" name="txtProdLocal">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
            <property name="readOnly">
             <bool>true</bool>
@@ -167,6 +180,9 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -175,7 +191,7 @@
          <item row="0" column="1">
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Lokal</string>
+            <string>Synkroniseret</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -189,16 +205,6 @@
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Status</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -216,6 +222,9 @@
           <widget class="QLineEdit" name="txtCustServer">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
            <property name="readOnly">
             <bool>true</bool>
@@ -255,9 +264,53 @@
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout" name="customerGrid">
-         <item row="1" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="2">
+            <widget class="QPushButton" name="buttonVisits">
+             <property name="text">
+              <string>Besøg</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="buttonOrders">
+             <property name="text">
+              <string>Ordrer</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="buttonMaster">
+             <property name="text">
+              <string>Stamdata</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="buttonContacts">
+             <property name="text">
+              <string>Kontakter</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QPushButton" name="buttonNewVisit">
+           <property name="text">
+            <string>Opret besøg / ordre</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QStackedWidget" name="customerInfoStack">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="currentIndex">
             <number>0</number>
            </property>
@@ -265,115 +318,122 @@
             <widget class="QWidget" name="layoutWidget">
              <property name="geometry">
               <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>391</width>
-               <height>457</height>
+               <x>13</x>
+               <y>1</y>
+               <width>350</width>
+               <height>462</height>
               </rect>
              </property>
-             <layout class="QGridLayout" name="gridLayoutCustomerrMasterData">
-              <item row="5" column="0">
-               <widget class="QLabel" name="lblPostOffice">
-                <property name="text">
-                 <string>Bynavn</string>
-                </property>
-               </widget>
-              </item>
-              <item row="10" column="1">
-               <widget class="QLineEdit" name="txtEmail">
-                <property name="placeholderText">
-                 <string>epost adresse</string>
-                </property>
-               </widget>
-              </item>
-              <item row="11" column="0">
-               <widget class="QLabel" name="lblFactor">
-                <property name="text">
-                 <string>Faktor</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="lblCompany">
-                <property name="text">
-                 <string>Firma</string>
-                </property>
-               </widget>
-              </item>
-              <item row="7" column="0">
-               <widget class="QLabel" name="lblPhone1">
-                <property name="text">
-                 <string>Tlf1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="txtAccount">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="txtAddress1">
-                <property name="placeholderText">
-                 <string>adresse</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="lblPhone2">
-                <property name="text">
-                 <string>Tlf2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="lblAccount">
-                <property name="text">
-                 <string>Konto</string>
-                </property>
-               </widget>
-              </item>
-              <item row="11" column="1">
+             <layout class="QGridLayout" name="gridMasterData">
+              <item row="12" column="1">
                <widget class="QLineEdit" name="txtFactor">
                 <property name="placeholderText">
                  <string>prisliste faktor</string>
                 </property>
                </widget>
               </item>
-              <item row="5" column="1">
-               <widget class="QLineEdit" name="txtCityName">
-                <property name="placeholderText">
-                 <string>by navn</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="lblPostCode">
-                <property name="text">
-                 <string>Postnr</string>
-                </property>
-               </widget>
-              </item>
-              <item row="12" column="1">
+              <item row="13" column="1">
                <widget class="QTextEdit" name="txtInfoText"/>
               </item>
-              <item row="2" column="0">
+              <item row="3" column="0">
                <widget class="QLabel" name="lblAddress1">
                 <property name="text">
                  <string>Adresse</string>
                 </property>
                </widget>
               </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="lblPostOffice">
+                <property name="text">
+                 <string>Bynavn</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QLineEdit" name="txtCityName">
+                <property name="placeholderText">
+                 <string>by navn</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="1">
+               <widget class="QLineEdit" name="txtPhone2">
+                <property name="placeholderText">
+                 <string>mobil telefon</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="lblAddress2">
+                <property name="text">
+                 <string>Adresse</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="lblAccount">
+                <property name="text">
+                 <string>Konto</string>
+                </property>
+               </widget>
+              </item>
+              <item row="9" column="0">
+               <widget class="QLabel" name="lblPhone2">
+                <property name="text">
+                 <string>Tlf2</string>
+                </property>
+               </widget>
+              </item>
               <item row="1" column="1">
+               <widget class="QLineEdit" name="txtAccount">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="1">
+               <widget class="QLineEdit" name="txtEmail">
+                <property name="placeholderText">
+                 <string>epost adresse</string>
+                </property>
+               </widget>
+              </item>
+              <item row="12" column="0">
+               <widget class="QLabel" name="lblFactor">
+                <property name="text">
+                 <string>Faktor</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
                <widget class="QLineEdit" name="txtCompany">
                 <property name="placeholderText">
                  <string>firma navn</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="0">
+              <item row="5" column="1">
+               <widget class="QLineEdit" name="txtZipCode">
+                <property name="placeholderText">
+                 <string>post nummer</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1">
+               <widget class="QLineEdit" name="txtPhone1">
+                <property name="placeholderText">
+                 <string>primær telefon</string>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="QLabel" name="lblEmail">
+                <property name="text">
+                 <string>Epost</string>
+                </property>
+               </widget>
+              </item>
+              <item row="13" column="0">
                <widget class="QLabel" name="lblInfoText">
                 <property name="text">
                  <string>Noter</string>
@@ -383,45 +443,45 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
+              <item row="4" column="1">
                <widget class="QLineEdit" name="txtAddress2">
                 <property name="placeholderText">
                  <string>adresse</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="1">
-               <widget class="QLineEdit" name="txtZipCode">
-                <property name="placeholderText">
-                 <string>post nummer</string>
-                </property>
-               </widget>
-              </item>
-              <item row="10" column="0">
-               <widget class="QLabel" name="lblEmail">
+              <item row="8" column="0">
+               <widget class="QLabel" name="lblPhone1">
                 <property name="text">
-                 <string>Epost</string>
+                 <string>Tlf1</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="1">
-               <widget class="QLineEdit" name="txtPhone1">
-                <property name="placeholderText">
-                 <string>primær telefon</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1">
-               <widget class="QLineEdit" name="txtPhone2">
-                <property name="placeholderText">
-                 <string>mobil telefon</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="lblAddress2">
+              <item row="2" column="0">
+               <widget class="QLabel" name="lblCompany">
                 <property name="text">
-                 <string>Adresse</string>
+                 <string>Firma</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLabel" name="lblPostCode">
+                <property name="text">
+                 <string>Postnr</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="txtAddress1">
+                <property name="placeholderText">
+                 <string>adresse</string>
+                </property>
+               </widget>
+              </item>
+              <item row="14" column="1">
+               <widget class="QPushButton" name="buttonSaveChanges">
+                <property name="text">
+                 <string>Arkiver rettelser</string>
                 </property>
                </widget>
               </item>
@@ -477,6 +537,9 @@
          </item>
         </layout>
        </item>
+       <item>
+        <layout class="QGridLayout" name="customerGrid"/>
+       </item>
       </layout>
      </item>
     </layout>
@@ -487,7 +550,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>802</width>
+     <width>800</width>
      <height>26</height>
     </rect>
    </property>
@@ -576,7 +639,6 @@
    </attribute>
    <addaction name="actionExit"/>
    <addaction name="separator"/>
-   <addaction name="actionCreateReport"/>
    <addaction name="actionCreateCustomer"/>
    <addaction name="actionCreateOrder"/>
    <addaction name="separator"/>
@@ -703,15 +765,6 @@
  </widget>
  <tabstops>
   <tabstop>customerList</tabstop>
-  <tabstop>txtCompany</tabstop>
-  <tabstop>txtAddress1</tabstop>
-  <tabstop>txtAddress2</tabstop>
-  <tabstop>txtZipCode</tabstop>
-  <tabstop>txtCityName</tabstop>
-  <tabstop>txtPhone1</tabstop>
-  <tabstop>txtPhone2</tabstop>
-  <tabstop>txtEmail</tabstop>
-  <tabstop>txtFactor</tabstop>
   <tabstop>txtNewCompany</tabstop>
   <tabstop>txtNewPhone1</tabstop>
  </tabstops>

@@ -8,6 +8,7 @@
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from resources import settings_dialog_rc as settingsui
+from util import utility
 
 
 class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
@@ -26,6 +27,7 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         self.editSmtp.setText(settings["smtp"])
         self.editPort.setText(str(settings["port"]))
         self.editMailTo.setText(settings["mailto"])
+        self.checkServerData.setChecked(utility.int2bool(settings["sc"]))
         self.editMailServer.setText(settings["mailserver"])
         self.editMailPort.setText(str(settings["mailport"]))
         self.editMailUser.setText(settings["mailuser"])
@@ -44,6 +46,7 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         self.app_settings["smtp"] = self.editSmtp.text().lower()
         self.app_settings["port"] = self.editPort.text()
         self.app_settings["mailto"] = self.editMailTo.text().lower()
+        self.app_settings["sc"] = utility.bool2int(self.checkServerData.isChecked())
         self.app_settings["mailserver"] = self.editMailServer.text().lower()
         self.app_settings["mailport"] = self.editMailPort.text()
         self.app_settings["mailuser"] = self.editMailUser.text()
