@@ -18,17 +18,19 @@ class Report:
     def __init__(self):
         """Initilize Report class"""
         # model for zipping dictionary
-        self.model = (
+        self.__model = (
             "reportid", "employeeid", "repno", "repdate",
             "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
             "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
             "sasday", "sasturnoverday", "demoday", "saleday",
             "kmmorning", "kmevening", "supervisor", "territory",
             "workday", "infotext", "sent", "offday", "offtext", "kmprivate")
+        self._totals = ("month_new_visit", "month_new_demo", "month_new_sale", "month_new_turnover",
+                        "month_recall_visit", "month_recall_demo", "month_recall_sale", "month_recall_turnover",
+                        "month_sas", "month_")
         self.__reports = []
         self.__report = {}
         self.__csv_field_count = 25  # one field short of the model (employeeid)
-        # "rapport_ID","rapportNummer","dato","newVisitToday","newDemoToday","newSaleToday","krNewToday","recallVisitToday","recallDemoToday","recallSaleToday","krRecallToday","sasToday","krSASToday","productDemo","productSale","km_start","km_slut","supervisor","distrikt","salgsdag","andet","sendt","minusdag","minusTekst","privatKM"
 
     @property
     def current_report(self):
@@ -53,9 +55,9 @@ class Report:
     def create_(self, employee, workdate):
         """Create report for employee and date supplied
         :param employee: object
-        :param workdate: iso str representing the date for the report to be created
+        :param workdate: iso formatted str representing the report date
         """
-        # we need to find the number of report for the month of the supplied date
+        # we need to find the number of reports for the month of the supplied date
         # then add 1 to that number
         # we need to calculate the sums for the previous report for month
         # those sums will be stored in seperate table
@@ -71,37 +73,24 @@ class Report:
         # | SUM |  sum     sum   sum      sum       sum     sum    sum    sum
 
         sql = "SELECT " \
-              "sum(newvisitday)            AS 't_month_n_visit', " \
-              "sum(newdemoday)             AS 't_month_n_demo', " \
-              "sum(newsaleday)             AS 't_month_n_sale', " \
-              "sum(newturnoverday)         AS 't_month_n_turnover', " \
-              "sum(recallvisitday)         AS 't_month_r_visit', " \
-              "sum(recalldemoday)          AS 't_month_r_demo', " \
-              "sum(recallsaleday)          AS 't_month_r_sale', " \
-              "sum(recallturnoverday)      AS 't_month_r_turnover', " \
-              "sum(sasday)                 AS 't_month_sas', " \
-              "sum(sasturnoverday)         AS 't_month_sas_turnover', " \
-              "(sum(newvisitday) +" \
-              " sum(recallvisitday))       AS 't_month_visit', " \
-              "(sum(newdemoday) +" \
-              " sum(recalldemoday))        AS 't_month_demo', " \
-              "(sum(newsaleday) + " \
-              " sum(recallsaleday) +" \
-              " sum(sasday))               AS 't_month_sale', " \
-              "(sum(newturnoverday) +" \
-              " sum(recallturnoverday) +" \
-              " sum(sasturnoverday))       AS 't_month_turnover', " \
-              "count(reportid)             AS 'reportcount' " \
+              "sum(newvisitday) AS 'month_new_visit', " \
+              "sum(newdemoday) AS 'month_new_demo', " \
+              "sum(newsaleday) AS 'month_new_sale', " \
+              "sum(newturnoverday) AS 'month_new_turnover', " \
+              "sum(recallvisitday) AS 'month_recall_visit', " \
+              "sum(recalldemoday) AS 'month_recall_demo', " \
+              "sum(recallsaleday) AS 'month_recall_sale', " \
+              "sum(recallturnoverday) AS 'month_recall_turnover', " \
+              "sum(sasday) AS 'month_sas', " \
+              "sum(sasturnoverday) AS 'month_sas_turnover', " \
+              "(sum(newvisitday) + sum(recallvisitday)) AS 'month_visit', " \
+              "(sum(newdemoday) + sum(recalldemoday)) AS 'month_demo', " \
+              "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'month_sale', " \
+              "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'month_turnover', " \
+              "count(reportid) AS 'reportcount' " \
               "FROM report WHERE repdate LIKE ? AND employeeid=? ;"
 
-        workmonth = (workdate[:8] + "%",)
-        employeeid = employee["employeeid"]
-        values = [workmonth, employeeid]
-
-        print("report -> create - sql: {}".format(sql))
-        print("report -> create -> workdate: {}".format(workdate))
-        print("report -> create -> workmonth: {}".format(workmonth))
-        print("report -> create -> employeeid: {}".format(employeeid))
+        values = [workdate[:8] + "%", employee["employeeid"]]
 
         db = sqlite3.connect(config.DBPATH)
         with db:
@@ -178,7 +167,7 @@ class Report:
             cur.execute(sql, (workdate,))
             report = cur.fetchone()
             if report:
-                self.__report = dict(zip(self.model, report))
+                self.__report = dict(zip(self.__model, report))
 
     def load_reports(self, year=None, month=None):
         """Load report matching year and month or all if no params are given
@@ -199,7 +188,7 @@ class Report:
             cur.execute(sql, (value,))
             reports = cur.fetchall()
             if reports:
-                self.__reports = [dict(zip(self.model, row)) for row in reports]
+                self.__reports = [dict(zip(self.__model, row)) for row in reports]
             else:
                 self.__reports = []
 
