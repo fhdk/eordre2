@@ -45,6 +45,7 @@ class Ui_FileImportDialog(object):
         self.txtSelectedFile.setObjectName("txtSelectedFile")
         self.checkHeaders = QtWidgets.QCheckBox(FileImportDialog)
         self.checkHeaders.setGeometry(QtCore.QRect(370, 100, 220, 24))
+        self.checkHeaders.setChecked(True)
         self.checkHeaders.setObjectName("checkHeaders")
 
         self.retranslateUi(FileImportDialog)
@@ -63,5 +64,5 @@ class Ui_FileImportDialog(object):
         self.buttonImport.setText(_translate("FileImportDialog", "Import"))
         self.label.setText(_translate("FileImportDialog", "Import"))
         self.buttonClose.setText(_translate("FileImportDialog", "Luk"))
-        self.checkHeaders.setText(_translate("FileImportDialog", "Spring over feltnavne"))
+        self.checkHeaders.setText(_translate("FileImportDialog", "Første linje er feltnavne"))
 

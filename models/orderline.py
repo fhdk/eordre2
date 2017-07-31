@@ -10,7 +10,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbfn
+from util import dbfn, utils
 
 
 class OrderLine:
@@ -20,6 +20,8 @@ class OrderLine:
         self.model = ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount")
         self.__order_lines = []
         self.__current_line = {}
+        self.__csv_field_count = 8
+        # "linje_id","ordre_id","antal","art","beskriv","stkPris","SAS","rabat"
 
     @property
     def orderlines_list(self):
@@ -61,6 +63,10 @@ class OrderLine:
                 if headers and line == 1:
                     continue
                 # sanitize line
+                #  0          1          2       3     4         5         6     7
+                # "linje_id","ordre_id","antal","art","beskriv","stkPris","SAS","rabat"
+                # translate bool text to integer col 6
+                row[6] = utils.bool2int(utils.str2bool(row[6]))
                 processed = [row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7]]
                 self.insert_values(processed)
             return True

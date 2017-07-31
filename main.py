@@ -23,7 +23,7 @@ from dialogs.http_prod_import_dialog import HttpProdImportDialog
 from dialogs.settings_dialog import SettingsDialog
 from models import contact, customer, employee, visit, orderline, product, report, settings
 from resources.main_window_rc import Ui_MainWindow
-from util import httpfn, dbfn, passwdfn, utility
+from util import httpfn, dbfn, passwdfn, utils
 from util.rules import check_settings
 
 __appname__ = "Eordre NG"
@@ -115,9 +115,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings_dialog_action()
 
         self.populate_customer_list()
-        if utility.int2bool(self.Settings.current_settings["sc"]):
+        if utils.int2bool(self.Settings.current_settings["sc"]):
             self.statusbar.setToolTip("Checker server for opdateringer ...")
-            status = utility.refresh_sync_status(self.Settings.current_settings)
+            status = utils.refresh_sync_status(self.Settings.current_settings)
             self.Settings.current_settings["sac"] = status[0][1].split()[0]
             self.Settings.current_settings["sap"] = status[1][1].split()[0]
             self.Settings.update_()
@@ -268,7 +268,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                            "du importere <strong>ALLE<strong> tabeller der findes i listen!<br/><br/>"
                            "<strong>Importerer du ikke alle vil det give problemer</strong>!",
                            QMessageBox.Ok)
-        import_dialog = FileImportDialog(config.CSVDATA)  # Create import dialog
+        import_dialog = FileImportDialog(config.CSVDATA, self.Employee.current_employee)  # Create import dialog
 
         if import_dialog.exec_():  # Execute the dialog - show it
             self.populate_customer_list()  # Reload the customer list
@@ -383,9 +383,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if len(check["mailpass"]) < 97:
                 check["mailpass"] = passwdfn.hash_password(check["mailpass"])
             # assign new settings
-            self.Settings.current_settings(check)
+            self.Settings.current_settings = check
             # save to database
             self.Settings.update_()
+            self.Employee.load_()
         else:
             pass
 

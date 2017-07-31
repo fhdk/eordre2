@@ -18,7 +18,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbfn
+from util import dbfn, utils
 
 
 class Customer:
@@ -35,6 +35,8 @@ class Customer:
                       "infotext", "att", "phone2", "factor")
         self.__customer_list = []
         self.__customer = {}
+        self.__csv_field_count = 20
+        # "kunde_id","konto","navn","adresse1","adresse2","post","by","land","medarbejder_ID","telefon","cvr","notat_ID","Email","www","prisliste","slettet","rettet","oprettet","area_ID","Notat"
 
     def clear(self):
         self.__customer = {}
@@ -111,27 +113,44 @@ class Customer:
         in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         """
         dbfn.recreate_table("customer")
-        filename.encode("utf8")
-        csv_field_count = 16
+        # filename.encode("ISO-8859-1")
+        # filename.encode("utf8")
         #      0  1   2    3    4    5       6    7         8   9     10  11    12  13  14  15   16  17    18
         # in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
-        with open(filename) as csvdata:
-            reader = csv.reader(csvdata)
-            line = 0
-            for row in reader:
-                if not len(row) == csv_field_count:
-                    return False
-                line += 1
-                if headers and line == 1:
-                    continue
-                values = [row[0],
-                          row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
-                          row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
-                          row[11].strip(), row[12], row[13], row[14], row[15].strip(),
-                          "", "", 0.0]
-                self.insert_(values)
-            return True
+        with open(filename, "rb") as csvfile:
+            data = csvfile.read()
+            print("{}".format(data))
+
+            # dialect = csv.Sniffer().sniff(csvfile.read(1024))
+            # csvfile.seek(0)
+            # reader = csv.reader(csvfile, dialect)
+            # line = 0
+            # for row in csvfile:
+            #     print("{}".format(row))
+                # if not len(row) == csv_field_count:
+                #     return False
+                # line += 1
+                # if headers and line == 1:
+                #     continue
+                #  0
+                # "kunde_id",
+                #  1       2      3          4          5
+                # "konto","navn","adresse1","adresse2","post",
+                #  6    7      8                9         10
+                # "by","land","medarbejder_ID","telefon","cvr",
+                #  11skip     12     13skip 14skip     15        16       17         18-skip   19
+                # "notat_ID","Email","www","prisliste","slettet","rettet","oprettet","area_ID","Notat"
+                # translate bool text in col 15
+                # row[15] = utils.bool2int(utils.str2bool(row[15]))
+                # values = [row[0],
+                #           row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
+                #           row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
+                #           row[12].strip(), row[15], row[16], row[17],
+                #           row[19].strip(), "", "", 0.0]
+                # print("{}".format(values))
+                # self.insert_(values)
+            # return True
 
     def import_http(self, values):
         """Insert a new customer

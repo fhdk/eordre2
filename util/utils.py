@@ -6,6 +6,7 @@
 
 """Utilities"""
 
+
 from configuration import config
 from util import httpfn
 
@@ -22,9 +23,9 @@ def refresh_sync_status(settings):
     return httpfn.update_last_sync_info(settings)
 
 
-def conv2bool(arg):
+def str2bool(arg):
     """Conversion"""
-    return str(arg.lower() in ["true", 1, "1", "ok"])
+    return str(arg.lower() in ["sand", "true", "1", "ok"])
 
 
 def int2bool(arg):

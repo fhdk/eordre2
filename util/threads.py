@@ -8,7 +8,7 @@
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
 
 from models import customer, product, settings, employee
-from util import httpfn, utility
+from util import httpfn, utils
 
 
 class Communicate(QObject):
@@ -76,6 +76,6 @@ class RefreshSyncStatus(QThread):
 
     def run(self):
         """The run process - activated by QThread start() methcod"""
-        status = utility.refresh_sync_status(self.Settings.current_settings)
+        status = utils.refresh_sync_status(self.Settings.current_settings)
         self.Settings.update_avail_sync(status)
         self.c.SyncStatusDone.emit()

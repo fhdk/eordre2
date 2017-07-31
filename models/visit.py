@@ -10,7 +10,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbfn
+from util import dbfn, utils
 
 
 # noinspection PyMethodMayBeStatic
@@ -27,6 +27,7 @@ class Visit:
         self.__visit_list_customer = []
         self.__visit_list_report = []
         self.__current_visit = {}
+        # "ordre_id","dagsrapport_id","medarbejder_id","kunde_id","dato","afsendt","koeber","rekv","levNavn","levAdresse1","levAdresse2","levPost","levBy","levLand","notat","produktDemo","produktSalg","ordreType","sas","almSalg","ordreTotal","godkendt"
 
     @property
     def current_visit(self):
@@ -94,6 +95,18 @@ class Visit:
                 line += 1
                 if headers and line == 1:
                     continue
+                #  0          1                2                3          4
+                # "ordre_id","dagsrapport_id","medarbejder_id","kunde_id","dato",
+                #  5         6        7      8         9
+                # "afsendt","koeber","rekv","levNavn","levAdresse1",
+                #  10            11        12      13        14
+                # "levAdresse2","levPost","levBy","levLand","notat",
+                #  15            16            17          18    19
+                # "produktDemo","produktSalg","ordreType","sas","almSalg",
+                #  20           21
+                # "ordreTotal","godkendt"
+                # translate bool text to integer col 5
+                row[5] = utils.bool2int(utils.str2bool(row[5]))
                 processed = [row[0], row[1], row[2], row[3], row[4].strip(),
                              row[5], row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
                              row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),

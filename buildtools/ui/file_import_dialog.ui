@@ -129,7 +129,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>Spring over feltnavne</string>
+    <string>Første linje er feltnavne</string>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

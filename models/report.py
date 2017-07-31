@@ -10,7 +10,7 @@ import csv
 import sqlite3
 
 from configuration import config
-from util import dbfn
+from util import dbfn, utils
 
 
 # noinspection PyMethodMayBeStatic
@@ -19,7 +19,7 @@ class Report:
         """Initilize Report class"""
         # model for zipping dictionary
         self.model = (
-            "reportid", "repno", "repdate",
+            "reportid", "employeeid", "repno", "repdate",
             "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
             "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
             "sasday", "sasturnoverday", "demoday", "saleday",
@@ -27,6 +27,8 @@ class Report:
             "workday", "infotext", "sent", "offday", "offtext", "kmprivate")
         self.__reports = []
         self.__report = {}
+        self.__csv_field_count = 25  # one field short of the model (employeeid)
+        # "rapport_ID","rapportNummer","dato","newVisitToday","newDemoToday","newSaleToday","krNewToday","recallVisitToday","recallDemoToday","recallSaleToday","krRecallToday","sasToday","krSASToday","productDemo","productSale","km_start","km_slut","supervisor","distrikt","salgsdag","andet","sendt","minusdag","minusTekst","privatKM"
 
     @property
     def current_report(self):
@@ -69,31 +71,41 @@ class Report:
         # | SUM |  sum     sum   sum      sum       sum     sum    sum    sum
 
         sql = "SELECT " \
-              "sum(newvisitday) AS 't_month_n_visit', " \
-              "sum(newdemoday) AS 't_month_n_demo', " \
-              "sum(newsaleday) AS 't_month_n_sale', " \
-              "sum(newturnoverday) AS 't_month_n_turnover', " \
-              "sum(recallvisitday) AS 't_month_r_visit', " \
-              "sum(recalldemoday) AS 't_month_r_demo', " \
-              "sum(recallsaleday) AS 't_month_r_sale', " \
-              "sum(recallturnoverday) AS 't_month_r_turnover', " \
-              "sum(sasday) AS 't_month_sas', " \
-              "sum(sasturnoverday) AS 't_month_sas_turnover', " \
-              "(sum(newvisitday) + sum(recallvisitday)) AS 't_month_visit', " \
-              "(sum(newdemoday) + sum(recalldemoday)) AS 't_month_demo', " \
-              "(sum(newsaleday) + sum(recallsaleday) + sum(sasday)) AS 't_month_sale', " \
-              "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 't_month_turnover', " \
-              "count(reportid) AS 'reportcount' " \
-              "FROM report WHERE repdate LIKE ? AND employeeid = ? ;"
+              "sum(newvisitday)            AS 't_month_n_visit', " \
+              "sum(newdemoday)             AS 't_month_n_demo', " \
+              "sum(newsaleday)             AS 't_month_n_sale', " \
+              "sum(newturnoverday)         AS 't_month_n_turnover', " \
+              "sum(recallvisitday)         AS 't_month_r_visit', " \
+              "sum(recalldemoday)          AS 't_month_r_demo', " \
+              "sum(recallsaleday)          AS 't_month_r_sale', " \
+              "sum(recallturnoverday)      AS 't_month_r_turnover', " \
+              "sum(sasday)                 AS 't_month_sas', " \
+              "sum(sasturnoverday)         AS 't_month_sas_turnover', " \
+              "(sum(newvisitday) +" \
+              " sum(recallvisitday))       AS 't_month_visit', " \
+              "(sum(newdemoday) +" \
+              " sum(recalldemoday))        AS 't_month_demo', " \
+              "(sum(newsaleday) + " \
+              " sum(recallsaleday) +" \
+              " sum(sasday))               AS 't_month_sale', " \
+              "(sum(newturnoverday) +" \
+              " sum(recallturnoverday) +" \
+              " sum(sasturnoverday))       AS 't_month_turnover', " \
+              "count(reportid)             AS 'reportcount' " \
+              "FROM report WHERE repdate LIKE ? AND employeeid=? ;"
 
+        print("report -> create - sql: {}".format(sql))
         workmonth = (workdate[:8] + "%",)
+        employeeid = employee["employeeid"]
+        values = [workmonth, employeeid]
         print("report -> create -> workdate: {}".format(workdate))
         print("report -> create -> workmonth: {}".format(workmonth))
-        print("")
+        print("report -> create -> employeeid: {}".format(employeeid))
+
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            cur.execute(sql, (workmonth, employee["employeeid"]))
+            cur.execute(sql, values)
             totals = cur.fetchone()
             print("report -> create -> select from report -> totals: {}".format(totals))
 
@@ -101,20 +113,8 @@ class Report:
 
     def insert_(self, values):
         """Insert new report in table"""
-        sql = "INSERT INTO report (" \
-              "reportid, repno, repdate, " \
-              "newvisitday, newdemoday, newsaleday, newturnoverday, " \
-              "recallvisitday, recalldemoday, recallsaleday, recallturnoverday, " \
-              "sasday, sasturnoverday, demoday, saleday, " \
-              "kmmorning, kmevening, supervisor, territory, " \
-              "workday, infotext, sent, offday, offtext, kmprivate) " \
-              "VALUES (" \
-              "?, ?, ?, " \
-              "?, ?, ?, ?, " \
-              "?, ?, ?, ?, " \
-              "?, ?, ?, ?, " \
-              "?, ?, ?, ?, " \
-              "?, ?, ?, ?, ?, ?);"
+        sql = "INSERT INTO report" \
+              " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         if not values:
             values = list(self.current_report.values())
         db = sqlite3.connect(config.DBPATH)
@@ -122,9 +122,10 @@ class Report:
             db.execute(sql, values)
             db.commit()
 
-    def import_csv(self, filename, headers=False):
+    def import_csv(self, filename, employee, headers=False):
         """Import report from file
         :param filename:
+        :param employee:
         :param headers:
         """
         # row: 0          1       2
@@ -142,18 +143,21 @@ class Report:
         #
         dbfn.recreate_table("report")
         filename.encode("utf8")
-        csv_field_count = 25
+        employeeid = employee["employeeid"]
         # open and read the file
         with open(filename) as csvdata:
             reader = csv.reader(csvdata)
             line = 0
             for row in reader:
-                if not len(row) == csv_field_count:
+                if not len(row) == self.__csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
-                processed = [row[0].strip(), row[1], row[2].strip(),
+                # translate bool text to integer for col 19, 21
+                row[19] = utils.bool2int(utils.str2bool(row[19]))
+                row[21] = utils.bool2int(utils.str2bool(row[21]))
+                processed = [row[0], employeeid, row[1], row[2].strip(),
                              row[3], row[4], row[5], row[6],
                              row[7], row[8], row[9], row[10],
                              row[11], row[12], row[13], row[14],

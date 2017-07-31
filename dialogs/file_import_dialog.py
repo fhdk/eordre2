@@ -7,7 +7,7 @@
 import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QDialog, QFileDialog
+from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from configuration import config
 from models import contact, customer, visit, orderline, report
@@ -19,10 +19,11 @@ class Communication(QObject):
 
 
 class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
-    def __init__(self, table_list, parent=None):
+    def __init__(self, table_list, employee, parent=None):
         """Initialize Dialog"""
         super(FileImportDialog, self).__init__(parent)
         self.file_dialog = QFileDialog()  # Create FileDialog object
+        self.employee = employee
         self.c = Communication()
         self.setupUi(self)
 
@@ -74,7 +75,6 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
 
             # import selected file to contact table
             if self.selectedTable == "contact":
-                self.Contact.import_csv(self.selectedFile, self.checkHeaders.isChecked())
                 self.listImported.addItem(notice)
                 self.c.customersdone.emit()
 
@@ -95,8 +95,12 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
 
             # import selected file to report table
             if self.selectedTable == "report":
-                self.Report.import_csv(self.selectedFile, self.checkHeaders.isChecked())
-                self.listImported.addItem(notice)
+                success = self.Report.import_csv(self.selectedFile, self.employee, self.checkHeaders.isChecked())
+                if success:
+                    self.listImported.addItem(notice)
+                else:
+                    QMessageBox.information(self, "Doh!", "Der er opstået en fejl!", QMessageBox.Ok)
+                    return
 
             self.selectedFile = ""
             self.txtSelectedFile.setText(self.selectedFile)
