@@ -54,7 +54,7 @@ class OrderLine:
         dbfn.recreate_table("orderline")
         filename.encode("utf8")
         with open(filename) as csvdata:
-            reader = csv.reader(csvdata)
+            reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
                 if not len(row) == csv_field_count:
@@ -79,7 +79,7 @@ class OrderLine:
                 values = self.__current_line.values()
             except KeyError:
                 return
-        if not type(values) == list or type(values) == tuple:
+        if not type(values) == list:
             values = list(values)
         # db insert
         db = sqlite3.connect(config.DBPATH)
@@ -104,7 +104,7 @@ class OrderLine:
               "SET " \
               "lineid=?, visitid=?, pcs=?, sku=?, infotext=?, price=?, sas=?, discount=? " \
               "WHERE lineid=?"
-        if not type(values) == list or type(values) == tuple:
+        if not type(values) == list:
             values = list(values)
         values += [values[0]]
         db = sqlite3.connect(config.DBPATH)

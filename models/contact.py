@@ -71,7 +71,7 @@ class Contact:
         filename.encode("utf8")
         csv_field_count = 7
         with open(filename) as csvdata:
-            reader = csv.reader(csvdata)
+            reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
                 if not len(row) == csv_field_count:
@@ -93,7 +93,6 @@ class Contact:
         sql = "INSERT INTO contact VALUES (?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
         # sanitize parameter
-        print("{}".format(values))
         if not type(values) == list:
             values = list(values)
         with db:
@@ -116,7 +115,7 @@ class Contact:
         """Update item"""
         sql = "UPDATE contact SET contactid=?, name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
         # sanitize parameter
-        if not type(values) == list or type(values) == tuple:
+        if not type(values) == list:
             values = list(values)
         values += values[0]
         db = sqlite3.connect(config.DBPATH)

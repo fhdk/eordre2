@@ -39,6 +39,8 @@ class Setting:
         """Insert settings data"""
         sql = "INSERT INTO settings " \
               "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+        if not type(data) == list:
+            list(data)
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

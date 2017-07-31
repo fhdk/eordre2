@@ -94,10 +94,11 @@ class Report:
               "count(reportid)             AS 'reportcount' " \
               "FROM report WHERE repdate LIKE ? AND employeeid=? ;"
 
-        print("report -> create - sql: {}".format(sql))
         workmonth = (workdate[:8] + "%",)
         employeeid = employee["employeeid"]
         values = [workmonth, employeeid]
+
+        print("report -> create - sql: {}".format(sql))
         print("report -> create -> workdate: {}".format(workdate))
         print("report -> create -> workmonth: {}".format(workmonth))
         print("report -> create -> employeeid: {}".format(employeeid))
@@ -146,7 +147,7 @@ class Report:
         employeeid = employee["employeeid"]
         # open and read the file
         with open(filename) as csvdata:
-            reader = csv.reader(csvdata)
+            reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
                 if not len(row) == self.__csv_field_count:
@@ -201,3 +202,6 @@ class Report:
                 self.__reports = [dict(zip(self.model, row)) for row in reports]
             else:
                 self.__reports = []
+
+    def update_(self):
+        pass

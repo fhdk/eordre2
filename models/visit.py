@@ -65,8 +65,8 @@ class Visit:
         self.__visit_list_report = []
 
     def create(self, reportid, employeeid, customerid, workdate):
-        values = (None, reportid, employeeid, customerid, workdate,
-                  0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
+        values = [None, reportid, employeeid, customerid, workdate,
+                  0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0]
         self.find(self._insert_(values))
 
     def find(self, visitid):
@@ -87,7 +87,7 @@ class Visit:
         dbfn.recreate_table("visit")  # recreate an empty table
         filename.encode("utf8")
         with open(filename) as csvdata:
-            reader = csv.reader(csvdata)
+            reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
                 if not len(row) == self.__csv_field_count:
@@ -120,6 +120,8 @@ class Visit:
         sql = "INSERT INTO visit VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         if not values:
             values = self.__current_visit.values()
+        if not type(values) == list:
+            values = list(values)
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

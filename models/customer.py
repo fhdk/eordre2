@@ -118,21 +118,15 @@ class Customer:
         #      0  1   2    3    4    5       6    7         8   9     10  11    12  13  14  15   16  17    18
         # in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
-        with open(filename, "rb") as csvfile:
-            data = csvfile.read()
-            print("{}".format(data))
-
-            # dialect = csv.Sniffer().sniff(csvfile.read(1024))
-            # csvfile.seek(0)
-            # reader = csv.reader(csvfile, dialect)
-            # line = 0
-            # for row in csvfile:
-            #     print("{}".format(row))
-                # if not len(row) == csv_field_count:
-                #     return False
-                # line += 1
-                # if headers and line == 1:
-                #     continue
+        with open(filename) as csvfile:
+            reader = csv.reader(csvfile, delimiter="|")
+            line = 0
+            for row in reader:
+                if not len(row) == self.__csv_field_count:
+                    return False
+                line += 1
+                if headers and line == 1:
+                    continue
                 #  0
                 # "kunde_id",
                 #  1       2      3          4          5
@@ -142,15 +136,14 @@ class Customer:
                 #  11skip     12     13skip 14skip     15        16       17         18-skip   19
                 # "notat_ID","Email","www","prisliste","slettet","rettet","oprettet","area_ID","Notat"
                 # translate bool text in col 15
-                # row[15] = utils.bool2int(utils.str2bool(row[15]))
-                # values = [row[0],
-                #           row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
-                #           row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
-                #           row[12].strip(), row[15], row[16], row[17],
-                #           row[19].strip(), "", "", 0.0]
-                # print("{}".format(values))
-                # self.insert_(values)
-            # return True
+                row[15] = utils.bool2int(utils.str2bool(row[15]))
+                values = [row[0],
+                          row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
+                          row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
+                          row[12].strip(), row[15], row[16], row[17],
+                          row[19].strip(), "", "", 0.0]
+                self.insert_(values)
+            return True
 
     def import_http(self, values):
         """Insert a new customer

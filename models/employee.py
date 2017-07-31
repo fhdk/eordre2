@@ -33,7 +33,7 @@ class Employee:
         """Insert employee in database"""
         sql = "INSERT INTO employee VALUES (?, ?, ?, ?, ?, ?)"
         db = sqlite3.connect(config.DBPATH)
-        if not type(values) == list or type(values) == tuple:
+        if not type(values) == list:
             list(values)
         with db:
             cur = db.cursor()
@@ -58,7 +58,7 @@ class Employee:
               "WHERE employeeid=?;"
         if not values:
             values = list(self.__employee.values())
-        if not type(values) == list or type(values) == tuple:
+        if not type(values) == list:
             values = list(values)
         values.append(self.__employee["employeeid"])
         db = sqlite3.connect(config.DBPATH)
