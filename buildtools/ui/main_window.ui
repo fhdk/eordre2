@@ -128,7 +128,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
+         <item row="3" column="0">
           <widget class="QPushButton" name="buttonReport">
            <property name="text">
             <string>Dagsrapport</string>
@@ -788,7 +788,6 @@
   <tabstop>txtNewCompany</tabstop>
   <tabstop>txtNewPhone1</tabstop>
   <tabstop>buttonCreateCustomer</tabstop>
-  <tabstop>buttonReport</tabstop>
   <tabstop>txtWorkdate</tabstop>
   <tabstop>txtCustLocal</tabstop>
   <tabstop>txtCustServer</tabstop>

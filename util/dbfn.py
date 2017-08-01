@@ -7,6 +7,7 @@
 """Sqlite database functions"""
 
 import sqlite3
+
 from configuration import config
 
 
