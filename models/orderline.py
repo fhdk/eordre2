@@ -17,33 +17,37 @@ class OrderLine:
     def __init__(self):
         """Initialize OrderLine class"""
         # model for zipping dictionary
-        self.model = ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount")
-        self.__order_lines = []
-        self.__current_line = {}
-        self.__csv_field_count = 8
+        self.model = {
+            "name": "orderline",
+            "fields": ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount"),
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "TEXT", "TEXT", "REAL", "INTEGER", "REAL")
+        }
+        self.order_lines = []
+        self.current_line = {}
         # "linje_id","ordre_id","antal","art","beskriv","stkPris","SAS","rabat"
+        self.csv_field_count = 8
 
     @property
     def orderlines_list(self):
-        return self.__order_lines
+        return self.order_lines
 
     @orderlines_list.setter
     def orderlines_list(self, visitid):
         try:
-            _ = self.__order_lines[0]
+            _ = self.order_lines[0]
         except IndexError:
             self.load_(visitid)
 
     def clear(self):
-        self.__current_line = {}
-        self.__order_lines = []
+        self.current_line = {}
+        self.order_lines = []
 
     def create_(self, visit_id):
         """Create a new orderline on visitid"""
         # create new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
         self.insert_values(values)
-        self.__current_line = dict(zip(self.model, values))
+        self.current_line = dict(zip(self.model["fields"], values))
 
     def csv_import(self, filename, headers=False):
         """Import orderline from file
@@ -76,7 +80,7 @@ class OrderLine:
         # sanitize values
         if not values:
             try:
-                values = self.__current_line.values()
+                values = self.current_line.values()
             except KeyError:
                 return
         if not type(values) == list:
@@ -96,7 +100,7 @@ class OrderLine:
             cur = db.cursor()
             orderlines = cur.execute(sql, list(visitid))
             if orderlines:
-                self.orderlines_list = [dict(zip(self.model, row)) for row in orderlines]
+                self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in orderlines]
 
     def update_(self, values):
         """Update orderline"""

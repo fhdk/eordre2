@@ -14,26 +14,31 @@ class Setting:
     def __init__(self):
         """Initialize the Settings class"""
         # model for zipping dictionary
-        self.model = (
-            "usermail", "userpass", "usercountry",
-            "pd", "pf", "sf",
-            "http", "smtp", "port", "mailto",
-            "mailserver", "mailport", "mailuser", "mailpass",
-            "fc", "fp", "fe", "lsc", "lsp", "sac", "sap", "sc")
+        self.model = {
+            "name": "settings",
+            "fields": ("usermail", "userpass", "usercountry", "pd", "pf", "sf",
+                       "http", "smtp", "port", "mailto",
+                       "mailserver", "mailport", "mailuser", "mailpass",
+                       "fc", "fp", "fe", "lsc", "lsp", "sac", "sap", "sc"),
+            "types": ("TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
+        }
 
-        self.__settings = {}
+        self.settings = {}
 
     @property
     def current_settings(self):
         try:
-            _ = self.__settings["usermail"]
+            _ = self.settings["usermail"]
         except KeyError:
             self.load_()
-        return self.__settings
+        return self.settings
 
     @current_settings.setter
     def current_settings(self, settings):
-        self.__settings = settings
+        self.settings = settings
 
     def insert_(self, data):
         """Insert settings data"""
@@ -66,7 +71,7 @@ class Setting:
                 self.insert_defaults()
                 cur.execute(sql)
                 data = cur.fetchone()
-            self.__settings = dict(zip(self.model, data))
+            self.settings = dict(zip(self.model["fields"], data))
 
     def update_(self):
         """Update settings"""
@@ -76,7 +81,7 @@ class Setting:
               "http=?, smtp=?, port=?, mailto=?, " \
               "mailserver=?, mailport=?, mailuser=?, mailpass=?, " \
               "fc=?, fp=?, fe=?, lsc=?, lsp=?, sac=?, sap=?, sc=?;"
-        values = list(self.__settings.values())
+        values = list(self.settings.values())
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

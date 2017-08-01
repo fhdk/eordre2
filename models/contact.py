@@ -16,32 +16,36 @@ class Contact:
     def __init__(self):
         """Initialize Contact class"""
         # model for zipping dictionary
-        self.model = ("contactid", "customerid", "name", "department", "email", "phone", "infotext")
-        self.__contact = {}
-        self.__contacts = []
-        self.__csv_field_count = 8
+        self.model = {
+            "name": "contact",
+            "fields": ("contactid", "customerid", "name", "department", "email", "phone", "infotext"),
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT")
+        }
+        self.contact = {}
+        self.contacts = []
         # "Person_ID","Kunde_ID","Navn","Afdeling","Email","Telefon","Notat_ID","Notat"
+        self.csv_field_count = 8
 
     @property
     def current_contact(self):
-        return self.__contact
+        return self.contact
 
     @property
     def contact_list(self):
-        return self.__contacts
+        return self.contacts
 
     @contact_list.setter
     def contact_list(self, customerid):
         try:
-            custid = self.__contacts[0]["customerid"]
+            custid = self.contacts[0]["customerid"]
             if not custid == customerid:
                 self.load_for_customer(customerid)
         except IndexError:
             self.load_for_customer(customerid)
 
     def clear(self):
-        self.__contact = {}
-        self.__contacts = []
+        self.contact = {}
+        self.contacts = []
 
     def create(self, customerid, name):
         """Create a contact"""
@@ -60,7 +64,7 @@ class Contact:
             cur.execute(sql, (contactid,))
             contact = cur.fetchone()
             if contact:
-                self.__contact = dict(zip(self.model, contact))
+                self.contact = dict(zip(self.model["fields"], contact))
 
     def import_csv(self, filename, headers=False):
         """Import contact from file
@@ -107,9 +111,9 @@ class Contact:
             cur = db.execute(sql, (customerid,))
             contacts = cur.fetchall()
             if contacts:
-                self.__contacts = [dict(zip(self.model, row)) for row in contacts]
+                self.contacts = [dict(zip(self.model["fields"], row)) for row in contacts]
             else:
-                self.__contacts = []
+                self.contacts = []
 
     def update_(self, values):
         """Update item"""

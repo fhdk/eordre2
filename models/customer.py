@@ -28,38 +28,42 @@ class Customer:
     def __init__(self):
         """Initialize Customer class"""
         # model for zipping dictionary
-        self.model = ("customerid",
-                      "account", "company", "address1", "address2", "zipcode", "city", "country",
-                      "salesrep", "phone1", "vat", "email",
-                      "deleted", "modified", "created",
-                      "infotext", "att", "phone2", "factor")
-        self.__customer_list = []
-        self.__customer = {}
-        self.__csv_field_count = 20
-        # "kunde_id","konto","navn","adresse1","adresse2","post","by","land","medarbejder_ID","telefon","cvr","notat_ID","Email","www","prisliste","slettet","rettet","oprettet","area_ID","Notat"
+        self.model = {
+            "name": "customer",
+            "fields": ("customerid", "account", "company", "address1", "address2", "zipcode", "city", "country",
+                       "salesrep", "phone1", "vat", "email", "deleted", "modified", "created", "infotext", "att",
+                       "phone2", "factor"),
+            "types": ("INTEGER PRIMARY KEY NOT NUL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "REAL")
+        }
+        self.customers = []
+        self.customer = {}
+        # "kunde_id","konto","navn","adresse1","adresse2","post","by","land","medarbejder_ID","telefon","cvr",
+        # "notat_ID","Email","www","prisliste","slettet","rettet","oprettet","area_ID","Notat"
+        self.csv_field_count = 20
 
     def clear(self):
-        self.__customer = {}
-        self.__customer_list = []
+        self.customer = {}
+        self.customers = []
 
     @property
     def current_customer(self):
         """Return current customer"""
-        return self.__customer
+        return self.customer
 
     @property
     def customer_list(self):
         """Load customer into primary customer list"""
         try:
-            _ = self.__customer_list[0]
+            _ = self.customers[0]
         except IndexError:
             self.load_()
-        return self.__customer_list
+        return self.customers
 
     def create_(self, company, phone, createdate, country, salesrep):
         found = self.find_name_account(company, phone)
         if found:
-            self.__customer = found
+            self.customer = found
         else:
             new = (None, "NY", company, "", "", "", "", country,
                    salesrep, phone, "", "", 0, 0, createdate, "", "", "", 0.0)
@@ -78,7 +82,7 @@ class Customer:
             cur = db.cursor()
             cur.execute(sql, (customerid,))
             customer = cur.fetchone()
-            self.__customer = dict(zip(self.model, customer))
+            self.customer = dict(zip(self.model, customer))
 
     def find_name_account(self, company, account):
         """Look up customer
@@ -102,8 +106,8 @@ class Customer:
                 cust = cur.fetchone()
                 if cust:  # found as new customer
                     data = dict(zip(self.model, cust))
-        self.__customer = data
-        return self.__customer
+        self.customer = data
+        return self.customer
 
     def import_csv(self, filename, headers=False):
         """Import customer from csv file
@@ -122,12 +126,12 @@ class Customer:
             reader = csv.reader(csvfile, delimiter="|")
             line = 0
             for row in reader:
-                if not len(row) == self.__csv_field_count:
+                if not len(row) == self.csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
-                #  0
+                # 0
                 # "kunde_id",
                 #  1       2      3          4          5
                 # "konto","navn","adresse1","adresse2","post",
@@ -216,11 +220,11 @@ class Customer:
             cur = db.cursor()
             customers = cur.execute('SELECT * FROM customer')
             if customers:
-                self.__customer_list = [dict(zip(self.model, row)) for row in customers]
+                self.customers = [dict(zip(self.model, row)) for row in customers]
 
     def save_(self):
         """Save current customer changes"""
-        self.update_(list(self.__customer.values()))
+        self.update_(list(self.customer.values()))
 
     def update_(self, values=None):
         """Update current row

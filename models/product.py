@@ -20,23 +20,26 @@ class Product:
     def __init__(self):
         """Initialize product class"""
         # model for zipping dictionary
-        self.model = (
-            "sku", "name1", "name2", "name3", "item",
-            "price", "d2", "d4", "d6", "d8", "d12", "d24", "d48", "d99", "min", "net", "group")
-        self.__products = []
-        self.__product = {}
+        self.model = {
+            "name": "product",
+            "fields": ("sku", "name1", "name2", "name3", "item",
+                       "price", "d2", "d4", "d6", "d8", "d12", "d24", "d48", "d96", "min", "net", "group"),
+            "types": ("TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "TEXT")}
+        self.products = []
+        self.product = {}
 
     def clear(self):
-        self.__product = {}
-        self.__products = []
+        self.product = {}
+        self.products = []
 
     @property
     def product_list(self):
         try:
-            _ = self.__products[0]
+            _ = self.products[0]
         except IndexError:
             self.load_()
-        return self.__products
+        return self.products
 
     def drop_table(self):
         """Drop the product table
@@ -44,7 +47,7 @@ class Product:
         An internal pointer to a specific product id is not used as orderline will contain the product sku etc
         This approach also eliminates and outstanding issue with deprecated product
         """
-        self.__product = []
+        self.product = []
         dbfn.recreate_table("product")
 
     def insert_(self, values):
@@ -67,6 +70,6 @@ class Product:
             cur.execute(sql)
             products = cur.fetchall()
             if products:
-                self.__products = [dict(zip(self.model, row)) for row in products]
+                self.products = [dict(zip(self.model["fields"], row)) for row in products]
             else:
-                self.__products = []
+                self.products = []

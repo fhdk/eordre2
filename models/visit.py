@@ -18,29 +18,38 @@ class Visit:
     def __init__(self):
         """Initialize visit class"""
         # model for zipping dictionary
-        self.__model = (
-            "visitid", "reportid", "employeeid", "customerid",
-            "podate", "posent", "pocontact", "ponum", "pocompany",
-            "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry",
-            "infotext", "proddemo", "prodsale", "ordertype", "turnsas", "turnsale", "turntotal", "approved")
-        self.__csv_field_count = 22
-        self.__visit_list_customer = []
-        self.__visit_list_report = []
-        self.__current_visit = {}
-        # "ordre_id","dagsrapport_id","medarbejder_id","kunde_id","dato","afsendt","koeber","rekv","levNavn","levAdresse1","levAdresse2","levPost","levBy","levLand","notat","produktDemo","produktSalg","ordreType","sas","almSalg","ordreTotal","godkendt"
+        self.model = {
+            "name": "visit",
+            "fields": (
+                "visitid", "reportid", "employeeid", "customerid", "podate", "posent", "pocontact", "ponum",
+                "pocompany", "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry",
+                "infotext", "proddemo", "prodsale", "ordertype", "turnsas", "turnsale", "turntotal",
+                "approved"),
+            "types": (
+                "INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "INTEGER", "TEXT", "INTEGER", "TEXT", "TEXT",
+                "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "REAL", "REAL", "REAL",
+                "INTEGER")
+        }
+        self.visit_list_customer = []
+        self.visit_list_report = []
+        self.visit = {}
+        # "ordre_id","dagsrapport_id","medarbejder_id","kunde_id","dato","afsendt","koeber","rekv",
+        # "levNavn","levAdresse1","levAdresse2","levPost","levBy","levLand",
+        # "notat","produktDemo","produktSalg","ordreType","sas","almSalg","ordreTotal","godkendt"
+        self.csv_field_count = 22
 
     @property
     def current_visit(self):
-        return self.__current_visit
+        return self.visit
 
     @property
     def visit_list_customer(self):
-        return self.__visit_list_customer
+        return self.visit_list_customer
 
     @visit_list_customer.setter
     def visit_list_customer(self, customerid):
         try:
-            cid = self.__visit_list_customer[0]["customerid"]
+            cid = self.visit_list_customer[0]["customerid"]
             if not cid == customerid:
                 self.load_for_customer(customerid=customerid)
         except IndexError:
@@ -48,21 +57,21 @@ class Visit:
 
     @property
     def visit_list_report(self):
-        return self.__visit_list_report
+        return self.visit_list_report
 
     @visit_list_report.setter
     def visit_list_report(self, reportid):
         try:
-            rid = self.__visit_list_report[0]["reportid"]
+            rid = self.visit_list_report[0]["reportid"]
             if not rid == reportid:
                 self.load_for_report(reportid)
         except IndexError:
             self.load_for_report(reportid=reportid)
 
     def clear(self):
-        self.__current_visit = {}
-        self.__visit_list_customer = []
-        self.__visit_list_report = []
+        self.visit = {}
+        self.visit_list_customer = []
+        self.visit_list_report = []
 
     def create(self, reportid, employeeid, customerid, workdate):
         values = [None, reportid, employeeid, customerid, workdate,
@@ -77,7 +86,7 @@ class Visit:
             cur = db.cursor()
             cur.execute(sql, (visitid,))
             data = cur.fetchone()
-            self.__current_visit = dict(zip(self.__model, data))
+            self.visit = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
         """Import orders from file
@@ -90,21 +99,11 @@ class Visit:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-                if not len(row) == self.__csv_field_count:
+                if not len(row) == self.csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
-                #  0          1                2                3          4
-                # "ordre_id","dagsrapport_id","medarbejder_id","kunde_id","dato",
-                #  5         6        7      8         9
-                # "afsendt","koeber","rekv","levNavn","levAdresse1",
-                #  10            11        12      13        14
-                # "levAdresse2","levPost","levBy","levLand","notat",
-                #  15            16            17          18    19
-                # "produktDemo","produktSalg","ordreType","sas","almSalg",
-                #  20           21
-                # "ordreTotal","godkendt"
                 # translate bool text to integer col 5
                 row[5] = utils.bool2int(utils.str2bool(row[5]))
                 processed = [row[0], row[1], row[2], row[3], row[4].strip(),
@@ -119,7 +118,7 @@ class Visit:
         """Save visit"""
         sql = "INSERT INTO visit VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         if not values:
-            values = self.__current_visit.values()
+            values = self.visit.values()
         if not type(values) == list:
             values = list(values)
         db = sqlite3.connect(config.DBPATH)
@@ -127,7 +126,7 @@ class Visit:
             cur = db.cursor()
             cur.execute(sql, values)
             db.commit()
-            return cur.execute("select last_insert_rowid()")
+            return cur.execute("SELECT last_insert_rowid()")
 
     def load_for_customer(self, customerid):
         """Load orders for specified customer"""
@@ -138,7 +137,7 @@ class Visit:
             cur.execute(sql, (customerid,))
             visits = cur.fetchall()
             if visits:
-                self.visit_list_customer = [dict(zip(self.__model, row)) for row in visits]
+                self.visit_list_customer = [dict(zip(self.model["fields"], row)) for row in visits]
 
     def load_for_report(self, reportid):
         """Load orders for specified customer"""
@@ -149,7 +148,7 @@ class Visit:
             cur.execute(sql, (reportid,))
             visits = cur.fetchall()
             if visits:
-                self.visit_list_report = [dict(zip(self.__model, row)) for row in visits]
+                self.visit_list_report = [dict(zip(self.model["fields"], row)) for row in visits]
 
     def save(self):
         """Save"""
@@ -162,7 +161,7 @@ class Visit:
               "pozipcode=?, pocity=?, pocountry=?, infotext=?, proddemo=?, prodsale=?, " \
               "ordertype=?, turnsas=?, turnsale=?, turntotal=?, approved=? WHERE visitid=?;"
         if not values:
-            values = self.__current_visit.values()
+            values = self.visit.values()
         if not type(values) == list:
             values = list(values)
         # move visitid to end of values list

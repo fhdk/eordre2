@@ -17,17 +17,21 @@ class Employee:
     def __init__(self):
         """Initialize Employee class"""
         # model for zipping dictionary
-        self.model = ("employeeid", "salesrep", "fullname", "email", "country", "sas")
-        self.__employee = {}
+        self.model = {
+            "name": "employee",
+            "fields": ("employeeid", "salesrep", "fullname", "email", "country", "sas"),
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
+        }
+        self.employee = {}
 
     @property
     def current_employee(self):
         """Return current and only employee"""
         try:
-            _ = self.__employee["fullname"]
+            _ = self.employee["fullname"]
         except KeyError:
             self.load_()
-        return self.__employee
+        return self.employee
 
     def insert_(self, values):
         """Insert employee in database"""
@@ -49,7 +53,7 @@ class Employee:
             cur.execute(sql)
             row = cur.fetchone()
             if row:
-                self.__employee = dict(zip(self.model, row))
+                self.employee = dict(zip(self.model["fields"], row))
 
     def update_(self, values=None):
         """Update the employee"""
@@ -57,10 +61,10 @@ class Employee:
               "SET employeeid=?, salesrep=?, fullname=?, email=?, country=?, sas=? " \
               "WHERE employeeid=?;"
         if not values:
-            values = list(self.__employee.values())
+            values = list(self.employee.values())
         if not type(values) == list:
             values = list(values)
-        values.append(self.__employee["employeeid"])
+        values.append(self.employee["employeeid"])
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

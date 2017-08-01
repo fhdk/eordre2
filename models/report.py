@@ -11,7 +11,7 @@ from pprint import pprint
 import csv
 import sqlite3
 
-import util.query_builder
+from util.query import Query
 from configuration import config
 from util import dbfn, utils
 
@@ -22,7 +22,6 @@ class Report:
         """Initilize Report class"""
         self.model = {
             "name": "report",
-            "primary_key": "reportid",
             "fields": ("reportid", "employeeid", "repno", "repdate",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
@@ -36,42 +35,36 @@ class Report:
                       "INTEGER", "INTEGER", "TEXT", "TEXT",
                       "INTEGER", "TEXT", "INTEGER", "INTEGER", "TEXT", "INTEGER")
         }
-        self.totals_model = {
-            "name": "temptotals",
-            "fields": ("workdate", "reportid", "employeeid",
-                       "new_visit", "new_demo", "new_sale", "new_turnover",
-                       "recall_visit", "recall_demo", "recall_sale", "recall_turnover",
-                       "sas", "sas_turnover", "visit", "demo", "sale", "turnover",
-                       "kmwork", "kmprivate", "workdays", "offdays", "reports"),
-            "types": ("TEXT", "INTEGER", "INTEGER",
-                      "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "REAL", "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER")
-        }
-        self.__csv_field_count = (len(self.model["fields"]) - 1)  # minus employeeid
-        self.__reports = []
-        self.__report = {}
-        self.__totals = {}
+
+        self.reports = []
+        self.report = {}
+        self.totals = {}
+        # csv: "reportid","repno","repdate",
+        #      "newvisitday","newdemoday","newsaleday","newturnoverday",
+        #      "recallvisitday","recalldemoday","recallsaleday","recallturnoverday",
+        #      "sasday","sasturnoverday","demoday","saleday",
+        #      "kmmorning","kmevening","supervisor","territory",
+        #      "workday","infotext","sent","offday","offtext","kmprivate"
+        self.__csv_field_count = 25
 
     @property
     def current_report(self):
-        return self.__report
+        return self.report
 
     @current_report.setter
     def current_report(self, workdate):
         try:
-            _ = self.__report["repdate"]
+            _ = self.report["repdate"]
         except KeyError:
             self.load_report(workdate=workdate)
 
     @property
     def reportlist(self):
-        return self.__reports
+        return self.reports
 
     @reportlist.setter
     def reportlist(self, year=None, month=None):
-        self.__reports = []
+        self.reports = []
         self.load_reports(year=year, month=month)
 
     def create_(self, employee, workdate):
@@ -94,43 +87,65 @@ class Report:
         # | SAS |                sum      sum                      sum    sum
         # | SUM |  sum     sum   sum      sum       sum     sum    sum    sum
 
-        sql = "SELECT " \
-              "sum(newvisitday) AS 'new_visit', " \
-              "sum(newdemoday) AS 'new_demo', " \
-              "sum(newsaleday) AS 'new_sale', " \
-              "sum(newturnoverday) AS 'new_turnover', " \
-              "sum(recallvisitday) AS 'recall_visit', " \
-              "sum(recalldemoday) AS 'recall_demo', " \
-              "sum(recallsaleday) AS 'recall_sale', " \
-              "sum(recallturnoverday) AS 'recall_turnover', " \
-              "sum(sasday) AS 'sas', " \
-              "sum(sasturnoverday) AS 'sas_turnover', " \
-              "(sum(newvisitday) + sum(recallvisitday)) AS 'visit', " \
-              "(sum(newdemoday) + sum(recalldemoday)) AS 'demo', " \
-              "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale', " \
-              "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover', " \
-              "(sum(kmevening - kmmorning)) AS 'kmwork', " \
-              "(sum(kmprivate)) AS 'kmprivate', " \
-              "(sum(workday = 1)) AS 'workdays', " \
-              "(sum(offday = 1)) AS 'offdays', " \
-              "count(reportid) AS 'reports' " \
-              "FROM report WHERE repdate LIKE ? AND employeeid=? ;"
+        # sql = "SELECT " \
+        #       "sum(newvisitday) AS 'new_visit', " \
+        #       "sum(newdemoday) AS 'new_demo', " \
+        #       "sum(newsaleday) AS 'new_sale', " \
+        #       "sum(newturnoverday) AS 'new_turnover', " \
+        #       "sum(recallvisitday) AS 'recall_visit', " \
+        #       "sum(recalldemoday) AS 'recall_demo', " \
+        #       "sum(recallsaleday) AS 'recall_sale', " \
+        #       "sum(recallturnoverday) AS 'recall_turnover', " \
+        #       "sum(sasday) AS 'sas', " \
+        #       "sum(sasturnoverday) AS 'sas_turnover', " \
+        #       "(sum(newvisitday) + sum(recallvisitday)) AS 'visit', " \
+        #       "(sum(newdemoday) + sum(recalldemoday)) AS 'demo', " \
+        #       "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale', " \
+        #       "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover', " \
+        #       "(sum(kmevening - kmmorning)) AS 'kmwork', " \
+        #       "(sum(kmprivate)) AS 'kmprivate', " \
+        #       "(sum(workday = 1)) AS 'workdays', " \
+        #       "(sum(offday = 1)) AS 'offdays', " \
+        #       "count(reportid) AS 'reports' " \
+        #       "FROM report WHERE repdate LIKE ? AND employeeid=? ;"
+        # 
+        # values = [workdate[:8] + "%", employee["employeeid"]]
 
-        values = [workdate[:8] + "%", employee["employeeid"]]
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            totals = cur.fetchone()
-            totals = [workdate, "None", employee["employeeid"]] + list(totals)
-            print(totals)
-            self.__totals = dict(zip(self.totals_model["fields"], totals))
-            new_values = [None, employee["employeeid"], (self.__totals["reports"] + 1), workdate,
-                          None, None, None, None, None, None, None, None, None, None, None, None,
-                          None, None, None, None, None, None, None, None, None, None]
-            self.__totals["reportid"] = self.insert_(new_values)
+        sums = ("sum(newvisitday) AS 'new_visit'",
+                "sum(newdemoday) AS 'new_demo'",
+                "sum(newsaleday) AS 'new_sale'",
+                "sum(newturnoverday) AS 'new_turnover'",
+                "sum(recallvisitday) AS 'recall_visit'",
+                "sum(recalldemoday) AS 'recall_demo'",
+                "sum(recallsaleday) AS 'recall_sale'",
+                "sum(recallturnoverday) AS 'recall_turnover'",
+                "sum(sasday) AS 'sas'",
+                "sum(sasturnoverday) AS 'sas_turnover'",
+                "(sum(newvisitday) + sum(recallvisitday)) AS 'visit'",
+                "(sum(newdemoday) + sum(recalldemoday)) AS 'demo'",
+                "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale'",
+                "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover'",
+                "(sum(kmevening - kmmorning)) AS 'kmwork'",
+                "(sum(kmprivate)) AS 'kmprivate'",
+                "(sum(workday = 1)) AS 'workdays'",
+                "(sum(offday = 1)) AS 'offdays'",
+                "count(reportid) AS 'reports'")
+        clause = ("repdate", workdate[:8] + "%"), ("employeeid", employee["employeeid"])
 
-        print("TODO: create report in database!")
+        # db = sqlite3.connect(config.DBPATH)
+        # with db:
+        #     cur = db.cursor()
+        #     cur.execute(sql, values)
+        #     totals = cur.fetchone()
+        #     totals = [workdate, "None", employee["employeeid"]] + list(totals)
+        #     print(totals)
+        #     self.__totals = dict(zip(self.totals_model["fields"], totals))
+        #     new_values = [None, employee["employeeid"], (self.__totals["reports"] + 1), workdate,
+        #                   None, None, None, None, None, None, None, None, None, None, None, None,
+        #                   None, None, None, None, None, None, None, None, None, None]
+        #     self.__totals["reportid"] = self.insert_(new_values)
+        #
+        # print("TODO: create report in database!")
 
     def insert_(self, values):
         """Insert new report in table"""
@@ -142,7 +157,7 @@ class Report:
         with db:
             db.execute(sql, values)
             db.commit()
-            return db.execute("select last_insert_rowid()")
+            return db.execute("SELECT last_insert_rowid()")
 
     def import_csv(self, filename, employee, headers=False):
         """Import report from file
@@ -199,7 +214,7 @@ class Report:
             cur.execute(sql, (workdate,))
             report = cur.fetchone()
             if report:
-                self.__report = dict(zip(self.model["fields"], report))
+                self.report = dict(zip(self.model["fields"], report))
 
     def load_reports(self, year=None, month=None):
         """Load report matching year and month or all if no params are given
@@ -220,13 +235,12 @@ class Report:
             cur.execute(sql, (value,))
             reports = cur.fetchall()
             if reports:
-                self.__reports = [dict(zip(self.model["fields"], row)) for row in reports]
+                self.reports = [dict(zip(self.model["fields"], row)) for row in reports]
             else:
-                self.__reports = []
+                self.reports = []
 
     def update_report(self):
         pass
 
     def save_totals(self):
-        sql = util.query_builder.build_sql_query(self.model, self.__totals)
-        pprint(sql)
+        pass
