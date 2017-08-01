@@ -13,7 +13,6 @@ from configuration import config
 class Setting:
     def __init__(self):
         """Initialize the Settings class"""
-        # model for zipping dictionary
         self.model = {
             "name": "settings",
             "fields": ("usermail", "userpass", "usercountry", "pd", "pf", "sf",
@@ -25,7 +24,6 @@ class Setting:
                       "TEXT", "TEXT", "TEXT", "TEXT",
                       "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
         }
-
         self.settings = {}
 
     @property

@@ -14,12 +14,8 @@ from util import dbfn
 
 # noinspection PyMethodMayBeStatic
 class Product:
-    # last_mod -> _invenprices.txt
-    # sample content: 2017-06-22 09:15:30
-    # __invenprices.txt
     def __init__(self):
         """Initialize product class"""
-        # model for zipping dictionary
         self.model = {
             "name": "product",
             "fields": ("sku", "name1", "name2", "name3", "item",

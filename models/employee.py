@@ -11,9 +11,6 @@ from configuration import config
 
 
 class Employee:
-    # last_mod -> _employees.txt
-    # sample content: 2017-06-22 09:15:30
-    # __employees.txt
     def __init__(self):
         """Initialize Employee class"""
         # model for zipping dictionary

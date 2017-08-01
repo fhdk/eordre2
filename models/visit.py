@@ -17,7 +17,6 @@ from util import dbfn, utils
 class Visit:
     def __init__(self):
         """Initialize visit class"""
-        # model for zipping dictionary
         self.model = {
             "name": "visit",
             "fields": (
@@ -33,9 +32,6 @@ class Visit:
         self.visit_list_customer = []
         self.visit_list_report = []
         self.visit = {}
-        # "ordre_id","dagsrapport_id","medarbejder_id","kunde_id","dato","afsendt","koeber","rekv",
-        # "levNavn","levAdresse1","levAdresse2","levPost","levBy","levLand",
-        # "notat","produktDemo","produktSalg","ordreType","sas","almSalg","ordreTotal","godkendt"
         self.csv_field_count = 22
 
     @property

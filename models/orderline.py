@@ -16,7 +16,6 @@ from util import dbfn, utils
 class OrderLine:
     def __init__(self):
         """Initialize OrderLine class"""
-        # model for zipping dictionary
         self.model = {
             "name": "orderline",
             "fields": ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount"),
@@ -24,7 +23,6 @@ class OrderLine:
         }
         self.order_lines = []
         self.current_line = {}
-        # "linje_id","ordre_id","antal","art","beskriv","stkPris","SAS","rabat"
         self.csv_field_count = 8
 
     @property
@@ -66,9 +64,6 @@ class OrderLine:
                 line += 1
                 if headers and line == 1:
                     continue
-                # sanitize line
-                #  0          1          2       3     4         5         6     7
-                # "linje_id","ordre_id","antal","art","beskriv","stkPris","SAS","rabat"
                 # translate bool text to integer col 6
                 row[6] = utils.bool2int(utils.str2bool(row[6]))
                 processed = [row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7]]

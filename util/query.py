@@ -18,7 +18,7 @@ class Query:
     def build(self, query, definition, values=None, aggregate=None, where=None):
         """
         Builds a sql query from definition
-        :param query: crudt (create, read, update, delete, table)
+        :param query: c.r.u.d.t (create, read, update, delete, table)
         :param definition: table model definition
         :param values: valid with update query sql, generates sql with key=value pairs
         :param aggregate: aggregates to  be returned
@@ -34,29 +34,29 @@ class Query:
         if query in ["u", "d"] and not where:
             return "ERROR - DANGEROUS QUERY DETECTED. SPECIFY CLAUSE TO AVOID DAMAGE."
 
-        # insert query
+        # build insert query
         if query == "c":
-            result = self._build_create(definition, values)
+            result = self.b_insert_query(definition, values)
             return result
 
-        # select query / aggregate query
+        # build select query
         if query == "r":
-            result = self._build_select(definition, aggregate, where)
+            result = self.b_select_query(definition, aggregate, where)
             return result
 
-        # update query
+        # build update query
         if query == "u":
-            result = self._build_update(definition, values, where)
+            result = self.b_update_query(definition, values, where)
             return result
 
-        # delete query
+        # build delete query
         if query == "d":
-            result = self._build_delete(definition, where)
+            result = self.b_delete_query(definition, where)
             return result
 
-        # create table query
+        # build create table query
         if query == "t":
-            result = self._build_table(definition)
+            result = self.b_table_query(definition)
             return result
 
     def execute(self, query):
@@ -67,30 +67,7 @@ class Query:
             db.commit()
             print("{}".format(result))
 
-    def _build_create(self, definition, values=None):
-        sqlf = ""
-        sqlv = ""
-        name = definition["name"]
-        last_f_idx = len(definition["fields"])
-
-        if values:
-            for idx, kv in enumerate(values):
-                if idx == last_f_idx:
-                    sqlf = sqlf + "{}".format(kv[0])
-                    sqlv = sqlv + "{}".format(kv[1])
-                else:
-                    sqlf = sqlf + "{}, ".format(kv[0])
-                    sqlv = sqlv + "{}, ".format(kv[1])
-            return "INSERT INTO {} ({}) VALUES ({});".format(name, sqlf, sqlv).replace("  ", " ")
-        else:
-            for idx, f in enumerate(definition["fields"]):
-                if idx == last_f_idx:
-                    sqlf = sqlf + "?"
-                else:
-                    sqlf = sqlf + "?, "
-            return "INSERT INTO {} VALUES ({});".format(name, sqlf).replace("  ", " ")
-
-    def _build_delete(self, definition, where):
+    def b_delete_query(self, definition, where):
         sqlw = ""
         name = definition["name"]
         last_w_idx = len(where)
@@ -109,7 +86,19 @@ class Query:
 
         return "DELETE FROM {} WHERE {};".format(name, sqlw).replace("  ", " ")
 
-    def _build_select(self, definition, aggregate, where):
+    def b_insert_query(self, definition):
+        sqlf = ""
+        name = definition["name"]
+        last_f_idx = len(definition["fields"])
+
+        for idx, f in enumerate(definition["fields"]):
+            if idx == last_f_idx:
+                sqlf = sqlf + "?"
+            else:
+                sqlf = sqlf + "?, "
+        return "INSERT INTO {} VALUES ({});".format(name, sqlf).replace("  ", " ")
+
+    def b_select_query(self, definition, aggregate, where):
         sqla = ""
         sqlw = ""
         name = definition["name"]
@@ -146,7 +135,7 @@ class Query:
             # just select everything
             return "SELECT * FROM {};".format(name).replace("  ", " ").replace("  ", " ")
 
-    def _build_table(self, definition):
+    def b_table_query(self, definition):
         sqlt = ""
         name = definition["name"]
         last_f_idx = len(definition["fields"])
@@ -158,7 +147,7 @@ class Query:
 
         return "CREATE TABLE IF NOT EXISTS {} ({});".format(name, sqlt).replace("  ", " ")
 
-    def _build_update(self, definition, values, where):
+    def b_update_query(self, definition, values, where):
         sqlfv = ""
         sqlw = ""
         name = definition["name"]

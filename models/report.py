@@ -39,12 +39,6 @@ class Report:
         self.reports = []
         self.report = {}
         self.totals = {}
-        # csv: "reportid","repno","repdate",
-        #      "newvisitday","newdemoday","newsaleday","newturnoverday",
-        #      "recallvisitday","recalldemoday","recallsaleday","recallturnoverday",
-        #      "sasday","sasturnoverday","demoday","saleday",
-        #      "kmmorning","kmevening","supervisor","territory",
-        #      "workday","infotext","sent","offday","offtext","kmprivate"
         self.__csv_field_count = 25
 
     @property
@@ -111,25 +105,25 @@ class Report:
         # 
         # values = [workdate[:8] + "%", employee["employeeid"]]
 
-        sums = ("sum(newvisitday) AS 'new_visit'",
-                "sum(newdemoday) AS 'new_demo'",
-                "sum(newsaleday) AS 'new_sale'",
-                "sum(newturnoverday) AS 'new_turnover'",
-                "sum(recallvisitday) AS 'recall_visit'",
-                "sum(recalldemoday) AS 'recall_demo'",
-                "sum(recallsaleday) AS 'recall_sale'",
-                "sum(recallturnoverday) AS 'recall_turnover'",
-                "sum(sasday) AS 'sas'",
-                "sum(sasturnoverday) AS 'sas_turnover'",
-                "(sum(newvisitday) + sum(recallvisitday)) AS 'visit'",
-                "(sum(newdemoday) + sum(recalldemoday)) AS 'demo'",
-                "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale'",
-                "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover'",
-                "(sum(kmevening - kmmorning)) AS 'kmwork'",
-                "(sum(kmprivate)) AS 'kmprivate'",
-                "(sum(workday = 1)) AS 'workdays'",
-                "(sum(offday = 1)) AS 'offdays'",
-                "count(reportid) AS 'reports'")
+        aggregate = ("sum(newvisitday) AS 'new_visit'",
+                     "sum(newdemoday) AS 'new_demo'",
+                     "sum(newsaleday) AS 'new_sale'",
+                     "sum(newturnoverday) AS 'new_turnover'",
+                     "sum(recallvisitday) AS 'recall_visit'",
+                     "sum(recalldemoday) AS 'recall_demo'",
+                     "sum(recallsaleday) AS 'recall_sale'",
+                     "sum(recallturnoverday) AS 'recall_turnover'",
+                     "sum(sasday) AS 'sas'",
+                     "sum(sasturnoverday) AS 'sas_turnover'",
+                     "(sum(newvisitday) + sum(recallvisitday)) AS 'visit'",
+                     "(sum(newdemoday) + sum(recalldemoday)) AS 'demo'",
+                     "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale'",
+                     "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover'",
+                     "(sum(kmevening - kmmorning)) AS 'kmwork'",
+                     "(sum(kmprivate)) AS 'kmprivate'",
+                     "(sum(workday = 1)) AS 'workdays'",
+                     "(sum(offday = 1)) AS 'offdays'",
+                     "count(reportid) AS 'reports'")
         clause = ("repdate", workdate[:8] + "%"), ("employeeid", employee["employeeid"])
 
         # db = sqlite3.connect(config.DBPATH)
@@ -165,19 +159,6 @@ class Report:
         :param employee:
         :param headers:
         """
-        # row: 0          1       2
-        # csv: "reportid","repno","repdate",
-        #      3             4            5            6
-        #      "newvisitday","newdemoday","newsaleday","newturnoverday",
-        #      7                8               9               10
-        #      "recallvisitday","recalldemoday","recallsaleday","recallturnoverday",
-        #      11       12               13        14
-        #      "sasday","sasturnoverday","demoday","saleday",
-        #      15          16          17           18
-        #      "kmmorning","kmevening","supervisor","territory",
-        #      19        20         21     22       23        24
-        #      "workday","infotext","sent","offday","offtext","kmprivate"
-        #
         dbfn.recreate_table("report")
         filename.encode("utf8")
         employeeid = employee["employeeid"]

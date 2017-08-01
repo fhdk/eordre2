@@ -22,12 +22,8 @@ from util import dbfn, utils
 
 
 class Customer:
-    # last_mod -> _customers.txt
-    # sample content: 2017-06-22 09:15:30
-    # __customer.txt
     def __init__(self):
         """Initialize Customer class"""
-        # model for zipping dictionary
         self.model = {
             "name": "customer",
             "fields": ("customerid", "account", "company", "address1", "address2", "zipcode", "city", "country",
@@ -38,8 +34,6 @@ class Customer:
         }
         self.customers = []
         self.customer = {}
-        # "kunde_id","konto","navn","adresse1","adresse2","post","by","land","medarbejder_ID","telefon","cvr",
-        # "notat_ID","Email","www","prisliste","slettet","rettet","oprettet","area_ID","Notat"
         self.csv_field_count = 20
 
     def clear(self):
@@ -117,11 +111,6 @@ class Customer:
         in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         """
         dbfn.recreate_table("customer")
-        # filename.encode("ISO-8859-1")
-        # filename.encode("utf8")
-        #      0  1   2    3    4    5       6    7         8   9     10  11    12  13  14  15   16  17    18
-        # in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
-        # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
         with open(filename) as csvfile:
             reader = csv.reader(csvfile, delimiter="|")
             line = 0
@@ -131,14 +120,6 @@ class Customer:
                 line += 1
                 if headers and line == 1:
                     continue
-                # 0
-                # "kunde_id",
-                #  1       2      3          4          5
-                # "konto","navn","adresse1","adresse2","post",
-                #  6    7      8                9         10
-                # "by","land","medarbejder_ID","telefon","cvr",
-                #  11skip     12     13skip 14skip     15        16       17         18-skip   19
-                # "notat_ID","Email","www","prisliste","slettet","rettet","oprettet","area_ID","Notat"
                 # translate bool text in col 15
                 row[15] = utils.bool2int(utils.str2bool(row[15]))
                 values = [row[0],
@@ -154,10 +135,6 @@ class Customer:
         :param values: List with values from http request
         expected incoming fields: acc comp add1 add2 zipcity country s_rep phone1 vat email att phon2
         """
-        # check if exist - either as a real account or as a 'NY' account
-        # adjust and call either update or insert as necessary
-        #                  0   1    2    3    4       5       6     7      8   9     10  11
-        # incoming fields: acc comp add1 add2 zipcity country s_rep phone1 vat email att phon2
         # import file has 'zip  city'
         # app use 'zip' 'city' in different columns
         # zip city can contain more than one space
@@ -190,13 +167,9 @@ class Customer:
             found["phone2"] = values[11].strip()
             self.update_(found.values())  # call update function
         else:
-            # sanitize values
-            # in :    acc comp add1 add2   zipcity    country s_rep phon1 vat email att phon2
-            # out: id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info att phon2 factor
             row_values = [None, values[0].strip(), values[1].strip(), values[2], values[3].strip(), zipcode, city,
                           values[5].strip(), values[6].strip(), values[7].strip(), values[8].strip(),
                           values[9].strip(), 0, 0, 0, "", values[10].strip(), values[11].strip(), 0.0]
-            # call insert function
             self.insert_(row_values)
 
     def insert_(self, values):

@@ -15,7 +15,6 @@ from util import dbfn
 class Contact:
     def __init__(self):
         """Initialize Contact class"""
-        # model for zipping dictionary
         self.model = {
             "name": "contact",
             "fields": ("contactid", "customerid", "name", "department", "email", "phone", "infotext"),
@@ -23,7 +22,6 @@ class Contact:
         }
         self.contact = {}
         self.contacts = []
-        # "Person_ID","Kunde_ID","Navn","Afdeling","Email","Telefon","Notat_ID","Notat"
         self.csv_field_count = 8
 
     @property
@@ -83,8 +81,6 @@ class Contact:
                 line += 1
                 if headers and line == 1:
                     continue
-                # 0           1          2      3          4       5         6-skip     7
-                # "Person_ID","Kunde_ID","Navn","Afdeling","Email","Telefon","Notat_ID","Notat"
                 values = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[7].strip()]
                 self.insert_(values)
