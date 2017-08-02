@@ -49,25 +49,25 @@ class Setting:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        value_list = value_list.append(value_list[0])[1:]
         self.q.execute(sql, value_list=value_list)
 
     def insert_defaults(self):
         """Create default settings in database"""
-        defaults = [None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
-                    "customers", "invenprices", "employees", "", "", "", "", 0]
+        defaults = [(None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
+                    "customers", "invenprices", "employees", "", "", "", "", 0)]
         self.insert(defaults)  # call insert function
 
     def load(self):
         """Load settings"""
         sql = self.q.build("select", self.model)
-        result = self.q.execute(sql)
-        if not result:
+        success, data = self.q.execute(sql)
+        if success and not data:
             self.insert_defaults()
-            result = self.q.execute(sql)
-        self._settings = dict(zip(self.model["fields"], result))
-        print("{}".format(self._settings))
-        exit(0)
+            sql = self.q.build("select", self.model)
+            success, data = self.q.execute(sql)
+            print("debug -> load -> {} {}".format(success, data))
+        if success:
+            self._settings = dict(zip(self.model["fields"], data))
 
     def update(self):
         """Update settings"""

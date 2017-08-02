@@ -80,8 +80,9 @@ class Visit:
         where_list = [(self.model["id"], "=")]
         value_list = [visitid]
         sql = self.q.build("select", self.model, where_list=where_list)
-        result = self.q.execute(sql, value_list=value_list)
-        self._visit = dict(zip(self.model["fields"], result))
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._visit = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
         """Import orders from file
@@ -117,7 +118,9 @@ class Visit:
             _ = value_list[0]
         except IndexError:
             value_list = list(self._visit.values())
-        return self.q.execute(sql, value_list=value_list)
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            return data
 
     def recreate_table(self):
         """Drop and create table"""
@@ -131,18 +134,18 @@ class Visit:
         where_list = [(self.model["id"]), "="]
         value_list = [customerid]
         sql = self.q.build("select", self.model, where_list=where_list)
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._customer_visits = [dict(zip(self.model["fields"], row)) for row in result]
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def select_by_report(self, reportid):
         """Load orders for specified customer"""
         where_list = [(self.model["id"], "=")]
         value_list = [reportid]
         sql = self.q.build("select", self.model, where_list=where_list)
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._report_visits = [dict(zip(self.model["fields"], row)) for row in result]
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def save(self):
         """Save"""

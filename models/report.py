@@ -163,7 +163,9 @@ class Report:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        return self.q.execute(sql, value_list=value_list)
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            return data
 
     def import_csv(self, filename, employee, headers=False):
         """Import report from file
@@ -203,9 +205,9 @@ class Report:
         where_list = [("repdate", "like")]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [workdate]
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._report = dict(zip(self.model["fields"], result))
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._report = dict(zip(self.model["fields"], data))
 
     def load_reports(self, year=None, month=None):
         """Load report matching year and month or all if no params are given
@@ -220,9 +222,9 @@ class Report:
         if year and month:
             value = "{}-{}-{}".format(year, month, "%")
         value_list = [value]
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._reports = [dict(zip(self.model["fields"], row)) for row in result]
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._reports = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._reports = []
 

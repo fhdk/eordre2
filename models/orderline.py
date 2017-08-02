@@ -87,9 +87,9 @@ class OrderLine:
         where_list = [("visitid", "=")]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [visitid]
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in result]
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
         """Drop and create table"""

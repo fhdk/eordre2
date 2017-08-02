@@ -59,17 +59,18 @@ class Customer:
             sql = self.q.execute(sql)
             value_list = [None, "NY", company, "", "", "", "", country, salesrep,
                           phone, "", "", 0, 0, createdate, "", "", "", 0.0]
-            result = self.q.execute(sql, value_list)
-            self.lookup_by_id(result)
+            success, data = self.q.execute(sql, value_list)
+            if success:
+                self.lookup_by_id(data)
 
     def lookup_by_id(self, customerid):
         """Find customer by id"""
         where_list = [(self.model["id"], "=")]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._customer = dict(zip(self.model["fields"], result))
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._customer = dict(zip(self.model["fields"], data))
 
     def lookup_by_phone_name(self, phone, company):
         """Look up customer
@@ -80,15 +81,13 @@ class Customer:
         where_list = [("phone", "=", "or"), ("account", "=")]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [phone, phone]
-        result = self.q.execute(sql, value_list=value_list)
-
-        if not result:
+        success, data = self.q.execute(sql, value_list=value_list)
+        if not success:
             where_list = [("account", "=", "and"), ("company", "=", "or"), ("phone", "=")]
             sql = self.q.build("select", self.model, where_list=where_list)
             value_list = ["NY", company, phone]
-            result = self.q.execute(sql, value_list=value_list)
-
-        self._customer = dict(zip(self.model["fields"], result))
+            success, data = self.q.execute(sql, value_list=value_list)
+        self._customer = dict(zip(self.model["fields"], data))
         return self._customer
 
     def import_csv(self, filename, headers=False):
@@ -170,13 +169,16 @@ class Customer:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        return self.q.execute(sql, value_list=value_list)
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            return data
 
     def load(self):
         """Load customers into primary customer list"""
         sql = self.q.build("select", self.model)
-        result = self.q.execute(sql)
-        self._customers = [dict(zip(self.model["fields"], row)) for row in result]
+        success, data = self.q.execute(sql)
+        if success:
+            self._customers = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
         """Drop and create table"""

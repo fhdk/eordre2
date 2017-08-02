@@ -48,9 +48,9 @@ class Employee:
     def load(self):
         """Load the employee"""
         sql = self.q.build("select", self.model)
-        result = self.q.execute(sql)
-        if result:
-            self._employee = dict(zip(self.model["fields"], result))
+        success, data = self.q.execute(sql)
+        if success:
+            self._employee = dict(zip(self.model["fields"], data))
 
     def update(self, values=None):
         """Update the employee"""

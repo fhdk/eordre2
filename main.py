@@ -40,7 +40,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         configfn.check_config_folder()  # Check app folder in users home
-        dbfn.create_tables()  # Create the needed tables
 
         self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
         self.Contacts = contact.Contact()  # Initialize Contact object

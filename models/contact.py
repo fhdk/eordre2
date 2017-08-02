@@ -51,17 +51,16 @@ class Contact:
 
     def create(self, customerid, name):
         """Create a contact"""
-        sql = self.q.build("insert", self.model)
         value_list = [None, customerid, name, "", "", "", ""]
-        result = self.q.execute(sql, value_list=value_list)
-        self.find(result)
+        data = self.insert(value_list)
+        self.find(data)
 
     def find(self, contactid):
         sql = self.q.build("select", self.model)
         value_list = [contactid]
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._contact = dict(zip(self.model["fields"], result))
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._contact = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
         """Import contact from file
@@ -95,16 +94,18 @@ class Contact:
         except IndexError:
             value_list = list(values)
         sql = self.q.build("insert", self.model)
-        return self.q.execute(sql, value_list=value_list)
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            return data
 
     def load_for_customer(self, customerid):
         """Load contact"""
         where_list = list(self.model["id"])
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
-        contacts = self.q.execute(sql, value_list=value_list)
-        if contacts:
-            self._contacts = [dict(zip(self.model["fields"], row)) for row in contacts]
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._contacts = []
 

@@ -53,26 +53,27 @@ class ReportCalc:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        result = self.q.execute(sql, value_list=value_list)
-        self.select_by_id(result)
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self.select_by_id(data)
 
     def select_by_id(self, totals_id):
         """Select by id"""
         where_list = [(self.model["id"], "=")]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [totals_id]
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._totals = dict(zip(self.model["fields"], result))
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._totals = dict(zip(self.model["fields"], data))
 
     def select_by_employee_date(self, employeeid, workdate):
         """Select by employeeid and workdate"""
         where_list = [("workdate", "=", "and"), ("employeeid", "=")]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [workdate, employeeid]
-        result = self.q.execute(sql, value_list=value_list)
-        if result:
-            self._totals = dict(zip(self.model["fields"], result))
+        success, data = self.q.execute(sql, value_list=value_list)
+        if success:
+            self._totals = dict(zip(self.model["fields"], data))
 
     def update(self, values):
         """Update totals"""

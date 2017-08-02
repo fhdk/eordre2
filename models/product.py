@@ -62,9 +62,9 @@ class Product:
     def load(self):
         """Load product list"""
         sql = self.q.build("select", self.model)
-        result = self.q.execute(sql)
-        if result:
-            self._products = [dict(zip(self.model["fields"], row)) for row in result]
+        success, data = self.q.execute(sql)
+        if success:
+            self._products = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._products = []
 
