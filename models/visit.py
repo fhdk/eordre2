@@ -11,6 +11,7 @@ import sqlite3
 
 from configuration import config
 from util import dbfn, utils
+from util.query import Query
 
 
 # noinspection PyMethodMayBeStatic
@@ -33,6 +34,10 @@ class Visit:
         self._report_visits = []
         self._visit = {}
         self.csv_field_count = 22
+        self.q = Query()
+        if not dbfn.exist_table(self.model["name"]):
+            sql = self.q.build("create", self.model)
+            self.q.execute(sql)
 
     @property
     def visit(self):

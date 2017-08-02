@@ -39,7 +39,10 @@ class Report:
         self._report = {}
         self._totals = {}
         self.csv_field_count = 25
-        self.query = Query()
+        self.q = Query()
+        if not dbfn.exist_table(self.model["name"]):
+            sql = self.q.build("create", self.model)
+            self.q.execute(sql)
 
     @property
     def current_report(self):

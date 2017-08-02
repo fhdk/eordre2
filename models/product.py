@@ -10,6 +10,7 @@ import sqlite3
 
 from configuration import config
 from util import dbfn
+from util.query import Query
 
 
 # noinspection PyMethodMayBeStatic
@@ -24,6 +25,10 @@ class Product:
                       "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "TEXT")}
         self._products = []
         self._product = {}
+        self.q = Query()
+        if not dbfn.exist_table(self.model["name"]):
+            sql = self.q.build("create", self.model)
+            self.q.execute(sql)
 
     def clear(self):
         self._product = {}

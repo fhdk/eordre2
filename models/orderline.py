@@ -11,6 +11,7 @@ import sqlite3
 
 from configuration import config
 from util import dbfn, utils
+from util.query import Query
 
 
 class OrderLine:
@@ -24,6 +25,10 @@ class OrderLine:
         self._order_lines = []
         self._order_line = {}
         self.csv_field_count = 8
+        self.q = Query()
+        if not dbfn.exist_table(self.model["name"]):
+            sql = self.q.build("create", self.model)
+            self.q.execute(sql)
 
     @property
     def orderlines_list(self):

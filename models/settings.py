@@ -8,6 +8,8 @@
 import sqlite3
 
 from configuration import config
+from util import dbfn
+from util.query import Query
 
 
 class Setting:
@@ -25,6 +27,10 @@ class Setting:
                       "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
         }
         self.settings = {}
+        self.q = Query()
+        if not dbfn.exist_table(self.model["name"]):
+            sql = self.q.build("create", self.model)
+            self.q.execute(sql)
 
     @property
     def current_settings(self):

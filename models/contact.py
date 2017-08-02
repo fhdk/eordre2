@@ -6,9 +6,7 @@
 
 """Contact class"""
 import csv
-import sqlite3
 
-from configuration import config
 from util import dbfn
 from util.query import Query
 
