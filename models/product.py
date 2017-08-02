@@ -6,9 +6,6 @@
 
 """"productNg class"""
 
-import sqlite3
-
-from configuration import config
 from util import dbfn
 from util.query import Query
 
@@ -53,24 +50,17 @@ class Product:
 
     def insert(self, values):
         """Insert a product in database"""
-        sql = "INSERT INTO product VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        db = sqlite3.connect(config.DBPATH)
+        value_list = values
+        sql = self.q.build("insert", self.model)
         if not type(values) == list:
-            values = list(values)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+            value_list = list(values)
+        self.q.execute(sql, value_list=value_list)
 
     def load(self):
         """Load product list"""
-        sql = "SELECT * FROM product;"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql)
-            products = cur.fetchall()
-            if products:
-                self._products = [dict(zip(self.model["fields"], row)) for row in products]
-            else:
-                self._products = []
+        sql = self.q.build("select", self.model)
+        result = self.q.execute(sql)
+        if result:
+            self._products = [dict(zip(self.model["fields"], row)) for row in products]
+        else:
+            self._products = []

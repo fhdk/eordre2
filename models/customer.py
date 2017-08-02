@@ -3,15 +3,6 @@
 # Author: Frede Hundewadt <f@hundewadt.dk>
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
-# -----------------------------------------------------------------------------------------------
-# Possible formats for data
-# row: |0  |1   |2   |3   |4      |5      |6    |7      |8    |9    |10 |11   |12 |13 |14 |15  |16 |17   |19
-# old:  acc comp add1 add2 zipcity country s_rep phone1  vat
-# new:  acc comp add1 add2 zipcity country s_rep phone1  vat   email att phon2
-# csv:  id  acc  comp add1 add2    zipcode city  country s_rep phon1 vat email del mod cre info
-# db :  id  acc  comp add1 add2    zipcode city  country s_rep phon1 vat email del mod cre info att phon2 factor
-# -----------------------------------------------------------------------------------------------
-
 
 """CustomerNg class"""
 import csv
