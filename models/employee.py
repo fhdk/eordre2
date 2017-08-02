@@ -6,8 +6,8 @@
 
 """"Employee class"""
 
+from models.query import Query
 from util import dbfn
-from util.query import Query
 
 
 class Employee:

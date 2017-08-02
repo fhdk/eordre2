@@ -7,11 +7,9 @@
 """Orderhead class"""
 
 import csv
-import sqlite3
 
-from configuration import config
+from models.query import Query
 from util import dbfn, utils
-from util.query import Query
 
 
 # noinspection PyMethodMayBeStatic

@@ -6,11 +6,9 @@
 
 """Report class"""
 
-from pprint import pprint
-
 import csv
 
-from util.query import Query
+from models.query import Query
 from models.report_calc import ReportCalc
 from util import dbfn, utils
 

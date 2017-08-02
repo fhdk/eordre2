@@ -8,11 +8,12 @@
 
 import sqlite3
 
-from util.builders.create_query import create_query
 from util.builders.delete_query import delete_query
 from util.builders.insert_query import insert_query
 from util.builders.select_query import select_query
 from util.builders.update_query import update_query
+
+from models.builders.create_query import create_query
 
 
 class Query:

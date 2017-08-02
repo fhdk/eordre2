@@ -4,7 +4,7 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-from util.query import Query
+from models.query import Query
 from util import dbfn
 
 

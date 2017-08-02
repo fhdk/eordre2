@@ -7,8 +7,8 @@
 """Contact class"""
 import csv
 
+from models.query import Query
 from util import dbfn
-from util.query import Query
 
 
 class Contact:

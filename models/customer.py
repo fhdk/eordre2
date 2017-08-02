@@ -7,8 +7,8 @@
 """CustomerNg class"""
 import csv
 
+from models.query import Query
 from util import dbfn, utils
-from util.query import Query
 
 
 class Customer:
