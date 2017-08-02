@@ -16,6 +16,7 @@ class Contact:
         """Initialize Contact class"""
         self.model = {
             "name": "contact",
+            "idfield": "contactid",
             "fields": ("contactid", "customerid", "name", "department", "email", "phone", "infotext"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT")
         }
@@ -96,7 +97,7 @@ class Contact:
 
     def load_for_customer(self, customerid):
         """Load contact"""
-        where_list = list("customerid")
+        where_list = list(self.model["idfield"])
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
         contacts = self.q.execute(sql, value_list=value_list)
@@ -108,7 +109,7 @@ class Contact:
     def update(self, values):
         """Update item"""
         update_list = list(self.model["fields"])[1:]
-        where_list = ["contactid"]
+        where_list = list(self.model["idfield"])
         sql = self.q.build("update", update_list=update_list, where_list=where_list)
         value_list = []
         # sanitize parameter

@@ -25,6 +25,7 @@ class Customer:
         """Initialize Customer class"""
         self.model = {
             "name": "customer",
+            "idfield": "customerid",
             "fields": ("customerid", "account", "company", "address1", "address2", "zipcode", "city", "country",
                        "salesrep", "phone1", "vat", "email", "deleted", "modified", "created", "infotext", "att",
                        "phone2", "factor"),
@@ -72,7 +73,7 @@ class Customer:
 
     def lookup_by_id(self, customerid):
         """Find customer by id"""
-        where_list = ["customerid", "="]
+        where_list = [(self.model["idfield"], "=")]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
         result = self.q.execute(sql, value_list=value_list)
@@ -190,8 +191,8 @@ class Customer:
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
-        value_list = []
-        where_list = [("customerid", "=")]
+        value_list = values
+        where_list = [(self.model["idfield"], "=")]
         sql = self.q.build("update", self.model, where_list=where_list)
         if not type(values) == list:
             value_list = list(values)

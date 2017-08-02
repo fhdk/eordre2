@@ -7,9 +7,7 @@
 """Orderline class"""
 
 import csv
-import sqlite3
 
-from configuration import config
 from util import dbfn, utils
 from util.query import Query
 
@@ -19,6 +17,7 @@ class OrderLine:
         """Initialize OrderLine class"""
         self.model = {
             "name": "orderline",
+            "idfield": "lineid",
             "fields": ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "TEXT", "TEXT", "REAL", "INTEGER", "REAL")
         }
@@ -75,44 +74,29 @@ class OrderLine:
                 self.insert_values(processed)
             return True
 
-    def insert_values(self, values=None):
-        sql = "INSERT INTO orderline VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
-        # sanitize values
-        if not values:
-            try:
-                values = self._order_line.values()
-            except KeyError:
-                return
+    def insert_values(self, values):
+        sql = self.q.build("insert", self.model)
+        value_list = values
         if not type(values) == list:
-            values = list(values)
-        # db insert
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+            value_list = list(values)
+        self.q.execute(sql, value_list=value_list)
 
     def load(self, visitid):
         """Load orderlines"""
-        sql = "SELECT * FROM orderline WHERE visitid=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            orderlines = cur.execute(sql, list(visitid))
-            if orderlines:
-                self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in orderlines]
+        where_list = [("visitid", "=")]
+        sql = self.q.build("select", self.model, where_list=where_list)
+        value_list = [visitid]
+        result = self.q.execute(sql, value_list=value_list)
+        if result:
+            self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in result]
 
     def update(self, values):
         """Update orderline"""
-        sql = "UPDATE orderline " \
-              "SET " \
-              "lineid=?, visitid=?, pcs=?, sku=?, infotext=?, price=?, sas=?, discount=? " \
-              "WHERE lineid=?"
+        update_list = list(self.model["fields"])[1:]
+        where_list = [("lineid", "=")]
+        value_list = values
         if not type(values) == list:
-            values = list(values)
-        values += [values[0]]
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+            value_list = list(values)
+        value_list = values.append(value_list[0])[1:]
+        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
+        self.q.execute(sql, value_list=value_list)
