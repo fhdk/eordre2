@@ -4,6 +4,7 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
+
 def select_query(model_def, aggregate_list, where_list, sort_order):
     s_name = model_def["name"]
     num_sf = len(model_def["fields"])

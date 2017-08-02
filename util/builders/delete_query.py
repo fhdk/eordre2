@@ -4,6 +4,7 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
+
 def delete_query(model_def, where_list):
     d_name = model_def["name"]
     num_dw = len(where_list)
