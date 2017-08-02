@@ -50,7 +50,7 @@ class Employee:
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
         if success:
-            self._employee = dict(zip(self.model["fields"], data))
+            self._employee = dict(zip(self.model["fields"], data[0]))
 
     def update(self, values=None):
         """Update the employee"""

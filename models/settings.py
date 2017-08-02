@@ -65,9 +65,8 @@ class Setting:
             self.insert_defaults()
             sql = self.q.build("select", self.model)
             success, data = self.q.execute(sql)
-            print("debug -> load -> {} {}".format(success, data))
         if success:
-            self._settings = dict(zip(self.model["fields"], data))
+            self._settings = dict(zip(self.model["fields"], data[0]))
 
     def update(self):
         """Update settings"""
