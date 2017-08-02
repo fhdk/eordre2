@@ -166,6 +166,10 @@ class Customer:
         """
         sql = self.q.build("insert", self.model)
         value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
+            value_list = list(values)
         return self.q.execute(sql, value_list=value_list)
 
     def load(self):
@@ -182,10 +186,12 @@ class Customer:
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
-        value_list = values
         where_list = [(self.model["id"], "=")]
         sql = self.q.build("update", self.model, where_list=where_list)
-        if not type(values) == list:
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         value_list = value_list.append(value_list[0])[1:]
         self.q.execute(sql, value_list=value_list)

@@ -51,9 +51,11 @@ class Product:
 
     def insert(self, values):
         """Insert a product in database"""
-        value_list = values
         sql = self.q.build("insert", self.model)
-        if not type(values) == list:
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         self.q.execute(sql, value_list=value_list)
 

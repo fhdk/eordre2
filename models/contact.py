@@ -52,13 +52,13 @@ class Contact:
     def create(self, customerid, name):
         """Create a contact"""
         sql = self.q.build("insert", self.model)
-        value_list = (None, customerid, name, "", "", "", "")
+        value_list = [None, customerid, name, "", "", "", ""]
         result = self.q.execute(sql, value_list=value_list)
         self.find(result)
 
     def find(self, contactid):
         sql = self.q.build("select", self.model)
-        value_list = list(contactid)
+        value_list = [contactid]
         result = self.q.execute(sql, value_list=value_list)
         if result:
             self._contact = dict(zip(self.model["fields"], result))
@@ -89,8 +89,10 @@ class Contact:
         """Insert items
         :param values: contact data to insert in contact table
         """
-        value_list = []
-        if not type(values) == list:
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         sql = self.q.build("insert", self.model)
         return self.q.execute(sql, value_list=value_list)
@@ -111,9 +113,10 @@ class Contact:
         update_list = list(self.model["fields"])[1:]
         where_list = list(self.model["id"])
         sql = self.q.build("update", update_list=update_list, where_list=where_list)
-        value_list = []
-        # sanitize parameter
-        if not type(values) == list:
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         value_list = value_list.append(value_list[0])[1:]
         self.q.execute(sql, value_list=value_list)

@@ -20,15 +20,13 @@ class Visit:
         """Initialize visit class"""
         self.model = {
             "name": "visit",
-            "fields": (
-                "visitid", "reportid", "employeeid", "customerid", "podate", "posent", "pocontact", "ponum",
-                "pocompany", "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry",
-                "infotext", "proddemo", "prodsale", "ordertype", "turnsas", "turnsale", "turntotal",
-                "approved"),
-            "types": (
-                "INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "INTEGER", "TEXT", "INTEGER", "TEXT", "TEXT",
-                "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "REAL", "REAL", "REAL",
-                "INTEGER")
+            "id": "visitid",
+            "fields": ("visitid", "reportid", "employeeid", "customerid", "podate", "posent", "pocontact", "ponum",
+                       "pocompany", "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry", "infotext",
+                       "proddemo", "prodsale", "ordertype", "turnsas", "turnsale", "turntotal", "approved"),
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "INTEGER", "TEXT", "INTEGER",
+                      "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "REAL", "REAL", "REAL", "INTEGER")
         }
         self._customer_visits = []
         self._report_visits = []
@@ -52,9 +50,9 @@ class Visit:
         try:
             cid = self._customer_visits[0]["customerid"]
             if not cid == customerid:
-                self.load_for_customer(customerid=customerid)
+                self.select_by_customer(customerid=customerid)
         except IndexError:
-            self.load_for_customer(customerid=customerid)
+            self.select_by_customer(customerid=customerid)
 
     @property
     def report_visits(self):
@@ -65,9 +63,9 @@ class Visit:
         try:
             rid = self._report_visits[0]["reportid"]
             if not rid == reportid:
-                self.load_for_report(reportid)
+                self.select_by_report(reportid)
         except IndexError:
-            self.load_for_report(reportid=reportid)
+            self.select_by_report(reportid=reportid)
 
     def clear(self):
         self._visit = {}
@@ -77,17 +75,15 @@ class Visit:
     def create(self, reportid, employeeid, customerid, workdate):
         values = [None, reportid, employeeid, customerid, workdate,
                   0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0]
-        self.find(self.insert_(values))
+        self.find(self.insert(values))
 
     def find(self, visitid):
         """Look up a visit from visitid"""
-        sql = "SELECT * FROM visit WHERE visitid=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (visitid,))
-            data = cur.fetchone()
-            self._visit = dict(zip(self.model["fields"], data))
+        where_list = [(self.model["id"], "=")]
+        value_list = [visitid]
+        sql = self.q.build("select", self.model, where_list=where_list)
+        result = self.q.execute(sql, value_list=value_list)
+        self._visit = dict(zip(self.model["fields"], result))
 
     def import_csv(self, filename, headers=False):
         """Import orders from file
@@ -112,44 +108,36 @@ class Visit:
                              row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
                              row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
                              row[20], row[21]]
-                self.insert_(processed)  # call insert function
+                self.insert(processed)  # call insert function
             return True
 
-    def insert_(self, values=None):
+    def insert(self, values=None):
         """Save visit"""
-        sql = "INSERT INTO visit VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        if not values:
-            values = self._visit.values()
-        if not type(values) == list:
-            values = list(values)
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
-            return cur.execute("SELECT last_insert_rowid()")
+        sql = self.q.build("insert", self.model)
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
+            value_list = list(self._visit.values())
+        return self.q.execute(sql, value_list=value_list)
 
-    def load_for_customer(self, customerid):
-        """Load orders for specified customer"""
-        sql = "SELECT * FROM visit WHERE customerid=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (customerid,))
-            visits = cur.fetchall()
-            if visits:
-                self._customer_visits = [dict(zip(self.model["fields"], row)) for row in visits]
+    def select_by_customer(self, customerid):
+        """Load visits for specified customer"""
+        where_list = [(self.model["id"]), "="]
+        value_list = [customerid]
+        sql = self.q.build("select", self.model, where_list=where_list)
+        result = self.q.execute(sql, value_list=value_list)
+        if result:
+            self._customer_visits = [dict(zip(self.model["fields"], row)) for row in result]
 
-    def load_for_report(self, reportid):
+    def select_by_report(self, reportid):
         """Load orders for specified customer"""
-        sql = "SELECT * FROM visit WHERE reportid=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (reportid,))
-            visits = cur.fetchall()
-            if visits:
-                self._report_visits = [dict(zip(self.model["fields"], row)) for row in visits]
+        where_list = [(self.model["id"], "=")]
+        value_list = [reportid]
+        sql = self.q.build("select", self.model, where_list=where_list)
+        result = self.q.execute(sql, value_list=value_list)
+        if result:
+            self._report_visits = [dict(zip(self.model["fields"], row)) for row in result]
 
     def save(self):
         """Save"""
@@ -157,19 +145,12 @@ class Visit:
 
     def _update_(self, values=None):
         """Save current visit"""
-        sql = "UPDATE visit SET reportid=?, employeeid=?, customerid=?, podate=?, " \
-              "posent=?, pocontact=?, ponum=?, pocompany=?, poaddress1=?, poaddress2=?, " \
-              "pozipcode=?, pocity=?, pocountry=?, infotext=?, proddemo=?, prodsale=?, " \
-              "ordertype=?, turnsas=?, turnsale=?, turntotal=?, approved=? WHERE visitid=?;"
-        if not values:
-            values = self._visit.values()
-        if not type(values) == list:
-            values = list(values)
-        # move visitid to end of values list
-        values += [values[0]]
-        values = values[1:]
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+        where_list = [(self.model["id"]), "="]
+        sql = self.q.build("update", self.model, where_list=where_list)
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
+            value_list = list(self._visit.values())
+        value_list = value_list.append(value_list[0])[1:]
+        self.q.execute(sql, value_list=value_list)

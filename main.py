@@ -221,7 +221,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txtInfoText.clear()
             self.txtInfoText.insertPlainText(self.Customers.customer["infotext"])
             self.Contacts.load_for_customer(self.Customers.customer["customerid"])
-            self.Visits.load_for_customer(self.Customers.customer["customerid"])
+            self.Visits.select_by_customer(self.Customers.customer["customerid"])
 
         except KeyError:
             self.txtAccount.clear()
@@ -287,7 +287,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_customers_finished(self):
         """Slot for getCustomers finished signal"""
-        self.populate_customer_list()  # load_for_customer customers
+        self.populate_customer_list()  # select_by_customer customers
         lsc = datetime.date.today().isoformat()  # get sync date
         self.txtCustLocal.setText(lsc)  # get update display
         self.Settings.settings["lsc"] = lsc  # update settings
@@ -302,7 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def get_product_finished(self):
         """Slot for getProducts finished signal"""
-        self.Products.load()  # load_for_customer products
+        self.Products.load()  # select_by_customer products
         lsp = datetime.date.today().isoformat()  # get sync date
         self.txtProdLocal.setText(lsp)  # update display
         self.Settings.settings["lsp"] = lsp  # update settings

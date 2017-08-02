@@ -39,7 +39,9 @@ class Employee:
         """Insert employee in database"""
         sql = self.q.build("insert", self.model)
         value_list = values
-        if not type(value_list) == list:
+        try:
+            _ = value_list[0]
+        except IndexError:
             list(value_list)
         self.q.execute(sql, value_list=value_list)
 
@@ -53,10 +55,16 @@ class Employee:
     def update(self, values=None):
         """Update the employee"""
         update_list = list(self.model["fields"])[1:]
-        value_list = list(values)
         where_list = [(self.model["id"], "=")]
         sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
-        if not values:
-            value_list = list(self._employee.values())
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
+            value_list = list(values)
+            try:
+                _ = value_list[0]
+            except IndexError:
+                value_list = list(self._employee.values())
         value_list = value_list.append(value_list[0])[1:]
         self.q.execute(sql, value_list=value_list)

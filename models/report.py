@@ -142,7 +142,6 @@ class Report:
 
         calc = ReportCalc()
 
-
         # db = sqlite3.connect(config.DBPATH)
         # with db:
         #     cur = db.cursor()
@@ -160,9 +159,11 @@ class Report:
 
     def insert(self, values):
         """Insert new report in table"""
-        value_list = values
         sql = self.q.build("insert", self.model)
-        if not type(values) == list:
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         return self.q.execute(sql, value_list=value_list)
 

@@ -77,7 +77,9 @@ class OrderLine:
     def insert_values(self, values):
         sql = self.q.build("insert", self.model)
         value_list = values
-        if not type(values) == list:
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         self.q.execute(sql, value_list=value_list)
 
@@ -94,9 +96,11 @@ class OrderLine:
         """Update orderline"""
         update_list = list(self.model["fields"])[1:]
         where_list = [("lineid", "=")]
+        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
         value_list = values
-        if not type(values) == list:
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         value_list = values.append(value_list[0])[1:]
-        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
         self.q.execute(sql, value_list=value_list)

@@ -43,9 +43,11 @@ class Setting:
 
     def insert(self, values):
         """Insert settings data"""
-        value_list = values
         sql = self.q.build("insert", self.model)
-        if not type(values) == list:
+        value_list = values
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         value_list = value_list.append(value_list[0])[1:]
         self.q.execute(sql, value_list=value_list)

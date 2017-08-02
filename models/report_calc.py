@@ -49,7 +49,9 @@ class ReportCalc:
         """Save values to database"""
         sql = self.q.build("insert", self.model)
         value_list = values
-        if not type(values) == list:
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         result = self.q.execute(sql, value_list=value_list)
         self.select_by_id(result)
@@ -77,7 +79,9 @@ class ReportCalc:
         where_list = [(self.model["id"]), "="]
         sql = self.q.build("update", self.model, where_list=where_list)
         value_list = values
-        if not type(values) == list:
+        try:
+            _ = value_list[0]
+        except IndexError:
             value_list = list(values)
         value_list = value_list.append(value_list[0])[1:]
         self.q.execute(sql, value_list=value_list)
