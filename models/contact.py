@@ -112,7 +112,7 @@ class Contact:
         """Update item"""
         update_list = list(self.model["fields"])[1:]
         where_list = list(self.model["id"])
-        sql = self.q.build("update", update_list=update_list, where_list=where_list)
+        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
         value_list = values
         try:
             _ = value_list[0]
