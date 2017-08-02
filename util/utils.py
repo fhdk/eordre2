@@ -6,7 +6,6 @@
 
 """Utilities"""
 
-
 from configuration import config
 from util import httpfn
 

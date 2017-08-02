@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_OrderDialog(object):
     def setupUi(self, OrderDialog):
         OrderDialog.setObjectName("OrderDialog")
@@ -210,4 +211,3 @@ class Ui_OrderDialog(object):
         self.lblCompany.setText(_translate("OrderDialog", "Besøg / Ordre:"))
         self.buttonAddOrderLine.setText(_translate("OrderDialog", "Ny ordrelinje"))
         self.buttonCreateOrderVisit.setText(_translate("OrderDialog", "Arkiver"))
-

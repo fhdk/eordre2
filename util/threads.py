@@ -69,6 +69,7 @@ class ImportProductsThread(QThread):
 
 class RefreshSyncStatus(QThread):
     """Thread for updating sync status"""
+
     def __init__(self, parent=None):
         super(RefreshSyncStatus, self).__init__(parent)
         self.Settings = settings.Setting()

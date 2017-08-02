@@ -19,7 +19,7 @@ class Product:
             "id": "productid",
             "fields": ("productid", "sku", "name1", "name2", "name3", "item", "price", "d2", "d4", "d6", "d8", "d12",
                        "d24", "d48", "d96", "min", "net", "group"),
-            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT","REAL", "REAL",
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "REAL", "REAL",
                       "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "TEXT")}
         self._products = []
         self._product = {}
