@@ -29,50 +29,50 @@ class Visit:
                 "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "REAL", "REAL", "REAL",
                 "INTEGER")
         }
-        self.visit_list_customer = []
-        self.visit_list_report = []
-        self.visit = {}
+        self._customer_visits = []
+        self._report_visits = []
+        self._visit = {}
         self.csv_field_count = 22
 
     @property
-    def current_visit(self):
-        return self.visit
+    def visit(self):
+        return self._visit
 
     @property
-    def visit_list_customer(self):
-        return self.visit_list_customer
+    def customer_visits(self):
+        return self._customer_visits
 
-    @visit_list_customer.setter
-    def visit_list_customer(self, customerid):
+    @customer_visits.setter
+    def customer_visits(self, customerid):
         try:
-            cid = self.visit_list_customer[0]["customerid"]
+            cid = self._customer_visits[0]["customerid"]
             if not cid == customerid:
                 self.load_for_customer(customerid=customerid)
         except IndexError:
             self.load_for_customer(customerid=customerid)
 
     @property
-    def visit_list_report(self):
-        return self.visit_list_report
+    def report_visits(self):
+        return self._report_visits
 
-    @visit_list_report.setter
-    def visit_list_report(self, reportid):
+    @report_visits.setter
+    def report_visits(self, reportid):
         try:
-            rid = self.visit_list_report[0]["reportid"]
+            rid = self._report_visits[0]["reportid"]
             if not rid == reportid:
                 self.load_for_report(reportid)
         except IndexError:
             self.load_for_report(reportid=reportid)
 
     def clear(self):
-        self.visit = {}
-        self.visit_list_customer = []
-        self.visit_list_report = []
+        self._visit = {}
+        self._customer_visits = []
+        self._report_visits = []
 
     def create(self, reportid, employeeid, customerid, workdate):
         values = [None, reportid, employeeid, customerid, workdate,
                   0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0]
-        self.find(self._insert_(values))
+        self.find(self.insert_(values))
 
     def find(self, visitid):
         """Look up a visit from visitid"""
@@ -82,7 +82,7 @@ class Visit:
             cur = db.cursor()
             cur.execute(sql, (visitid,))
             data = cur.fetchone()
-            self.visit = dict(zip(self.model["fields"], data))
+            self._visit = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
         """Import orders from file
@@ -107,14 +107,14 @@ class Visit:
                              row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
                              row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
                              row[20], row[21]]
-                self._insert_(processed)  # call insert function
+                self.insert_(processed)  # call insert function
             return True
 
-    def _insert_(self, values=None):
+    def insert_(self, values=None):
         """Save visit"""
         sql = "INSERT INTO visit VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         if not values:
-            values = self.visit.values()
+            values = self._visit.values()
         if not type(values) == list:
             values = list(values)
         db = sqlite3.connect(config.DBPATH)
@@ -133,7 +133,7 @@ class Visit:
             cur.execute(sql, (customerid,))
             visits = cur.fetchall()
             if visits:
-                self.visit_list_customer = [dict(zip(self.model["fields"], row)) for row in visits]
+                self._customer_visits = [dict(zip(self.model["fields"], row)) for row in visits]
 
     def load_for_report(self, reportid):
         """Load orders for specified customer"""
@@ -144,7 +144,7 @@ class Visit:
             cur.execute(sql, (reportid,))
             visits = cur.fetchall()
             if visits:
-                self.visit_list_report = [dict(zip(self.model["fields"], row)) for row in visits]
+                self._report_visits = [dict(zip(self.model["fields"], row)) for row in visits]
 
     def save(self):
         """Save"""
@@ -157,7 +157,7 @@ class Visit:
               "pozipcode=?, pocity=?, pocountry=?, infotext=?, proddemo=?, prodsale=?, " \
               "ordertype=?, turnsas=?, turnsale=?, turntotal=?, approved=? WHERE visitid=?;"
         if not values:
-            values = self.visit.values()
+            values = self._visit.values()
         if not type(values) == list:
             values = list(values)
         # move visitid to end of values list

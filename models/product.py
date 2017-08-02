@@ -22,20 +22,20 @@ class Product:
                        "price", "d2", "d4", "d6", "d8", "d12", "d24", "d48", "d96", "min", "net", "group"),
             "types": ("TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
                       "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "TEXT")}
-        self.products = []
-        self.product = {}
+        self._products = []
+        self._product = {}
 
     def clear(self):
-        self.product = {}
-        self.products = []
+        self._product = {}
+        self._products = []
 
     @property
     def product_list(self):
         try:
-            _ = self.products[0]
+            _ = self._products[0]
         except IndexError:
-            self.load_()
-        return self.products
+            self.load()
+        return self._products
 
     def drop_table(self):
         """Drop the product table
@@ -43,10 +43,10 @@ class Product:
         An internal pointer to a specific product id is not used as orderline will contain the product sku etc
         This approach also eliminates and outstanding issue with deprecated product
         """
-        self.product = []
+        self._product = []
         dbfn.recreate_table("product")
 
-    def insert_(self, values):
+    def insert(self, values):
         """Insert a product in database"""
         sql = "INSERT INTO product VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
         db = sqlite3.connect(config.DBPATH)
@@ -57,7 +57,7 @@ class Product:
             cur.execute(sql, values)
             db.commit()
 
-    def load_(self):
+    def load(self):
         """Load product list"""
         sql = "SELECT * FROM product;"
         db = sqlite3.connect(config.DBPATH)
@@ -66,6 +66,6 @@ class Product:
             cur.execute(sql)
             products = cur.fetchall()
             if products:
-                self.products = [dict(zip(self.model["fields"], row)) for row in products]
+                self._products = [dict(zip(self.model["fields"], row)) for row in products]
             else:
-                self.products = []
+                self._products = []

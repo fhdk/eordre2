@@ -35,33 +35,33 @@ class Report:
                       "INTEGER", "INTEGER", "TEXT", "TEXT",
                       "INTEGER", "TEXT", "INTEGER", "INTEGER", "TEXT", "INTEGER")
         }
-
-        self.reports = []
-        self.report = {}
-        self.totals = {}
-        self.__csv_field_count = 25
+        self._reports = []
+        self._report = {}
+        self._totals = {}
+        self.csv_field_count = 25
+        self.query = Query()
 
     @property
     def current_report(self):
-        return self.report
+        return self._report
 
     @current_report.setter
     def current_report(self, workdate):
         try:
-            _ = self.report["repdate"]
+            _ = self._report["repdate"]
         except KeyError:
             self.load_report(workdate=workdate)
 
     @property
     def reportlist(self):
-        return self.reports
+        return self._reports
 
     @reportlist.setter
     def reportlist(self, year=None, month=None):
-        self.reports = []
+        self._reports = []
         self.load_reports(year=year, month=month)
 
-    def create_(self, employee, workdate):
+    def create(self, employee, workdate):
         """Create report for employee and date supplied
         :param employee: object
         :param workdate: iso formatted str representing the report date
@@ -105,7 +105,7 @@ class Report:
         # 
         # values = [workdate[:8] + "%", employee["employeeid"]]
 
-        aggregate = ("sum(newvisitday) AS 'new_visit'",
+        aggregate = ["sum(newvisitday) AS 'new_visit'",
                      "sum(newdemoday) AS 'new_demo'",
                      "sum(newsaleday) AS 'new_sale'",
                      "sum(newturnoverday) AS 'new_turnover'",
@@ -123,8 +123,11 @@ class Report:
                      "(sum(kmprivate)) AS 'kmprivate'",
                      "(sum(workday = 1)) AS 'workdays'",
                      "(sum(offday = 1)) AS 'offdays'",
-                     "count(reportid) AS 'reports'")
-        clause = ("repdate", workdate[:8] + "%"), ("employeeid", employee["employeeid"])
+                     "count(reportid) AS 'reports'"]
+        clause = [("repdate", "LIKE", "'" + workdate[:8] + "%'"), ("employeeid", "=", employee["employeeid"])]
+
+        sql = self.query.build("read", self.model, aggregate=aggregate, where=clause)
+        pprint(sql)
 
         # db = sqlite3.connect(config.DBPATH)
         # with db:
@@ -137,11 +140,11 @@ class Report:
         #     new_values = [None, employee["employeeid"], (self.__totals["reports"] + 1), workdate,
         #                   None, None, None, None, None, None, None, None, None, None, None, None,
         #                   None, None, None, None, None, None, None, None, None, None]
-        #     self.__totals["reportid"] = self.insert_(new_values)
+        #     self.__totals["reportid"] = self.insert(new_values)
         #
         # print("TODO: create report in database!")
 
-    def insert_(self, values):
+    def insert(self, values):
         """Insert new report in table"""
         sql = "INSERT INTO report" \
               " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
@@ -167,7 +170,7 @@ class Report:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-                if not len(row) == self.__csv_field_count:
+                if not len(row) == self.csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
@@ -181,7 +184,7 @@ class Report:
                              row[11], row[12], row[13], row[14],
                              row[15], row[16], row[17].strip(), row[18].strip(),
                              row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24]]
-                self.insert_(processed)
+                self.insert(processed)
             return True
 
     def load_report(self, workdate):
@@ -195,7 +198,7 @@ class Report:
             cur.execute(sql, (workdate,))
             report = cur.fetchone()
             if report:
-                self.report = dict(zip(self.model["fields"], report))
+                self._report = dict(zip(self.model["fields"], report))
 
     def load_reports(self, year=None, month=None):
         """Load report matching year and month or all if no params are given
@@ -216,9 +219,9 @@ class Report:
             cur.execute(sql, (value,))
             reports = cur.fetchall()
             if reports:
-                self.reports = [dict(zip(self.model["fields"], row)) for row in reports]
+                self._reports = [dict(zip(self.model["fields"], row)) for row in reports]
             else:
-                self.reports = []
+                self._reports = []
 
     def update_report(self):
         pass

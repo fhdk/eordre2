@@ -33,7 +33,7 @@ class ImportCustomersThread(QThread):
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
         data = httpfn.get_customers(self.Settings.current_settings,
-                                    self.Employee.current_employee)
+                                    self.Employee.employee)
         self.c.processing.emit("{}".format("Henter fra server ..."))
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
@@ -62,7 +62,7 @@ class ImportProductsThread(QThread):
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.Product.insert_(row)  # add row to database
+            self.Product.insert(row)  # add row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
 

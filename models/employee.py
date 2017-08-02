@@ -19,18 +19,18 @@ class Employee:
             "fields": ("employeeid", "salesrep", "fullname", "email", "country", "sas"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
         }
-        self.employee = {}
+        self._employee = {}
 
     @property
-    def current_employee(self):
+    def employee(self):
         """Return current and only employee"""
         try:
-            _ = self.employee["fullname"]
+            _ = self._employee["fullname"]
         except KeyError:
-            self.load_()
-        return self.employee
+            self.load()
+        return self._employee
 
-    def insert_(self, values):
+    def insert(self, values):
         """Insert employee in database"""
         sql = "INSERT INTO employee VALUES (?, ?, ?, ?, ?, ?)"
         db = sqlite3.connect(config.DBPATH)
@@ -41,7 +41,7 @@ class Employee:
             cur.execute(sql, values)
             db.commit()
 
-    def load_(self):
+    def load(self):
         """Load the employee"""
         sql = "SELECT * FROM employee"
         db = sqlite3.connect(config.DBPATH)
@@ -50,18 +50,18 @@ class Employee:
             cur.execute(sql)
             row = cur.fetchone()
             if row:
-                self.employee = dict(zip(self.model["fields"], row))
+                self._employee = dict(zip(self.model["fields"], row))
 
-    def update_(self, values=None):
+    def update(self, values=None):
         """Update the employee"""
         sql = "UPDATE employee " \
               "SET employeeid=?, salesrep=?, fullname=?, email=?, country=?, sas=? " \
               "WHERE employeeid=?;"
         if not values:
-            values = list(self.employee.values())
+            values = list(self._employee.values())
         if not type(values) == list:
             values = list(values)
-        values.append(self.employee["employeeid"])
+        values.append(self._employee["employeeid"])
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()

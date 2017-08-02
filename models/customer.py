@@ -32,36 +32,36 @@ class Customer:
             "types": ("INTEGER PRIMARY KEY NOT NUL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
                       "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "REAL")
         }
-        self.customers = []
-        self.customer = {}
+        self._customers = []
+        self._customer = {}
         self.csv_field_count = 20
 
     def clear(self):
-        self.customer = {}
-        self.customers = []
+        self._customer = {}
+        self._customers = []
 
     @property
-    def current_customer(self):
+    def customer(self):
         """Return current customer"""
-        return self.customer
+        return self._customer
 
     @property
-    def customer_list(self):
+    def customers(self):
         """Load customer into primary customer list"""
         try:
-            _ = self.customers[0]
+            _ = self._customers[0]
         except IndexError:
-            self.load_()
-        return self.customers
+            self.load()
+        return self._customers
 
-    def create_(self, company, phone, createdate, country, salesrep):
+    def create(self, company, phone, createdate, country, salesrep):
         found = self.find_name_account(company, phone)
         if found:
-            self.customer = found
+            self._customer = found
         else:
             new = (None, "NY", company, "", "", "", "", country,
                    salesrep, phone, "", "", 0, 0, createdate, "", "", "", 0.0)
-            self.insert_(new)
+            self.insert(new)
             db = sqlite3.connect(config.DBPATH)
             with db:
                 cur = db.cursor()
@@ -76,7 +76,7 @@ class Customer:
             cur = db.cursor()
             cur.execute(sql, (customerid,))
             customer = cur.fetchone()
-            self.customer = dict(zip(self.model, customer))
+            self._customer = dict(zip(self.model["fields"], customer))
 
     def find_name_account(self, company, account):
         """Look up customer
@@ -93,15 +93,15 @@ class Customer:
             cur.execute(sql_1, [account])
             cust = cur.fetchone()
             if cust:  # found by account
-                data = dict(zip(self.model, cust))
+                data = dict(zip(self.model["fields"], cust))
             else:  # search again
                 # does the row exist as 'NY'
                 cur.execute(sql_2, ['NY', company])
                 cust = cur.fetchone()
                 if cust:  # found as new customer
-                    data = dict(zip(self.model, cust))
-        self.customer = data
-        return self.customer
+                    data = dict(zip(self.model["fields"], cust))
+        self._customer = data
+        return self._customer
 
     def import_csv(self, filename, headers=False):
         """Import customer from csv file
@@ -127,7 +127,7 @@ class Customer:
                           row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
                           row[12].strip(), row[15], row[16], row[17],
                           row[19].strip(), "", "", 0.0]
-                self.insert_(values)
+                self.insert(values)
             return True
 
     def import_http(self, values):
@@ -165,14 +165,14 @@ class Customer:
             found["email"] = values[9].strip()
             found["att"] = values[10].strip()
             found["phone2"] = values[11].strip()
-            self.update_(found.values())  # call update function
+            self.update(found.values())  # call update function
         else:
             row_values = [None, values[0].strip(), values[1].strip(), values[2], values[3].strip(), zipcode, city,
                           values[5].strip(), values[6].strip(), values[7].strip(), values[8].strip(),
                           values[9].strip(), 0, 0, 0, "", values[10].strip(), values[11].strip(), 0.0]
-            self.insert_(row_values)
+            self.insert(row_values)
 
-    def insert_(self, values):
+    def insert(self, values):
         """Insert a new customer
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
@@ -186,20 +186,20 @@ class Customer:
             cur.execute(sql, values)
             db.commit()
 
-    def load_(self):
+    def load(self):
         """Load customers into primary customer list"""
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             customers = cur.execute('SELECT * FROM customer')
             if customers:
-                self.customers = [dict(zip(self.model, row)) for row in customers]
+                self._customers = [dict(zip(self.model["fields"], row)) for row in customers]
 
-    def save_(self):
+    def save(self):
         """Save current customer changes"""
-        self.update_(list(self.customer.values()))
+        self.update(list(self._customer.values()))
 
-    def update_(self, values=None):
+    def update(self, values=None):
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """

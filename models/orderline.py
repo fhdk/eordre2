@@ -21,31 +21,31 @@ class OrderLine:
             "fields": ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "TEXT", "TEXT", "REAL", "INTEGER", "REAL")
         }
-        self.order_lines = []
-        self.current_line = {}
+        self._order_lines = []
+        self._order_line = {}
         self.csv_field_count = 8
 
     @property
     def orderlines_list(self):
-        return self.order_lines
+        return self._order_lines
 
     @orderlines_list.setter
     def orderlines_list(self, visitid):
         try:
-            _ = self.order_lines[0]
+            _ = self._order_lines[0]
         except IndexError:
-            self.load_(visitid)
+            self.load(visitid)
 
     def clear(self):
-        self.current_line = {}
-        self.order_lines = []
+        self._order_line = {}
+        self._order_lines = []
 
-    def create_(self, visit_id):
+    def create(self, visit_id):
         """Create a new orderline on visitid"""
         # create new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
         self.insert_values(values)
-        self.current_line = dict(zip(self.model["fields"], values))
+        self._order_line = dict(zip(self.model["fields"], values))
 
     def csv_import(self, filename, headers=False):
         """Import orderline from file
@@ -75,7 +75,7 @@ class OrderLine:
         # sanitize values
         if not values:
             try:
-                values = self.current_line.values()
+                values = self._order_line.values()
             except KeyError:
                 return
         if not type(values) == list:
@@ -87,7 +87,7 @@ class OrderLine:
             cur.execute(sql, values)
             db.commit()
 
-    def load_(self, visitid):
+    def load(self, visitid):
         """Load orderlines"""
         sql = "SELECT * FROM orderline WHERE visitid=?"
         db = sqlite3.connect(config.DBPATH)
@@ -97,7 +97,7 @@ class OrderLine:
             if orderlines:
                 self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in orderlines]
 
-    def update_(self, values):
+    def update(self, values):
         """Update orderline"""
         sql = "UPDATE orderline " \
               "SET " \

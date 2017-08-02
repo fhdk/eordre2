@@ -26,7 +26,7 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
 
         self.c = Communicate()
 
-        self.employee = employee.Employee().current_employee  # Create employe object
+        self.employee = employee.Employee().employee  # Create employe object
         self.settings = settings.Setting().current_settings  # Create settings object
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox

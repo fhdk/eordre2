@@ -20,41 +20,41 @@ class Contact:
             "fields": ("contactid", "customerid", "name", "department", "email", "phone", "infotext"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT")
         }
-        self.contact = {}
-        self.contacts = []
+        self._contact = {}
+        self._contacts = []
         self.csv_field_count = 8
 
     @property
-    def current_contact(self):
-        return self.contact
+    def contact(self):
+        return self._contact
 
     @property
-    def contact_list(self):
-        return self.contacts
+    def contacts(self):
+        return self._contacts
 
-    @contact_list.setter
-    def contact_list(self, customerid):
+    @contacts.setter
+    def contacts(self, customerid):
         try:
-            custid = self.contacts[0]["customerid"]
+            custid = self._contacts[0]["customerid"]
             if not custid == customerid:
                 self.load_for_customer(customerid)
         except IndexError:
             self.load_for_customer(customerid)
 
     def clear(self):
-        self.contact = {}
-        self.contacts = []
+        self._contact = {}
+        self._contacts = []
 
     def create(self, customerid, name):
         """Create a contact"""
         values = (None, customerid, name, "", "", "", "")
-        self.insert_(values)
+        self.insert(values)
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
-            self.find_(cur.execute("SELECT last_insert_rowid();"))
+            self.find(cur.execute("SELECT last_insert_rowid();"))
 
-    def find_(self, contactid):
+    def find(self, contactid):
         sql = "SELECT * FROM contact WHERE contactid=?"
         db = sqlite3.connect(config.DBPATH)
         with db:
@@ -62,7 +62,7 @@ class Contact:
             cur.execute(sql, (contactid,))
             contact = cur.fetchone()
             if contact:
-                self.contact = dict(zip(self.model["fields"], contact))
+                self._contact = dict(zip(self.model["fields"], contact))
 
     def import_csv(self, filename, headers=False):
         """Import contact from file
@@ -83,10 +83,10 @@ class Contact:
                     continue
                 values = [row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[7].strip()]
-                self.insert_(values)
+                self.insert(values)
             return True
 
-    def insert_(self, values):
+    def insert(self, values):
         """Insert items
         :param values: contact data to insert in contact table
         """
@@ -107,11 +107,11 @@ class Contact:
             cur = db.execute(sql, (customerid,))
             contacts = cur.fetchall()
             if contacts:
-                self.contacts = [dict(zip(self.model["fields"], row)) for row in contacts]
+                self._contacts = [dict(zip(self.model["fields"], row)) for row in contacts]
             else:
-                self.contacts = []
+                self._contacts = []
 
-    def update_(self, values):
+    def update(self, values):
         """Update item"""
         sql = "UPDATE contact SET contactid=?, name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
         # sanitize parameter
