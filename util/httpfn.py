@@ -53,7 +53,7 @@ def get_modified_data(settings, file, maxwait=2):
                                 settings["pd"], file, settings["sf"])
     try:
         with urlopen(uri, timeout=maxwait, context=context) as response:
-            data = response.read().decode(config.DECODE)
+            data = response.read().decode(config.DECODE_HTTP)
             # return int(time.mktime(time.strptime(data, "%Y-%m-%d %H:%M:%S")))
             return data
     except (HTTPException, timeout, URLError) as e:

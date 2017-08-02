@@ -56,14 +56,13 @@ class OrderLine:
         :param filename: csv file
         :param headers: flag first row as fieldnames
         """
-        csv_field_count = 8
-        dbfn.recreate_table("orderline")
+        self.recreate_table()
         filename.encode("utf8")
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-                if not len(row) == csv_field_count:
+                if not len(row) == self.csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
@@ -91,6 +90,13 @@ class OrderLine:
         result = self.q.execute(sql, value_list=value_list)
         if result:
             self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in result]
+
+    def recreate_table(self):
+        """Drop and create table"""
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)
 
     def update(self, values):
         """Update orderline"""

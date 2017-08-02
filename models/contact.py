@@ -68,7 +68,7 @@ class Contact:
         :param filename:
         :param headers:
         """
-        dbfn.recreate_table("contact")
+        self.recreate_table()
         filename.encode("utf8")
         csv_field_count = 7
         with open(filename) as csvdata:
@@ -120,3 +120,10 @@ class Contact:
             value_list = list(values)
         value_list = value_list.append(value_list[0])[1:]
         self.q.execute(sql, value_list=value_list)
+
+    def recreate_table(self):
+        """Drop and create table"""
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)

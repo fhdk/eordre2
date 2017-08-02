@@ -20,7 +20,7 @@ def sanitize_customer_data(rawdata, sr):
     for data in cdata:
         if not data:
             continue
-        line = data.decode(config.DECODE).split("|")
+        line = data.decode(config.DECODE_HTTP).split("|")
         if line[6].strip() == sr:
             cdata = [line[0].strip(), line[1].strip(), line[2].strip(),
                      line[3].strip(), line[4].strip(), line[5].strip(),
@@ -40,7 +40,7 @@ def sanitize_employee_data(rawdata, em, hp):
     for data in employeedata:
         if not data:
             continue
-        line = data.decode(config.DECODE).split("|")
+        line = data.decode(config.DECODE_HTTP).split("|")
         if line[2].lower() == em.lower():
             if check_password(hp, line[4]):
                 email_lower = line[2].lower()
@@ -61,7 +61,7 @@ def sanitize_product_data(rawdata):
     for data in productdata:
         if not data:
             continue
-        line = data.decode(config.DECODE).split("|")
+        line = data.decode(config.DECODE_HTTP).split("|")
         pdata = (line[0].strip(), line[1].strip(), line[2].strip(), line[3].strip(), line[4].strip(),
                  line[5], line[6], line[7], line[8], line[9], line[10],
                  line[11], line[12], line[13], line[14], line[15], line[16].strip())

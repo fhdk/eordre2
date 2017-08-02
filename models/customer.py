@@ -98,7 +98,7 @@ class Customer:
         The expected file format contains data in the following sequence
         in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         """
-        dbfn.recreate_table("customer")
+        self.recreate_table()
         with open(filename) as csvfile:
             reader = csv.reader(csvfile, delimiter="|")
             line = 0
@@ -177,6 +177,13 @@ class Customer:
         sql = self.q.build("select", self.model)
         result = self.q.execute(sql)
         self._customers = [dict(zip(self.model["fields"], row)) for row in result]
+
+    def recreate_table(self):
+        """Drop and create table"""
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)
 
     def save(self):
         """Save current customer changes"""

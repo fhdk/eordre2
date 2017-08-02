@@ -94,36 +94,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                      "Bygget med Python 3.6 og Qt framework<br/><br/>Frede Hundewadt (c) 2017<br/><br/>"
                      "<a href='https://www.gnu.org/licenses/agpl.html'>https://www.gnu.org/licenses/agpl.html</a>")
 
-    def app_run(self):
-        """Setup database and basic configuration"""
-        # Settings needs to be up for inet connection to work
-        is_set = check_settings(self.Settings.settings)
-        if is_set:
-            try:
-                _ = self.Employee.employee["fullname"]
-            except KeyError:
-                if httpfn.inet_conn_check():
-                    e = httpfn.get_employee_data(self.Settings.settings)
-                    if e:
-                        e = [1] + e
-                        self.Employee.insert(e)
-        else:
-            msgbox = QMessageBox()
-            msgbox.about(self,
-                         __appname__,
-                         "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses.")
-            self.settings_dialog_action()
-
-        self.populate_customer_list()
-        if utils.int2bool(self.Settings.settings["sc"]):
-            self.statusbar.setToolTip("Checker server for opdateringer ...")
-            status = utils.refresh_sync_status(self.Settings.settings)
-            self.Settings.settings["sac"] = status[0][1].split()[0]
-            self.Settings.settings["sap"] = status[1][1].split()[0]
-            self.Settings.update()
-        # update display
-        self.display_sync_status()
-
     def archive_customer_action(self):
         """Slot for updateCustomer triggered signal"""
         if not self.Customers.customer:
@@ -407,6 +377,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                            "Kunder og prisliste er nu nulstillet!",
                            QMessageBox.Ok)
 
+    def run(self):
+        """Setup database and basic configuration"""
+        # Settings needs to be up for inet connection to work
+        is_set = check_settings(self.Settings.settings)
+        if is_set:
+            try:
+                _ = self.Employee.employee["fullname"]
+            except KeyError:
+                if httpfn.inet_conn_check():
+                    e = httpfn.get_employee_data(self.Settings.settings)
+                    if e:
+                        e = [1] + e
+                        self.Employee.insert(e)
+        else:
+            msgbox = QMessageBox()
+            msgbox.about(self,
+                         __appname__,
+                         "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses.")
+            self.settings_dialog_action()
+
+        self.populate_customer_list()
+        if utils.int2bool(self.Settings.settings["sc"]):
+            self.statusbar.setToolTip("Checker server for opdateringer ...")
+            status = utils.refresh_sync_status(self.Settings.settings)
+            self.Settings.settings["sac"] = status[0][1].split()[0]
+            self.Settings.settings["sap"] = status[1][1].split()[0]
+            self.Settings.update()
+        # update display
+        self.display_sync_status()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -422,8 +422,8 @@ if __name__ == '__main__':
     window = MainWindow()
     window.show()
 
-    # QTimer.singleShot(1, window.app_run())
-    QTimer.singleShot(1, window.app_run)
+    # QTimer.singleShot(1, window.run())
+    QTimer.singleShot(1, window.run)
     splash.finish(window)
 
     sys.exit(app.exec_())

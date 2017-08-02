@@ -6,12 +6,12 @@
 
 
 def insert_query(model_def):
-    i_name = model_def["name"]
-    num_sf = len(model_def["fields"])
-    str_if = ""
+    name = model_def["name"]
+    fld_count = len(model_def["fields"])
+    string = ""
     for idx, field in enumerate(model_def["fields"]):
-        if (idx + 1) == num_sf:
-            str_if = str_if + "?"
+        if (idx + 1) == fld_count:
+            string = string + "?"
         else:
-            str_if = str_if + "?,"
-    return "INSERT INTO {} VALUES ({});".format(i_name, str_if)
+            string = string + "?,"
+    return "INSERT INTO {} VALUES ({});".format(name, string)

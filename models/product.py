@@ -47,7 +47,7 @@ class Product:
         This approach also eliminates and outstanding issue with deprecated product
         """
         self._product = []
-        dbfn.recreate_table("product")
+        self.recreate_table()
 
     def insert(self, values):
         """Insert a product in database"""
@@ -67,3 +67,10 @@ class Product:
             self._products = [dict(zip(self.model["fields"], row)) for row in result]
         else:
             self._products = []
+
+    def recreate_table(self):
+        """Drop and create table"""
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)

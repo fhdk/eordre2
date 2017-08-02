@@ -171,7 +171,7 @@ class Report:
         :param employee:
         :param headers:
         """
-        dbfn.recreate_table("report")
+        self.recreate_table()
         filename.encode("utf8")
         employeeid = employee["employeeid"]
         # open and read the file
@@ -225,6 +225,13 @@ class Report:
             self._reports = [dict(zip(self.model["fields"], row)) for row in result]
         else:
             self._reports = []
+
+    def recreate_table(self):
+        """Drop and create table"""
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)
 
     def update_report(self):
         pass

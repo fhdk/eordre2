@@ -54,8 +54,7 @@ class Setting:
 
     def insert_defaults(self):
         """Create default settings in database"""
-        defaults = ["", "", "", "_", "__", ".txt",
-                    "", "", "", "", "", "", "", "",
+        defaults = [None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
                     "customers", "invenprices", "employees", "", "", "", "", 0]
         self.insert(defaults)  # call insert function
 
@@ -67,6 +66,8 @@ class Setting:
             self.insert_defaults()
             result = self.q.execute(sql)
         self._settings = dict(zip(self.model["fields"], result))
+        print("{}".format(self._settings))
+        exit(0)
 
     def update(self):
         """Update settings"""

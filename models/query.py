@@ -8,12 +8,13 @@
 
 import sqlite3
 
-from util.builders.delete_query import delete_query
-from util.builders.insert_query import insert_query
-from util.builders.select_query import select_query
-from util.builders.update_query import update_query
-
+from configuration import config
+from models.builders.delete_query import delete_query
+from models.builders.insert_query import insert_query
+from models.builders.select_query import select_query
+from models.builders.update_query import update_query
 from models.builders.create_query import create_query
+from models.builders.drop_query import drop_query
 
 
 class Query:
@@ -38,7 +39,7 @@ class Query:
         :return: str
         """
         querytype = query_type.upper()
-        if querytype not in ["CREATE", "INSERT", "SELECT", "UPDATE", "DELETE"]:
+        if querytype not in ["CREATE", "DROP", "INSERT", "SELECT", "UPDATE", "DELETE"]:
             return "ERROR - UNSUPPORTED TYPE"
         if querytype in ["UPDATE", "DELETE"] and not where_list:
             return "ERROR - MISSING WHERE CLAUSE"
@@ -48,29 +49,33 @@ class Query:
             if not sort_order == "ASC" or not sort_order == "DESC":
                 sort_order = None
 
-        # builders insert query
+        # build insert query
         if querytype == "INSERT":
             return insert_query(model_def)
 
-        # builders select query
+        # build select query
         if querytype == "SELECT":
             return select_query(model_def, aggregate_list, where_list, sort_order)
 
-        # builders update query
+        # build update query
         if querytype == "UPDATE":
             return update_query(model_def, update_list, where_list)
 
-        # builders delete query
+        # build delete query
         if querytype == "DELETE":
             return delete_query(model_def, where_list)
 
-        # builders add table query
+        # build add table query
         if querytype == "CREATE":
             return create_query(model_def)
 
+        # builds drop table query
+        if querytype == "DROP":
+            return drop_query(model_def)
+
     def execute(self, sql_query, value_list=None):
         """Execute a query and return the result"""
-        db = sqlite3.connect("test_mock.db")
+        db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             try:

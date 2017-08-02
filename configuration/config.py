@@ -15,6 +15,6 @@ APP_DATA = "./.appdata"
 DBPATH = APP_DATA + "/app.db"
 LOGPATH = APP_DATA + "/app.log"
 TABLES = ["contact", "customer", "employee", "visit", "orderline", "product", "report", "settings"]
-CSVDATA = [("Kontakter", "contact"), ("Kunder", "customer"), ("Ordrer", "visit"), ("Ordrelinjer", "orderline"),
-           ("Rapporter", "report")]
-DECODE = "ISO-8859-1"
+CSVDATA = [("Kontakter", "contact"), ("Kunder", "customer"),
+           ("Ordrelinjer", "orderline"), ("Ordrer", "visit"), ("Rapporter", "report")]
+DECODE_HTTP = "ISO-8859-1"
