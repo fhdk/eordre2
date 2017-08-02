@@ -164,7 +164,7 @@ class Report:
         except IndexError:
             value_list = list(values)
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             return data
 
     def import_csv(self, filename, employee, headers=False):
@@ -206,7 +206,7 @@ class Report:
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [workdate]
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self._report = dict(zip(self.model["fields"], data))
 
     def load_reports(self, year=None, month=None):
@@ -223,7 +223,7 @@ class Report:
             value = "{}-{}-{}".format(year, month, "%")
         value_list = [value]
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self._reports = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._reports = []
@@ -236,6 +236,11 @@ class Report:
         self.q.execute(sql)
 
     def update_report(self):
+
+        # rowid = value_list[0]
+        # value_list = value_list[1:]
+        # value_list.append(rowid)
+
         pass
 
     def save_totals(self):

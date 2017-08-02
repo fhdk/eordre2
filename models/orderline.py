@@ -88,7 +88,7 @@ class OrderLine:
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [visitid]
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
@@ -108,5 +108,7 @@ class OrderLine:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        value_list = values.append(value_list[0])[1:]
+        rowid = value_list[0]
+        value_list = value_list[1:]
+        value_list.append(rowid)
         self.q.execute(sql, value_list=value_list)

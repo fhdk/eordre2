@@ -65,13 +65,16 @@ class Setting:
             self.insert_defaults()
             sql = self.q.build("select", self.model)
             success, data = self.q.execute(sql)
-        if success:
+        if success and data:
             self._settings = dict(zip(self.model["fields"], data[0]))
 
     def update(self):
         """Update settings"""
+        update_list = list(self.model["fields"])
         where_list = [(self.model["id"], "=")]
         value_list = list(self._settings.values())
-        sql = self.q.build("update", self.model, where_list=where_list)
-        value_list = value_list.append(value_list[0])[1:]
+        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
+        rowid = value_list[0]
+        value_list = value_list[1:]
+        value_list.append(rowid)
         self.q.execute(sql, value_list=value_list)

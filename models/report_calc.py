@@ -84,5 +84,7 @@ class ReportCalc:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        value_list = value_list.append(value_list[0])[1:]
+        rowid = value_list[0]
+        value_list = value_list[1:]
+        value_list.append(rowid)
         self.q.execute(sql, value_list=value_list)

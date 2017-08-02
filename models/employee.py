@@ -49,7 +49,7 @@ class Employee:
         """Load the employee"""
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
-        if success:
+        if success and data:
             self._employee = dict(zip(self.model["fields"], data[0]))
 
     def update(self, values=None):
@@ -66,5 +66,7 @@ class Employee:
                 _ = value_list[0]
             except IndexError:
                 value_list = list(self._employee.values())
-        value_list = value_list.append(value_list[0])[1:]
+        rowid = value_list[0]
+        value_list = value_list[1:]
+        value_list.append(rowid)
         self.q.execute(sql, value_list=value_list)

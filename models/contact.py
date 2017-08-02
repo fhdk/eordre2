@@ -59,7 +59,7 @@ class Contact:
         sql = self.q.build("select", self.model)
         value_list = [contactid]
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self._contact = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
@@ -95,7 +95,7 @@ class Contact:
             value_list = list(values)
         sql = self.q.build("insert", self.model)
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             return data
 
     def load_for_customer(self, customerid):
@@ -109,6 +109,13 @@ class Contact:
         else:
             self._contacts = []
 
+    def recreate_table(self):
+        """Drop and create table"""
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)
+
     def update(self, values):
         """Update item"""
         update_list = list(self.model["fields"])[1:]
@@ -119,12 +126,7 @@ class Contact:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        value_list = value_list.append(value_list[0])[1:]
+        rowid = value_list[0]
+        value_list = value_list[1:]
+        value_list.append(rowid)
         self.q.execute(sql, value_list=value_list)
-
-    def recreate_table(self):
-        """Drop and create table"""
-        sql = self.q.build("drop", self.model)
-        self.q.execute(sql)
-        sql = self.q.build("create", self.model)
-        self.q.execute(sql)

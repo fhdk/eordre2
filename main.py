@@ -365,16 +365,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def zero_database_action(self):
         """Slot for zeroDatabase triggered signal"""
-        for tbl in config.CSVDATA:
-            dbfn.recreate_table(tbl[1])
+        self.Contacts.recreate_table()
+        self.Customers.recreate_table()
+        self.OrderLines.recreate_table()
+        self.Visits.recreate_table()
+        self.Reports.recreate_table()
         self.customerList.clear()
         self.Products.clear()
         self.Customers.clear()
         msgbox = QMessageBox()
-        msgbox.information(self,
-                           __appname__,
-                           "Kunder og prisliste er nu nulstillet!",
-                           QMessageBox.Ok)
+        msgbox.information(self, __appname__, "Salgsdata er nulstillet!", QMessageBox.Ok)
 
     def run(self):
         """Setup database and basic configuration"""

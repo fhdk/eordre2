@@ -63,7 +63,7 @@ class Product:
         """Load product list"""
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
-        if success:
+        if success and data:
             self._products = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._products = []

@@ -81,7 +81,7 @@ class Visit:
         value_list = [visitid]
         sql = self.q.build("select", self.model, where_list=where_list)
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self._visit = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
@@ -119,7 +119,7 @@ class Visit:
         except IndexError:
             value_list = list(self._visit.values())
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             return data
 
     def recreate_table(self):
@@ -135,7 +135,7 @@ class Visit:
         value_list = [customerid]
         sql = self.q.build("select", self.model, where_list=where_list)
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def select_by_report(self, reportid):
@@ -144,7 +144,7 @@ class Visit:
         value_list = [reportid]
         sql = self.q.build("select", self.model, where_list=where_list)
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def save(self):
@@ -160,5 +160,7 @@ class Visit:
             _ = value_list[0]
         except IndexError:
             value_list = list(self._visit.values())
-        value_list = value_list.append(value_list[0])[1:]
+        rowid = value_list[0]
+        value_list = value_list[1:]
+        value_list.append(rowid)
         self.q.execute(sql, value_list=value_list)

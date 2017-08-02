@@ -60,7 +60,7 @@ class Customer:
             value_list = [None, "NY", company, "", "", "", "", country, salesrep,
                           phone, "", "", 0, 0, createdate, "", "", "", 0.0]
             success, data = self.q.execute(sql, value_list)
-            if success:
+            if success and data:
                 self.lookup_by_id(data)
 
     def lookup_by_id(self, customerid):
@@ -69,7 +69,7 @@ class Customer:
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             self._customer = dict(zip(self.model["fields"], data))
 
     def lookup_by_phone_name(self, phone, company):
@@ -87,7 +87,8 @@ class Customer:
             sql = self.q.build("select", self.model, where_list=where_list)
             value_list = ["NY", company, phone]
             success, data = self.q.execute(sql, value_list=value_list)
-        self._customer = dict(zip(self.model["fields"], data))
+        if success and data:
+            self._customer = dict(zip(self.model["fields"], data))
         return self._customer
 
     def import_csv(self, filename, headers=False):
@@ -170,14 +171,14 @@ class Customer:
         except IndexError:
             value_list = list(values)
         success, data = self.q.execute(sql, value_list=value_list)
-        if success:
+        if success and data:
             return data
 
     def load(self):
         """Load customers into primary customer list"""
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
-        if success:
+        if success and data:
             self._customers = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
@@ -202,5 +203,7 @@ class Customer:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        value_list = value_list.append(value_list[0])[1:]
+        rowid = value_list[0]
+        value_list = value_list[1:]
+        value_list.append(rowid)
         self.q.execute(sql, value_list=value_list)
