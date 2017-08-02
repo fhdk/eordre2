@@ -32,7 +32,7 @@ class ImportCustomersThread(QThread):
         """The run process - activated by the QTread start() method"""
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
-        data = httpfn.get_customers(self.Settings.current_settings,
+        data = httpfn.get_customers(self.Settings.settings,
                                     self.Employee.employee)
         self.c.processing.emit("{}".format("Henter fra server ..."))
         self.c.rowcount.emit(len(data))
@@ -58,7 +58,7 @@ class ImportProductsThread(QThread):
         self.Product.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
         # fetching datafile from http server
-        data = httpfn.get_product(self.Settings.current_settings)
+        data = httpfn.get_product(self.Settings.settings)
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
@@ -76,6 +76,6 @@ class RefreshSyncStatus(QThread):
 
     def run(self):
         """The run process - activated by QThread start() methcod"""
-        status = utils.refresh_sync_status(self.Settings.current_settings)
+        status = utils.refresh_sync_status(self.Settings.settings)
         self.Settings.update_avail_sync(status)
         self.c.SyncStatusDone.emit()

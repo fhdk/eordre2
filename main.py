@@ -97,13 +97,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def app_run(self):
         """Setup database and basic configuration"""
         # Settings needs to be up for inet connection to work
-        is_set = check_settings(self.Settings.current_settings)
+        is_set = check_settings(self.Settings.settings)
         if is_set:
             try:
                 _ = self.Employee.employee["fullname"]
             except KeyError:
                 if httpfn.inet_conn_check():
-                    e = httpfn.get_employee_data(self.Settings.current_settings)
+                    e = httpfn.get_employee_data(self.Settings.settings)
                     if e:
                         e = [1] + e
                         self.Employee.insert(e)
@@ -115,12 +115,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings_dialog_action()
 
         self.populate_customer_list()
-        if utils.int2bool(self.Settings.current_settings["sc"]):
+        if utils.int2bool(self.Settings.settings["sc"]):
             self.statusbar.setToolTip("Checker server for opdateringer ...")
-            status = utils.refresh_sync_status(self.Settings.current_settings)
-            self.Settings.current_settings["sac"] = status[0][1].split()[0]
-            self.Settings.current_settings["sap"] = status[1][1].split()[0]
-            self.Settings.update_()
+            status = utils.refresh_sync_status(self.Settings.settings)
+            self.Settings.settings["sac"] = status[0][1].split()[0]
+            self.Settings.settings["sap"] = status[1][1].split()[0]
+            self.Settings.update()
         # update display
         self.display_sync_status()
 
@@ -245,10 +245,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msgbox.information(self, __appname__, "Opret CSV data backup", QMessageBox.Ok)
 
     def display_sync_status(self):
-        self.txtCustLocal.setText(self.Settings.current_settings["lsc"])
-        self.txtCustServer.setText(self.Settings.current_settings["sac"])
-        self.txtProdLocal.setText(self.Settings.current_settings["lsp"])
-        self.txtProdServer.setText(self.Settings.current_settings["sap"])
+        self.txtCustLocal.setText(self.Settings.settings["lsc"])
+        self.txtCustServer.setText(self.Settings.settings["sac"])
+        self.txtProdLocal.setText(self.Settings.settings["lsp"])
+        self.txtProdServer.setText(self.Settings.settings["sap"])
 
     def exit_action(self):
         """Slot for exit triggered signal"""
@@ -290,8 +290,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.populate_customer_list()  # load_for_customer customers
         lsc = datetime.date.today().isoformat()  # get sync date
         self.txtCustLocal.setText(lsc)  # get update display
-        self.Settings.current_settings["lsc"] = lsc  # update settings
-        print("{}".format(list(self.Settings.current_settings.values())))
+        self.Settings.settings["lsc"] = lsc  # update settings
+        print("{}".format(list(self.Settings.settings.values())))
         # self.Settings.update()  # save settings
 
     def get_http_product_action(self):
@@ -305,8 +305,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Products.load()  # load_for_customer products
         lsp = datetime.date.today().isoformat()  # get sync date
         self.txtProdLocal.setText(lsp)  # update display
-        self.Settings.current_settings["lsp"] = lsp  # update settings
-        self.Settings.update_()  # save settings
+        self.Settings.settings["lsp"] = lsp  # update settings
+        self.Settings.update()  # save settings
 
     def master_data_action(self):
         """Slot for masterData triggered signal"""
@@ -373,7 +373,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def settings_dialog_action(self):
         """Slot for settingsDialog triggered signal"""
-        settings_dialog = SettingsDialog(self.Settings.current_settings)
+        settings_dialog = SettingsDialog(self.Settings.settings)
         if settings_dialog.exec_():
             # do check if password has been changed
             # and hash it if necessary
@@ -383,9 +383,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if len(check["mailpass"]) < 97:
                 check["mailpass"] = passwdfn.hash_password(check["mailpass"])
             # assign new settings
-            self.Settings.current_settings = check
+            self.Settings.settings = check
             # save to database
-            self.Settings.update_()
+            self.Settings.update()
             self.Employee.load()
         else:
             pass

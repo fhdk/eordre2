@@ -5,9 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """Settings class"""
-import sqlite3
 
-from configuration import config
 from util import dbfn
 from util.query import Query
 
@@ -17,77 +15,61 @@ class Setting:
         """Initialize the Settings class"""
         self.model = {
             "name": "settings",
-            "fields": ("usermail", "userpass", "usercountry", "pd", "pf", "sf",
-                       "http", "smtp", "port", "mailto",
-                       "mailserver", "mailport", "mailuser", "mailpass",
+            "id": "settingsid",
+            "fields": ("settingsid", "usermail", "userpass", "usercountry", "pd", "pf", "sf",
+                       "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
                        "fc", "fp", "fe", "lsc", "lsp", "sac", "sap", "sc"),
-            "types": ("TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
-                      "TEXT", "TEXT", "TEXT", "TEXT",
-                      "TEXT", "TEXT", "TEXT", "TEXT",
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
                       "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
         }
-        self.settings = {}
+        self._settings = {}
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
     @property
-    def current_settings(self):
+    def settings(self):
         try:
-            _ = self.settings["usermail"]
+            _ = self._settings["usermail"]
         except KeyError:
-            self.load_()
-        return self.settings
+            self.load()
+        return self._settings
 
-    @current_settings.setter
-    def current_settings(self, settings):
-        self.settings = settings
+    @settings.setter
+    def settings(self, settings):
+        self._settings = settings
 
-    def insert_(self, data):
+    def insert(self, values):
         """Insert settings data"""
-        sql = "INSERT INTO settings " \
-              "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        if not type(data) == list:
-            list(data)
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, data)
-            db.commit()
+        value_list = values
+        sql = self.q.build("insert", self.model)
+        if not type(values) == list:
+            value_list = list(values)
+        value_list = value_list.append(value_list[0])[1:]
+        self.q.execute(sql, value_list=value_list)
 
     def insert_defaults(self):
         """Create default settings in database"""
         defaults = ["", "", "", "_", "__", ".txt",
                     "", "", "", "", "", "", "", "",
                     "customers", "invenprices", "employees", "", "", "", "", 0]
-        self.insert_(defaults)  # call insert function
+        self.insert(defaults)  # call insert function
 
-    def load_(self):
+    def load(self):
         """Load settings"""
-        sql = "SELECT * FROM settings"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql)
-            data = cur.fetchone()
-            if not data:
-                self.insert_defaults()
-                cur.execute(sql)
-                data = cur.fetchone()
-            self.settings = dict(zip(self.model["fields"], data))
+        sql = self.q.build("select", self.model)
+        result = self.q.execute(sql)
+        if not result:
+            self.insert_defaults()
+            result = self.q.execute(sql)
+        self._settings = dict(zip(self.model["fields"], result))
 
-    def update_(self):
+    def update(self):
         """Update settings"""
-        sql = "UPDATE settings SET " \
-              "usermail=?, userpass=?, usercountry=?, " \
-              "pd=?, pf=?, sf=?, " \
-              "http=?, smtp=?, port=?, mailto=?, " \
-              "mailserver=?, mailport=?, mailuser=?, mailpass=?, " \
-              "fc=?, fp=?, fe=?, lsc=?, lsp=?, sac=?, sap=?, sc=?;"
-        values = list(self.settings.values())
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+        where_list = [(self.model["id"], "=")]
+        value_list = list(self._settings.values())
+        sql = self.q.build("update", self.model, where_list=where_list)
+        value_list = value_list.append(value_list[0])[1:]
+        self.q.execute(sql, value_list=value_list)

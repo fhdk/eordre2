@@ -23,7 +23,7 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
         super(HttpProdImportDialog, self).__init__(parent)
         self.setupUi(self)
         self.c = Communicate()
-        self.settings = settings.Setting().current_settings  # Create settings object
+        self.settings = settings.Setting().settings  # Create settings object
         self.progresscount = 1  # Used when setting progress values
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox

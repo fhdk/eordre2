@@ -17,7 +17,7 @@ class OrderLine:
         """Initialize OrderLine class"""
         self.model = {
             "name": "orderline",
-            "idfield": "lineid",
+            "id": "lineid",
             "fields": ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "TEXT", "TEXT", "REAL", "INTEGER", "REAL")
         }

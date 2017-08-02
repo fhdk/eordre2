@@ -9,10 +9,9 @@
 from pprint import pprint
 
 import csv
-import sqlite3
 
 from util.query import Query
-from configuration import config
+from models.report_calc import ReportCalc
 from util import dbfn, utils
 
 
@@ -22,6 +21,7 @@ class Report:
         """Initilize Report class"""
         self.model = {
             "name": "report",
+            "id": "reportid",
             "fields": ("reportid", "employeeid", "repno", "repdate",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
@@ -108,29 +108,40 @@ class Report:
         # 
         # values = [workdate[:8] + "%", employee["employeeid"]]
 
-        aggregate = ["sum(newvisitday) AS 'new_visit'",
-                     "sum(newdemoday) AS 'new_demo'",
-                     "sum(newsaleday) AS 'new_sale'",
-                     "sum(newturnoverday) AS 'new_turnover'",
-                     "sum(recallvisitday) AS 'recall_visit'",
-                     "sum(recalldemoday) AS 'recall_demo'",
-                     "sum(recallsaleday) AS 'recall_sale'",
-                     "sum(recallturnoverday) AS 'recall_turnover'",
-                     "sum(sasday) AS 'sas'",
-                     "sum(sasturnoverday) AS 'sas_turnover'",
-                     "(sum(newvisitday) + sum(recallvisitday)) AS 'visit'",
-                     "(sum(newdemoday) + sum(recalldemoday)) AS 'demo'",
-                     "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale'",
-                     "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover'",
-                     "(sum(kmevening - kmmorning)) AS 'kmwork'",
-                     "(sum(kmprivate)) AS 'kmprivate'",
-                     "(sum(workday = 1)) AS 'workdays'",
-                     "(sum(offday = 1)) AS 'offdays'",
-                     "count(reportid) AS 'reports'"]
-        clause = [("repdate", "LIKE", "'" + workdate[:8] + "%'"), ("employeeid", "=", employee["employeeid"])]
+        aggregate_list = ["sum(newvisitday) AS 'new_visit'",
+                          "sum(newdemoday) AS 'new_demo'",
+                          "sum(newsaleday) AS 'new_sale'",
+                          "sum(newturnoverday) AS 'new_turnover'",
+                          "sum(recallvisitday) AS 'recall_visit'",
+                          "sum(recalldemoday) AS 'recall_demo'",
+                          "sum(recallsaleday) AS 'recall_sale'",
+                          "sum(recallturnoverday) AS 'recall_turnover'",
+                          "sum(sasday) AS 'sas'",
+                          "sum(sasturnoverday) AS 'sas_turnover'",
+                          "(sum(newvisitday) + sum(recallvisitday)) AS 'visit'",
+                          "(sum(newdemoday) + sum(recalldemoday)) AS 'demo'",
+                          "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale'",
+                          "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover'",
+                          "(sum(kmevening - kmmorning)) AS 'kmwork'",
+                          "(sum(kmprivate)) AS 'kmprivate'",
+                          "(sum(workday = 1)) AS 'workdays'",
+                          "(sum(offday = 1)) AS 'offdays'",
+                          "count(reportid) AS 'reports'"]
+        where_list = [("repdate", "LIKE", "'" + workdate[:8] + "%'"), ("employeeid", "=", employee["employeeid"])]
 
-        sql = self.query.build("read", self.model, aggregate=aggregate, where=clause)
-        pprint(sql)
+        sql = self.q.build("select", self.model, aggregate_list=aggregate_list, where_list=where_list)
+
+        totals = self.q.execute(sql)
+
+        totals = [workdate, "None", employee["employeeid"]] + list(totals)
+        self._totals = dict(zip(self.model["fields"], totals))
+        new_values = [None, employee["employeeid"], (self._totals["reports"] + 1), workdate,
+                      None, None, None, None, None, None, None, None, None, None, None, None,
+                      None, None, None, None, None, None, None, None, None, None]
+        self._totals["reportid"] = self.insert(new_values)
+
+        calc = ReportCalc()
+
 
         # db = sqlite3.connect(config.DBPATH)
         # with db:
@@ -149,15 +160,11 @@ class Report:
 
     def insert(self, values):
         """Insert new report in table"""
-        sql = "INSERT INTO report" \
-              " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        if not values:
-            values = list(self.current_report.values())
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            db.execute(sql, values)
-            db.commit()
-            return db.execute("SELECT last_insert_rowid()")
+        value_list = values
+        sql = self.q.build("insert", self.model)
+        if not type(values) == list:
+            value_list = list(values)
+        return self.q.execute(sql, value_list=value_list)
 
     def import_csv(self, filename, employee, headers=False):
         """Import report from file
@@ -194,37 +201,31 @@ class Report:
         """Load report for supplied date
         :param workdate: iso formatted str representing the date for the report to be loaded
         """
-        sql = "SELECT * FROM report WHERE repdate LIKE ?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (workdate,))
-            report = cur.fetchone()
-            if report:
-                self._report = dict(zip(self.model["fields"], report))
+        where_list = [("repdate", "like")]
+        sql = self.q.build("select", self.model, where_list=where_list)
+        value_list = [workdate]
+        result = self.q.execute(sql, value_list=value_list)
+        if result:
+            self._report = dict(zip(self.model["fields"], result))
 
     def load_reports(self, year=None, month=None):
         """Load report matching year and month or all if no params are given
         :type year: str
         :type month: str
         """
-        sql = "SELECT * FROM report"
+        where_list = ["repdate", "like"]
+        sql = self.q.build("select", self.model, where_list=where_list)
         value = "{}-{}-{}".format("%", "%", "%")
         if year:
-            sql = "SELECT * FROM report WHERE repdate LIKE ?"
             value = "{}-{}-{}".format(year, "%", "%")
         if year and month:
-            sql = "SELECT * FROM report WHERE repdate LIKE ?"
             value = "{}-{}-{}".format(year, month, "%")
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (value,))
-            reports = cur.fetchall()
-            if reports:
-                self._reports = [dict(zip(self.model["fields"], row)) for row in reports]
-            else:
-                self._reports = []
+        value_list = [value]
+        result = self.q.execute(sql, value_list=value_list)
+        if result:
+            self._reports = [dict(zip(self.model["fields"], row)) for row in result]
+        else:
+            self._reports = []
 
     def update_report(self):
         pass

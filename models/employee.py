@@ -16,7 +16,7 @@ class Employee:
         # model for zipping dictionary
         self.model = {
             "name": "employee",
-            "idfield": "employeeid",
+            "id": "employeeid",
             "fields": ("employeeid", "salesrep", "fullname", "email", "country", "sas"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
         }
@@ -54,7 +54,7 @@ class Employee:
         """Update the employee"""
         update_list = list(self.model["fields"])[1:]
         value_list = list(values)
-        where_list = [(self.model["idfield"], "=")]
+        where_list = [(self.model["id"], "=")]
         sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
         if not values:
             value_list = list(self._employee.values())
