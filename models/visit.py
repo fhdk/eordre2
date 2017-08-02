@@ -88,7 +88,7 @@ class Visit:
         :param filename:
         :param headers:
         """
-        dbfn.recreate_table("visit")  # recreate an empty table
+        self.recreate_table()
         filename.encode("utf8")
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
@@ -118,6 +118,13 @@ class Visit:
         except IndexError:
             value_list = list(self._visit.values())
         return self.q.execute(sql, value_list=value_list)
+
+    def recreate_table(self):
+        """Drop and create table"""
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)
 
     def select_by_customer(self, customerid):
         """Load visits for specified customer"""
