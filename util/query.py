@@ -19,8 +19,8 @@ class Query:
     def build(self, query_type, model_def, update_list=None, aggregate_list=None, where_list=None, sort_order=None):
         """
         Builds a sql query from definition
-        :param query_type: create(table), insert, select, update, delete)
-        :type query_type: str "create"
+        :param query_type: add(table), insert, select, update, delete)
+        :type query_type: str "add"
         :param model_def: table model definition
         :type model_def: object
             {"name": ("name" ...),
@@ -63,7 +63,7 @@ class Query:
         if querytype == "DELETE":
             return delete_query(model_def, where_list)
 
-        # builders create table query
+        # builders add table query
         if querytype == "CREATE":
             return create_query(model_def)
 

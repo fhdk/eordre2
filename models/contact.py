@@ -26,7 +26,7 @@ class Contact:
         self.csv_field_count = 8
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("add", self.model)
             self.q.execute(sql)
 
     @property

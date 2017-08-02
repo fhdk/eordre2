@@ -24,7 +24,7 @@ def select_query(model_def, aggregate_list, where_list, sort_order):
                 str_sa = str_sa + "{},".format(aggregate)
     # table selection
     # the field order cannot be guaranteed with * alias
-    # create a select field list with all fields
+    # add a select field list with all fields
     else:
         for idx, field in enumerate(model_def["fields"]):
             if (idx + 1) == num_sf:

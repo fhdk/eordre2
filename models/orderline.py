@@ -42,7 +42,7 @@ class OrderLine:
 
     def create(self, visit_id):
         """Create a new orderline on visitid"""
-        # create new with empty values
+        # add new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
         self.insert_values(values)
         self._order_line = dict(zip(self.model["fields"], values))

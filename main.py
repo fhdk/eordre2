@@ -206,7 +206,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :param current: currently selected item
         :param previous: previous selected item
         """
-        self.Customers.find_name_account(current.text(0), current.text(1))
+        self.Customers.lookup_by_phone_name(current.text(1), current.text(0))
         try:
             self.txtAccount.setText(self.Customers.customer["account"])
             self.txtCompany.setText(self.Customers.customer["company"])
@@ -325,7 +325,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.customerList.setSortingEnabled(True)  # enable sorting
         items = []  # temporary list
         for c in self.Customers.customers:
-            # create Widget
+            # add Widget
             item = QTreeWidgetItem([c["company"], c["account"]])
             items.append(item)
         # assign Widgets to Tree

@@ -142,7 +142,7 @@ class Report:
         #                   None, None, None, None, None, None, None, None, None, None]
         #     self.__totals["reportid"] = self.insert(new_values)
         #
-        # print("TODO: create report in database!")
+        # print("TODO: add report in database!")
 
     def insert(self, values):
         """Insert new report in table"""

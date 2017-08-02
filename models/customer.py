@@ -15,9 +15,7 @@
 
 """CustomerNg class"""
 import csv
-import sqlite3
 
-from configuration import config
 from util import dbfn, utils
 from util.query import Query
 
@@ -38,7 +36,7 @@ class Customer:
         self.csv_field_count = 20
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("add", self.model)
             self.q.execute(sql)
 
     def clear(self):
@@ -59,50 +57,46 @@ class Customer:
             self.load()
         return self._customers
 
-    def create(self, company, phone, createdate, country, salesrep):
-        found = self.find_name_account(company, phone)
+    def add(self, company, phone, createdate, country, salesrep):
+        # do we have the customer
+        found = self.lookup_by_phone_name(phone, company)
         if found:
             self._customer = found
         else:
             sql = self.q.build("insert", self.model)
             sql = self.q.execute(sql)
-            value_list = [None, "NY", company, "", "", "", "", country,
-                          salesrep, phone, "", "", 0, 0, createdate, "", "", "", 0.0]
+            value_list = [None, "NY", company, "", "", "", "", country, salesrep,
+                          phone, "", "", 0, 0, createdate, "", "", "", 0.0]
             result = self.q.execute(sql, value_list)
-            self.find_id(result)
+            self.lookup_by_id(result)
 
-    def find_id(self, customerid):
+    def lookup_by_id(self, customerid):
         """Find customer by id"""
-        where_list = list("customerid")
+        where_list = ["customerid", "="]
         sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
         result = self.q.execute(sql, value_list=value_list)
         if result:
             self._customer = dict(zip(self.model["fields"], result))
 
-    def find_name_account(self, company, account):
+    def lookup_by_phone_name(self, phone, company):
         """Look up customer
-        :param account:
+        :param phone:
         :param company:
         """
-        data = {}
-        sql_1 = "SELECT * FROM customer WHERE account=?"
-        sql_2 = "SELECT * FROM customer WHERE account=? AND company=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            # does the row exist with account
-            cur = db.cursor()
-            cur.execute(sql_1, [account])
-            cust = cur.fetchone()
-            if cust:  # found by account
-                data = dict(zip(self.model["fields"], cust))
-            else:  # search again
-                # does the row exist as 'NY'
-                cur.execute(sql_2, ['NY', company])
-                cust = cur.fetchone()
-                if cust:  # found as new customer
-                    data = dict(zip(self.model["fields"], cust))
-        self._customer = data
+        # search by account
+        where_list = [("phone", "=", "or"), ("account", "=")]
+        sql = self.q.build("select", self.model, where_list=where_list)
+        value_list = [phone, phone]
+        result = self.q.execute(sql, value_list=value_list)
+
+        if not result:
+            where_list = [("account", "=", "and"), ("company", "=", "or"), ("phone", "=")]
+            sql = self.q.build("select", self.model, where_list=where_list)
+            value_list = ["NY", company, phone]
+            result = self.q.execute(sql, value_list=value_list)
+
+        self._customer = dict(zip(self.model["fields"], result))
         return self._customer
 
     def import_csv(self, filename, headers=False):
@@ -149,7 +143,7 @@ class Customer:
         zipcode = zipcity[0].strip()
         city = zipcity[1].strip()
         # lookup existing customer
-        found = self.find_name_account(values[1], values[0])
+        found = self.lookup_by_phone_name(values[0], values[1])
         if found:  # this is a complet customer with all fields
             # sanitize and assign values
             if found["account"] == 'NY':
@@ -178,47 +172,28 @@ class Customer:
         """Insert a new customer
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
-        sql = "INSERT INTO customer VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-        db = sqlite3.connect(config.DBPATH)
-        # sanitize parameter
-        if not type(values) == list:
-            values = list(values)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+        sql = self.q.build("insert", self.model)
+        value_list = values
+        return self.q.execute(sql, value_list=value_list)
 
     def load(self):
         """Load customers into primary customer list"""
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            customers = cur.execute('SELECT * FROM customer')
-            if customers:
-                self._customers = [dict(zip(self.model["fields"], row)) for row in customers]
+        sql = self.q.build("select", self.model)
+        result = self.q.execute(sql)
+        self._customers = [dict(zip(self.model["fields"], row)) for row in result]
 
     def save(self):
         """Save current customer changes"""
         self.update(list(self._customer.values()))
 
-    def update(self, values=None):
+    def update(self, values):
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
-        sql = "UPDATE customer SET " \
-              "account=?, company=?, address1=?, address2=?, zipcode=?, city=?, " \
-              "country=?, salesrep=?, phone1=?, vat=?, email=?, deleted=?, modified=?, created=?, " \
-              "infotext=?, att=?, phone2=?, factor=? " \
-              "WHERE customerid=?"
-        # sanitize parameter
+        value_list = []
+        where_list = [("customerid", "=")]
+        sql = self.q.build("update", self.model, where_list=where_list)
         if not type(values) == list:
-            values = list(values)
-        # move customerid to last value
-        values = values + [values[0]]
-        # remove customerid as first value
-        values = values[1:]
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, values)
-            db.commit()
+            value_list = list(values)
+        value_list = value_list.append(value_list[0])[1:]
+        self.q.execute(sql, value_list=value_list)
