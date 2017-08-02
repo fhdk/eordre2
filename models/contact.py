@@ -10,6 +10,7 @@ import sqlite3
 
 from configuration import config
 from util import dbfn
+from util.query import Query
 
 
 class Contact:
@@ -23,6 +24,10 @@ class Contact:
         self._contact = {}
         self._contacts = []
         self.csv_field_count = 8
+        self.q = Query()
+        if not dbfn.exist_table(self.model["name"]):
+            sql = self.q.build("create", self.model)
+            self.q.execute(sql)
 
     @property
     def contact(self):
@@ -47,22 +52,17 @@ class Contact:
 
     def create(self, customerid, name):
         """Create a contact"""
-        values = (None, customerid, name, "", "", "", "")
-        self.insert(values)
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            self.find(cur.execute("SELECT last_insert_rowid();"))
+        sql = self.q.build("insert", self.model)
+        value_list = (None, customerid, name, "", "", "", "")
+        result = self.q.execute(sql, value_list=value_list)
+        self.find(result)
 
     def find(self, contactid):
-        sql = "SELECT * FROM contact WHERE contactid=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (contactid,))
-            contact = cur.fetchone()
-            if contact:
-                self._contact = dict(zip(self.model["fields"], contact))
+        sql = self.q.build("select", self.model)
+        value_list = list(contactid)
+        result = self.q.execute(sql, value_list=value_list)
+        if result:
+            self._contact = dict(zip(self.model["fields"], result))
 
     def import_csv(self, filename, headers=False):
         """Import contact from file
@@ -90,35 +90,31 @@ class Contact:
         """Insert items
         :param values: contact data to insert in contact table
         """
-        sql = "INSERT INTO contact VALUES (?, ?, ?, ?, ?, ?, ?);"
-        db = sqlite3.connect(config.DBPATH)
-        # sanitize parameter
+        value_list = []
         if not type(values) == list:
-            values = list(values)
-        with db:
-            db.execute(sql, values)
-            db.commit()
+            value_list = list(values)
+        sql = self.q.build("insert", self.model)
+        return self.q.execute(sql, value_list=value_list)
 
     def load_for_customer(self, customerid):
         """Load contact"""
-        sql = "SELECT * FROM contact WHERE customerid=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.execute(sql, (customerid,))
-            contacts = cur.fetchall()
-            if contacts:
-                self._contacts = [dict(zip(self.model["fields"], row)) for row in contacts]
-            else:
-                self._contacts = []
+        where_list = list("customerid")
+        sql = self.q.build("select", self.model, where_list=where_list)
+        value_list = list(customerid)
+        contacts = self.q.execute(sql, value_list=value_list)
+        if contacts:
+            self._contacts = [dict(zip(self.model["fields"], row)) for row in contacts]
+        else:
+            self._contacts = []
 
     def update(self, values):
         """Update item"""
-        sql = "UPDATE contact SET contactid=?, name=?, department=?, email=?, phone=?, infotext=? WHERE contactid=?;"
+        update_list = list(self.model["fields"])[1:]
+        where_list = ["contactid"]
+        sql = self.q.build("update", update_list=update_list, where_list=where_list)
+        value_list = []
         # sanitize parameter
         if not type(values) == list:
-            values = list(values)
-        values += values[0]
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            db.execute(sql, list(values))
-            db.commit()
+            value_list = list(values)
+        value_list = value_list.append(value_list[0])[1:]
+        self.q.execute(sql, value_list=value_list)

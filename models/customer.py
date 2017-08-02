@@ -19,6 +19,7 @@ import sqlite3
 
 from configuration import config
 from util import dbfn, utils
+from util.query import Query
 
 
 class Customer:
@@ -35,6 +36,10 @@ class Customer:
         self._customers = []
         self._customer = {}
         self.csv_field_count = 20
+        self.q = Query()
+        if not dbfn.exist_table(self.model["name"]):
+            sql = self.q.build("create", self.model)
+            self.q.execute(sql)
 
     def clear(self):
         self._customer = {}
@@ -59,24 +64,21 @@ class Customer:
         if found:
             self._customer = found
         else:
-            new = (None, "NY", company, "", "", "", "", country,
-                   salesrep, phone, "", "", 0, 0, createdate, "", "", "", 0.0)
-            self.insert(new)
-            db = sqlite3.connect(config.DBPATH)
-            with db:
-                cur = db.cursor()
-                cid = cur.execute("SELECT last_insert_rowid();")
-                self.find_id(cid)
+            sql = self.q.build("insert", self.model)
+            sql = self.q.execute(sql)
+            value_list = [None, "NY", company, "", "", "", "", country,
+                          salesrep, phone, "", "", 0, 0, createdate, "", "", "", 0.0]
+            result = self.q.execute(sql, value_list)
+            self.find_id(result)
 
     def find_id(self, customerid):
         """Find customer by id"""
-        sql = "SELECT * FROM customer WHERE customerid=?"
-        db = sqlite3.connect(config.DBPATH)
-        with db:
-            cur = db.cursor()
-            cur.execute(sql, (customerid,))
-            customer = cur.fetchone()
-            self._customer = dict(zip(self.model["fields"], customer))
+        where_list = list("customerid")
+        sql = self.q.build("select", self.model, where_list=where_list)
+        value_list = list(customerid)
+        result = self.q.execute(sql, value_list=value_list)
+        if result:
+            self._customer = dict(zip(self.model["fields"], result))
 
     def find_name_account(self, company, account):
         """Look up customer

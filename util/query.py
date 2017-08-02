@@ -79,7 +79,12 @@ class Query:
                 else:
                     cur.execute(sql_query)
                 db.commit()
+
                 if sql_query.startswith("SELECT"):
                     return True, cur.fetchall()
+
+                if sql_query.startswith("INSERT"):
+                    return cur.execute("SELECT last_insert_rowid();")
+
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
                 return False, e
