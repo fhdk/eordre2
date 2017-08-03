@@ -27,64 +27,54 @@ class ReportCalc:
         self._totals = {}
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
-            sql = self.q.build("table", self.model)
+            # build query and execute
+            sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
     @property
     def totals(self):
         return self._totals
 
-    @totals.setter
-    def totals(self, values):
-        try:
-            if values[1] == self._totals["workdate"]:
-                self._totals = dict(zip(self.model["fields"], values))
-                self.update(values)
-            else:
-                self.insert(values)
-        except KeyError:
-            self.insert(values)
+    def seed(self, aggregate_list):
+        pass
 
     def insert(self, values):
         """Save values to database"""
-        sql = self.q.build("insert", self.model)
         value_list = values
         try:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("insert", self.model)
+        success, data = self.q.execute(sql, values=value_list)
         if success:
             self.select_by_id(data)
 
     def select_by_id(self, totals_id):
         """Select by id"""
         where_list = [(self.model["id"], "=")]
-        sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [totals_id]
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success:
             self._totals = dict(zip(self.model["fields"], data))
 
     def select_by_employee_date(self, employeeid, workdate):
         """Select by employeeid and workdate"""
         where_list = [("workdate", "=", "and"), ("employeeid", "=")]
-        sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [workdate, employeeid]
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success:
             self._totals = dict(zip(self.model["fields"], data))
 
-    def update(self, values):
+    def update(self):
         """Update totals"""
         where_list = [(self.model["id"]), "="]
-        sql = self.q.build("update", self.model, where_list=where_list)
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
-        rowid = value_list[0]
-        value_list = value_list[1:]
-        value_list.append(rowid)
-        self.q.execute(sql, value_list=value_list)
+        values = self.q.values_to_arg(self._totals.values())
+        # build query and execute
+        sql = self.q.build("update", self.model, where=where_list)
+        self.q.execute(sql, values=values)

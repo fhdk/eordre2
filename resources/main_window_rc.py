@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -58,7 +57,7 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setObjectName("gridLayout")
         self.labelWorkdate = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.labelWorkdate.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
+        self.labelWorkdate.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
         self.labelWorkdate.setObjectName("labelWorkdate")
         self.gridLayout.addWidget(self.labelWorkdate, 0, 0, 1, 1)
         self.txtWorkdate = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -109,11 +108,11 @@ class Ui_MainWindow(object):
         self.label_3.setObjectName("label_3")
         self.lastUpdateGrid.addWidget(self.label_3, 0, 1, 1, 1)
         self.lblCustomer = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.lblCustomer.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.lblCustomer.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.lblCustomer.setObjectName("lblCustomer")
         self.lastUpdateGrid.addWidget(self.lblCustomer, 1, 0, 1, 1)
         self.lblCatalog = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.lblCatalog.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.lblCatalog.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.lblCatalog.setObjectName("lblCatalog")
         self.lastUpdateGrid.addWidget(self.lblCatalog, 2, 0, 1, 1)
         self.txtCustServer = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -476,3 +475,4 @@ class Ui_MainWindow(object):
         self.actionReport.setText(_translate("MainWindow", "Dagsrapport"))
         self.actionZeroDatabase.setText(_translate("MainWindow", "Nulstil database"))
         self.actionReportList.setText(_translate("MainWindow", "Rapport oversigt"))
+

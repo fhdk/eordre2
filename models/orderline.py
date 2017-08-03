@@ -26,6 +26,7 @@ class OrderLine:
         self.csv_field_count = 8
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
+            # build query and execute
             sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
@@ -48,7 +49,7 @@ class OrderLine:
         """Create a new orderline on visitid"""
         # add new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
-        self.insert_values(values)
+        self.insert(values)
         self._order_line = dict(zip(self.model["fields"], values))
 
     def csv_import(self, filename, headers=False):
@@ -70,45 +71,43 @@ class OrderLine:
                 # translate bool text to integer col 6
                 row[6] = utils.bool2int(utils.str2bool(row[6]))
                 processed = [row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7]]
-                self.insert_values(processed)
+                self.insert(processed)
             return True
 
-    def insert_values(self, values):
-        sql = self.q.build("insert", self.model)
+    def insert(self, values):
+        """Insert row"""
         value_list = values
         try:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("insert", self.model)
+        self.q.execute(sql, values=value_list)
 
     def load(self, visitid):
         """Load orderlines"""
         where_list = [("visitid", "=")]
-        sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [visitid]
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
         """Drop and create table"""
+        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
 
-    def update(self, values):
+    def update(self):
         """Update orderline"""
         update_list = list(self.model["fields"])[1:]
         where_list = [("lineid", "=")]
-        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
-        rowid = value_list[0]
-        value_list = value_list[1:]
-        value_list.append(rowid)
-        self.q.execute(sql, value_list=value_list)
+        values = self.q.values_to_arg(self._order_line.values())
+        # build query and execute
+        sql = self.q.build("update", self.model, update=update_list, where=where_list)
+        self.q.execute(sql, values=values)

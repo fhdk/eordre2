@@ -25,6 +25,7 @@ class Product:
         self._product = {}
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
+            # build query and execute
             sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
@@ -51,16 +52,18 @@ class Product:
 
     def insert(self, values):
         """Insert a product in database"""
-        sql = self.q.build("insert", self.model)
         value_list = values
         try:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("insert", self.model)
+        self.q.execute(sql, values=value_list)
 
     def load(self):
         """Load product list"""
+        # build query and execute
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
         if success and data:
@@ -70,6 +73,7 @@ class Product:
 
     def recreate_table(self):
         """Drop and create table"""
+        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)

@@ -28,7 +28,8 @@ class Customer:
         self.csv_field_count = 20
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
-            sql = self.q.build("add", self.model)
+            # build query and execute
+            sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
     def clear(self):
@@ -49,12 +50,14 @@ class Customer:
             self.load()
         return self._customers
 
+    # TODO: refactor this
     def add(self, company, phone, createdate, country, salesrep):
         # do we have the customer
         found = self.lookup_by_phone_name(phone, company)
         if found:
             self._customer = found
         else:
+            # build query and execute
             sql = self.q.build("insert", self.model)
             sql = self.q.execute(sql)
             value_list = [None, "NY", company, "", "", "", "", country, salesrep,
@@ -66,9 +69,10 @@ class Customer:
     def lookup_by_id(self, customerid):
         """Find customer by id"""
         where_list = [(self.model["id"], "=")]
-        sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._customer = dict(zip(self.model["fields"], data))
 
@@ -79,14 +83,17 @@ class Customer:
         """
         # search by account
         where_list = [("phone", "=", "or"), ("account", "=")]
-        sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [phone, phone]
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if not success:
+            # retry search which "NY" as account
             where_list = [("account", "=", "and"), ("company", "=", "or"), ("phone", "=")]
-            sql = self.q.build("select", self.model, where_list=where_list)
             value_list = ["NY", company, phone]
-            success, data = self.q.execute(sql, value_list=value_list)
+            # build query and execute
+            sql = self.q.build("select", self.model, where=where_list)
+            success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._customer = dict(zip(self.model["fields"], data))
         return self._customer
@@ -164,18 +171,20 @@ class Customer:
         """Insert a new customer
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
-        sql = self.q.build("insert", self.model)
         value_list = values
         try:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("insert", self.model)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             return data
 
     def load(self):
         """Load customers into primary customer list"""
+        # build query and execute
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
         if success and data:
@@ -183,6 +192,7 @@ class Customer:
 
     def recreate_table(self):
         """Drop and create table"""
+        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
@@ -192,18 +202,12 @@ class Customer:
         """Save current customer changes"""
         self.update(list(self._customer.values()))
 
-    def update(self, values):
+    def update(self):
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
         where_list = [(self.model["id"], "=")]
-        sql = self.q.build("update", self.model, where_list=where_list)
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
-        rowid = value_list[0]
-        value_list = value_list[1:]
-        value_list.append(rowid)
-        self.q.execute(sql, value_list=value_list)
+        values = self.q.values_to_arg(self._customer.values())
+        # build query and execute
+        sql = self.q.build("update", self.model, where=where_list)
+        self.q.execute(sql, values=values)

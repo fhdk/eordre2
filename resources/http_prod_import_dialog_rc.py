@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_HttpProdImportDialog(object):
     def setupUi(self, HttpProdImportDialog):
         HttpProdImportDialog.setObjectName("HttpProdImportDialog")
@@ -35,3 +34,4 @@ class Ui_HttpProdImportDialog(object):
         HttpProdImportDialog.setWindowTitle(_translate("HttpProdImportDialog", "Prisliste import fra server"))
         self.buttonStart.setText(_translate("HttpProdImportDialog", "Start"))
         self.buttonClose.setText(_translate("HttpProdImportDialog", "Luk"))
+

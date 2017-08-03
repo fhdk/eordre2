@@ -18,7 +18,7 @@ from models.builders.drop_query import drop_query
 
 
 class Query:
-    def build(self, query_type, model_def, update_list=None, aggregate_list=None, where_list=None, sort_order=None):
+    def build(self, query_type, model_def, update=None, aggregate_list=None, where=None, sort_order=None):
         """
         Builds a sql query from definition
         :param query_type: add(table), insert, select, update, delete)
@@ -28,21 +28,21 @@ class Query:
             {"name": ("name" ...),
              "fields": ("field" ...),
              "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
-        :param update_list: key:value pairs
-        :type update_list: iterable ("field", "field" ...)
+        :param update: key:value pairs
+        :type update: iterable ("field", "field" ...)
         :type aggregate_list: iterable ["sum(column) AS 'expression'", "sum(column) AS 'expression'" ....]
         :param aggregate_list: aggregates to  be returned
-        :type where_list: iterable [("field", "operator", "value", "and/or"), (("field", "operator", "value"))]]
-        :param where_list: valid with read-, update- and delete query
+        :type where: iterable [("field", "operator", "value", "and/or"), (("field", "operator", "value"))]]
+        :param where: valid with read-, update- and delete query
         :type sort_order: str
         :param sort_order: asc or desc
         :return: str
         """
         querytype = query_type.upper()
         if querytype not in ["CREATE", "DROP", "INSERT", "SELECT", "UPDATE", "DELETE"]:
-            return "ERROR - UNSUPPORTED TYPE"
-        if querytype in ["UPDATE", "DELETE"] and not where_list:
-            return "ERROR - MISSING WHERE CLAUSE"
+            return "ERROR - UNSUPPORTED TYPE: {}, MODEL: {}".format(querytype, model_def)
+        if querytype in ["UPDATE", "DELETE"] and not where:
+            return "ERROR - MISSING WHERE FOR TYPE: {}, MODEL: {}".format(querytype, model_def)
 
         if sort_order:
             sort_order = sort_order.upper()
@@ -55,15 +55,15 @@ class Query:
 
         # build select query
         if querytype == "SELECT":
-            return select_query(model_def, aggregate_list, where_list, sort_order)
+            return select_query(model_def, aggregate_list, where, sort_order)
 
         # build update query
         if querytype == "UPDATE":
-            return update_query(model_def, update_list, where_list)
+            return update_query(model_def, update, where)
 
         # build delete query
         if querytype == "DELETE":
-            return delete_query(model_def, where_list)
+            return delete_query(model_def, where)
 
         # build add table query
         if querytype == "CREATE":
@@ -73,15 +73,14 @@ class Query:
         if querytype == "DROP":
             return drop_query(model_def)
 
-    def execute(self, sql_query, value_list=None):
+    def execute(self, sql_query, values=None):
         """Execute a query and return the result"""
         db = sqlite3.connect(config.DBPATH)
         with db:
             cur = db.cursor()
             try:
-                if value_list:
-                    for item in value_list:
-                        cur.execute(sql_query, item)
+                if values:
+                    cur.execute(sql_query, values)
                 else:
                     cur.execute(sql_query)
                 db.commit()
@@ -94,3 +93,12 @@ class Query:
 
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
                 return False, e
+
+    def values_to_arg(self, values):
+        # move id from first to last element
+        work = list(values)
+        rowid = work[0]
+        work = work[1:]
+        work.append(rowid)
+        work = tuple(work)
+        return work

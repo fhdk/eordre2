@@ -39,6 +39,7 @@ class Report:
         self.csv_field_count = 25
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
+            # build query and execute
             sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
@@ -82,30 +83,7 @@ class Report:
         # | SAS |                sum      sum                      sum    sum
         # | SUM |  sum     sum   sum      sum       sum     sum    sum    sum
 
-        # sql = "SELECT " \
-        #       "sum(newvisitday) AS 'new_visit', " \
-        #       "sum(newdemoday) AS 'new_demo', " \
-        #       "sum(newsaleday) AS 'new_sale', " \
-        #       "sum(newturnoverday) AS 'new_turnover', " \
-        #       "sum(recallvisitday) AS 'recall_visit', " \
-        #       "sum(recalldemoday) AS 'recall_demo', " \
-        #       "sum(recallsaleday) AS 'recall_sale', " \
-        #       "sum(recallturnoverday) AS 'recall_turnover', " \
-        #       "sum(sasday) AS 'sas', " \
-        #       "sum(sasturnoverday) AS 'sas_turnover', " \
-        #       "(sum(newvisitday) + sum(recallvisitday)) AS 'visit', " \
-        #       "(sum(newdemoday) + sum(recalldemoday)) AS 'demo', " \
-        #       "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale', " \
-        #       "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover', " \
-        #       "(sum(kmevening - kmmorning)) AS 'kmwork', " \
-        #       "(sum(kmprivate)) AS 'kmprivate', " \
-        #       "(sum(workday = 1)) AS 'workdays', " \
-        #       "(sum(offday = 1)) AS 'offdays', " \
-        #       "count(reportid) AS 'reports' " \
-        #       "FROM report WHERE repdate LIKE ? AND employeeid=? ;"
-        # 
-        # values = [workdate[:8] + "%", employee["employeeid"]]
-
+        # parameters for initial feed of ReportCalc
         aggregate_list = ["sum(newvisitday) AS 'new_visit'",
                           "sum(newdemoday) AS 'new_demo'",
                           "sum(newsaleday) AS 'new_sale'",
@@ -125,11 +103,20 @@ class Report:
                           "(sum(workday = 1)) AS 'workdays'",
                           "(sum(offday = 1)) AS 'offdays'",
                           "count(reportid) AS 'reports'"]
-        where_list = [("repdate", "LIKE", "'" + workdate[:8] + "%'"), ("employeeid", "=", employee["employeeid"])]
+        where_list = [("repdate", "LIKE"), ("employeeid", "=")]
+        value_list = [workdate[:8] + "%", employee["employeeid"]]
 
-        sql = self.q.build("select", self.model, aggregate_list=aggregate_list, where_list=where_list)
+        # TODO:
+        # using ReportCalc
+        # calc = ReportCalc()
+        # get totals
+        # calc needs list of aggregates to use
+        #            list with wheres
+        #            list with values for wheres
 
-        totals = self.q.execute(sql)
+        # send the sql to ReportCalc
+
+        # save totals using ReportCalc
 
         totals = [workdate, "None", employee["employeeid"]] + list(totals)
         self._totals = dict(zip(self.model["fields"], totals))
@@ -138,32 +125,18 @@ class Report:
                       None, None, None, None, None, None, None, None, None, None]
         self._totals["reportid"] = self.insert(new_values)
 
-        calc = ReportCalc()
-
-        # db = sqlite3.connect(config.DBPATH)
-        # with db:
-        #     cur = db.cursor()
-        #     cur.execute(sql, values)
-        #     totals = cur.fetchone()
-        #     totals = [workdate, "None", employee["employeeid"]] + list(totals)
-        #     print(totals)
-        #     self.__totals = dict(zip(self.totals_model["fields"], totals))
-        #     new_values = [None, employee["employeeid"], (self.__totals["reports"] + 1), workdate,
-        #                   None, None, None, None, None, None, None, None, None, None, None, None,
-        #                   None, None, None, None, None, None, None, None, None, None]
-        #     self.__totals["reportid"] = self.insert(new_values)
-        #
         # print("TODO: add report in database!")
 
     def insert(self, values):
         """Insert new report in table"""
-        sql = self.q.build("insert", self.model)
         value_list = values
         try:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("insert", self.model)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             return data
 
@@ -203,9 +176,10 @@ class Report:
         :param workdate: iso formatted str representing the date for the report to be loaded
         """
         where_list = [("repdate", "like")]
-        sql = self.q.build("select", self.model, where_list=where_list)
         value_list = [workdate]
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._report = dict(zip(self.model["fields"], data))
 
@@ -215,14 +189,15 @@ class Report:
         :type month: str
         """
         where_list = ["repdate", "like"]
-        sql = self.q.build("select", self.model, where_list=where_list)
         value = "{}-{}-{}".format("%", "%", "%")
         if year:
             value = "{}-{}-{}".format(year, "%", "%")
         if year and month:
             value = "{}-{}-{}".format(year, month, "%")
         value_list = [value]
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._reports = [dict(zip(self.model["fields"], row)) for row in data]
         else:
@@ -230,18 +205,13 @@ class Report:
 
     def recreate_table(self):
         """Drop and create table"""
+        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
 
     def update_report(self):
-
-        # rowid = value_list[0]
-        # value_list = value_list[1:]
-        # value_list.append(rowid)
-
-        pass
-
-    def save_totals(self):
+        # build query and execute
+        # self.q.values_to_arg(self._report.values())
         pass

@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_FileImportDialog(object):
     def setupUi(self, FileImportDialog):
         FileImportDialog.setObjectName("FileImportDialog")
@@ -42,7 +41,7 @@ class Ui_FileImportDialog(object):
         self.txtSelectedFile = QtWidgets.QLineEdit(FileImportDialog)
         self.txtSelectedFile.setEnabled(True)
         self.txtSelectedFile.setGeometry(QtCore.QRect(10, 50, 341, 41))
-        self.txtSelectedFile.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.txtSelectedFile.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.txtSelectedFile.setObjectName("txtSelectedFile")
         self.checkHeaders = QtWidgets.QCheckBox(FileImportDialog)
         self.checkHeaders.setGeometry(QtCore.QRect(370, 100, 220, 24))
@@ -66,3 +65,4 @@ class Ui_FileImportDialog(object):
         self.label.setText(_translate("FileImportDialog", "Import"))
         self.buttonClose.setText(_translate("FileImportDialog", "Luk"))
         self.checkHeaders.setText(_translate("FileImportDialog", "Første linje er feltnavne"))
+

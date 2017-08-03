@@ -43,13 +43,14 @@ class Setting:
 
     def insert(self, values):
         """Insert settings data"""
-        sql = self.q.build("insert", self.model)
         value_list = values
         try:
             _ = value_list[0]
         except IndexError:
             value_list = list(values)
-        self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("insert", self.model)
+        self.q.execute(sql, values=value_list)
 
     def insert_defaults(self):
         """Create default settings in database"""
@@ -59,10 +60,13 @@ class Setting:
 
     def load(self):
         """Load settings"""
+        # build query and execute
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
         if success and not data:
+            # insert defaults and retry
             self.insert_defaults()
+            # build query and execute
             sql = self.q.build("select", self.model)
             success, data = self.q.execute(sql)
         if success and data:
@@ -72,9 +76,7 @@ class Setting:
         """Update settings"""
         update_list = list(self.model["fields"])
         where_list = [(self.model["id"], "=")]
-        value_list = list(self._settings.values())
-        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
-        rowid = value_list[0]
-        value_list = value_list[1:]
-        value_list.append(rowid)
-        self.q.execute(sql, value_list=value_list)
+        values = self.q.values_to_arg(self._settings.values())
+        # use query to update
+        sql = self.q.build("update", self.model, update=update_list, where=where_list)
+        self.q.execute(sql, values=values)

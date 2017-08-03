@@ -8,7 +8,7 @@
 
 import csv
 
-from models.query import Query
+from models.query import Query, update_values_to_arg
 from util import dbfn, utils
 
 
@@ -79,8 +79,9 @@ class Visit:
         """Look up a visit from visitid"""
         where_list = [(self.model["id"], "=")]
         value_list = [visitid]
-        sql = self.q.build("select", self.model, where_list=where_list)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._visit = dict(zip(self.model["fields"], data))
 
@@ -112,18 +113,20 @@ class Visit:
 
     def insert(self, values=None):
         """Save visit"""
-        sql = self.q.build("insert", self.model)
         value_list = values
         try:
             _ = value_list[0]
         except IndexError:
             value_list = list(self._visit.values())
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("insert", self.model)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             return data
 
     def recreate_table(self):
         """Drop and create table"""
+        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
@@ -133,8 +136,9 @@ class Visit:
         """Load visits for specified customer"""
         where_list = [(self.model["id"]), "="]
         value_list = [customerid]
-        sql = self.q.build("select", self.model, where_list=where_list)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
@@ -142,25 +146,20 @@ class Visit:
         """Load orders for specified customer"""
         where_list = [(self.model["id"], "=")]
         value_list = [reportid]
-        sql = self.q.build("select", self.model, where_list=where_list)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def save(self):
         """Save"""
-        self._update_()
+        self.update()
 
-    def _update_(self, values=None):
+    def update(self):
         """Save current visit"""
         where_list = [(self.model["id"]), "="]
-        sql = self.q.build("update", self.model, where_list=where_list)
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(self._visit.values())
-        rowid = value_list[0]
-        value_list = value_list[1:]
-        value_list.append(rowid)
-        self.q.execute(sql, value_list=value_list)
+        values = self.q.values_to_arg(self._visit.values())
+        # build query and execute
+        sql = self.q.build("update", self.model, where=where_list)
+        self.q.execute(sql, values=values)

@@ -25,12 +25,17 @@ class Contact:
         self.csv_field_count = 8
         self.q = Query()
         if not dbfn.exist_table(self.model["name"]):
-            sql = self.q.build("add", self.model)
+            # build query and execute
+            sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
     @property
     def contact(self):
         return self._contact
+
+    @contact.setter
+    def contact(self, contact):
+        self.contact = contact
 
     @property
     def contacts(self):
@@ -56,9 +61,10 @@ class Contact:
         self.find(data)
 
     def find(self, contactid):
-        sql = self.q.build("select", self.model)
         value_list = [contactid]
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model)
+        success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._contact = dict(zip(self.model["fields"], data))
 
@@ -88,22 +94,19 @@ class Contact:
         """Insert items
         :param values: contact data to insert in contact table
         """
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
+        # build query and execute
         sql = self.q.build("insert", self.model)
-        success, data = self.q.execute(sql, value_list=value_list)
+        success, data = self.q.execute(sql, values=values)
         if success and data:
             return data
 
     def load_for_customer(self, customerid):
         """Load contact"""
         where_list = list(self.model["id"])
-        sql = self.q.build("select", self.model, where_list=where_list)
         value_list = list(customerid)
-        success, data = self.q.execute(sql, value_list=value_list)
+        # build query and execute
+        sql = self.q.build("select", self.model, where=where_list)
+        success, data = self.q.execute(sql, values=value_list)
         if success:
             self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
         else:
@@ -111,22 +114,18 @@ class Contact:
 
     def recreate_table(self):
         """Drop and create table"""
+        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
 
-    def update(self, values):
+    def update(self):
         """Update item"""
         update_list = list(self.model["fields"])[1:]
         where_list = list(self.model["id"])
-        sql = self.q.build("update", self.model, update_list=update_list, where_list=where_list)
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
-        rowid = value_list[0]
-        value_list = value_list[1:]
-        value_list.append(rowid)
-        self.q.execute(sql, value_list=value_list)
+        # move id from first to last element
+        values = self.q.values_to_arg(self._contact.values())
+        # build query and execute
+        sql = self.q.build("update", self.model, update=update_list, where=where_list)
+        self.q.execute(sql, values=values)
