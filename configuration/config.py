@@ -11,7 +11,7 @@ import os
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
 COUNTRIES = [("dk", "Danmark"), ("no", "Norge"), ("s", "Sverige")]
 HOME = os.path.expanduser("~")
-APP_DATA = "./.appdata"
+APP_DATA = "./appdata"
 DBPATH = APP_DATA + "/app.db"
 LOGPATH = APP_DATA + "/app.log"
 TABLES = ["contact", "customer", "employee", "visit", "orderline", "product", "report", "settings"]

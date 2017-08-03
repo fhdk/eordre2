@@ -389,11 +389,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if e:
                         e = [1] + e
                         self.Employee.insert(e)
+                else:
+                    msgbox = QMessageBox()
+                    msgbox.about(self,
+                                 __appname__,
+                                 "Check din netværksforbindelse! Tak")
+
         else:
             msgbox = QMessageBox()
             msgbox.about(self,
                          __appname__,
-                         "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses.")
+                         "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
             self.settings_dialog_action()
 
         self.populate_customer_list()
@@ -421,7 +427,6 @@ if __name__ == '__main__':
     window = MainWindow()
     window.show()
 
-    # QTimer.singleShot(1, window.run())
     QTimer.singleShot(1, window.run)
     splash.finish(window)
 

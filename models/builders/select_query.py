@@ -28,7 +28,7 @@ def select_query(model_def, aggregate_list, where_list, sort_order):
             if (idx + 1) == aggr_count:
                 str_sa = str_sa + "{}".format(aggregate)
             else:
-                str_sa = str_sa + "{},".format(aggregate)
+                str_sa = str_sa + "{}, ".format(aggregate)
     # table selection
     # the field order cannot be guaranteed with * alias
     # add a select field list with all fields
@@ -37,7 +37,7 @@ def select_query(model_def, aggregate_list, where_list, sort_order):
             if (idx + 1) == fld_count:
                 str_sf = str_sf + "{}".format(field)
             else:
-                str_sf = str_sf + "{},".format(field)
+                str_sf = str_sf + "{}, ".format(field)
 
     # where 'field' operator 'value'
     if where_list:

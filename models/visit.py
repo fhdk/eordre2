@@ -8,7 +8,7 @@
 
 import csv
 
-from models.query import Query, update_values_to_arg
+from models.query import Query
 from util import dbfn, utils
 
 

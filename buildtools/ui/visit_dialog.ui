@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>OrderDialog</class>
-    <widget class="QDialog" name="OrderDialog">
+    <class>VisitDialog</class>
+    <widget class="QDialog" name="VisitDialog">
         <property name="geometry">
             <rect>
                 <x>0</x>
@@ -11,7 +11,7 @@
             </rect>
         </property>
         <property name="windowTitle">
-            <string>Indkøbs ordre</string>
+            <string>Besøg / Indkøbs ordre</string>
         </property>
         <widget class="QWidget" name="formLayoutWidget">
             <property name="geometry">
@@ -22,7 +22,7 @@
                     <height>252</height>
                 </rect>
             </property>
-            <layout class="QFormLayout" name="formOrderVisit">
+            <layout class="QFormLayout" name="formVisit">
                 <item row="0" column="1">
                     <widget class="QLineEdit" name="txtOrderVisitDate">
                         <property name="enabled">

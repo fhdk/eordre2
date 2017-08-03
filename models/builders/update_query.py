@@ -17,7 +17,7 @@ def update_query(model_def, update_list, where_list):
         if (idx + 1) == fld_count:
             str_uf = str_uf + "{}=?".format(field)
         else:
-            str_uf = str_uf + "{}=?, ".format(field)
+            str_uf = str_uf + "{}=? , ".format(field)
 
     # where 'field' operator
     for idx, u_item in enumerate(where_list):

@@ -14,7 +14,7 @@ pyuic5 --from-imports file_import_dialog.ui -o ${targetdir}/file_import_dialog_r
 echo "Building Settings Dialog resource ..."
 pyuic5 --from-imports settings_dialog.ui -o ${targetdir}/settings_dialog_rc.py
 echo "Building Order Dialog resource ..."
-pyuic5 --from-imports order_dialog.ui -o ${targetdir}/order_dialog_rc.py
+pyuic5 --from-imports visit_dialog.ui -o ${targetdir}/visit_dialog_rc.py
 echo "Building Http Customer Import Dialog resource ..."
 pyuic5 --from-imports http_cust_import_dialog.ui -o ${targetdir}/http_cust_import_dialog_rc.py
 echo "Building Http Product Import Dialog resource ..."

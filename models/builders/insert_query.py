@@ -8,10 +8,13 @@
 def insert_query(model_def):
     name = model_def["name"]
     fld_count = len(model_def["fields"])
-    string = ""
+    stringf = ""
+    stringv = ""
     for idx, field in enumerate(model_def["fields"]):
         if (idx + 1) == fld_count:
-            string = string + "?"
+            stringf = field
+            stringv = stringv + "?"
         else:
-            string = string + "?,"
-    return "INSERT INTO {} VALUES ({});".format(name, string)
+            stringf = field + ", "
+            stringv = stringv + "?, "
+    return "INSERT INTO {} ({}) VALUES ({});".format(name, stringf, stringv)

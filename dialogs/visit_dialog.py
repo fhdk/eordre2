@@ -9,10 +9,10 @@ from PyQt5.QtWidgets import QDialog
 
 from models import visit
 from models import product
-from resources.order_dialog_rc import Ui_OrderDialog
+from resources.visit_dialog_rc import Ui_VisitDialog
 
 
-class CreateOrderDialog(QDialog, Ui_OrderDialog):
+class CreateOrderDialog(QDialog, Ui_VisitDialog):
     def __init__(self, report, customer, employee, workdate, parent=None):
         """Initialize"""
         super(CreateOrderDialog, self).__init__(parent)

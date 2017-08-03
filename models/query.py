@@ -28,7 +28,7 @@ class Query:
             {"name": ("name" ...),
              "fields": ("field" ...),
              "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
-        :param update: key:value pairs
+        :param update: fields to update
         :type update: iterable ("field", "field" ...)
         :type aggregate_list: iterable ["sum(column) AS 'expression'", "sum(column) AS 'expression'" ....]
         :param aggregate_list: aggregates to  be returned
@@ -39,60 +39,72 @@ class Query:
         :return: str
         """
         querytype = query_type.upper()
-        if querytype not in ["CREATE", "DROP", "INSERT", "SELECT", "UPDATE", "DELETE"]:
-            return "ERROR - UNSUPPORTED TYPE: {}, MODEL: {}".format(querytype, model_def)
-        if querytype in ["UPDATE", "DELETE"] and not where:
-            return "ERROR - MISSING WHERE FOR TYPE: {}, MODEL: {}".format(querytype, model_def)
+        if querytype not in ["CREATE", "DELETE", "DROP", "INSERT", "SELECT", "UPDATE"]:
+            return "ERROR! Unsupported type: {}, {}".format(querytype, model_def["name"])
+
+        if querytype == ["DELETE"]:
+            if not where:
+                return "ERROR! Missing 'where' for: {}, {}".format(querytype, model_def["name"])
+
+        if querytype == ["UPDATE"]:
+            if not where or not update:
+                return "ERROR! Missing 'update' or 'where' for: {}, {}".format(querytype, model_def["name"])
 
         if sort_order:
             sort_order = sort_order.upper()
             if not sort_order == "ASC" or not sort_order == "DESC":
                 sort_order = None
 
-        # build insert query
-        if querytype == "INSERT":
-            return insert_query(model_def)
-
-        # build select query
-        if querytype == "SELECT":
-            return select_query(model_def, aggregate_list, where, sort_order)
-
-        # build update query
-        if querytype == "UPDATE":
-            return update_query(model_def, update, where)
-
-        # build delete query
-        if querytype == "DELETE":
-            return delete_query(model_def, where)
-
-        # build add table query
+        # build create table query
         if querytype == "CREATE":
             return create_query(model_def)
+
+        # build delete row query
+        if querytype == "DELETE":
+            return delete_query(model_def, where)
 
         # builds drop table query
         if querytype == "DROP":
             return drop_query(model_def)
 
+        # build insert row query
+        if querytype == "INSERT":
+            return insert_query(model_def)
+
+        # build select row query
+        if querytype == "SELECT":
+            return select_query(model_def, aggregate_list, where, sort_order)
+
+        # build update row query
+        if querytype == "UPDATE":
+            return update_query(model_def, update, where)
+
     def execute(self, sql_query, values=None):
         """Execute a query and return the result"""
+        # query types: create, delete, insert, select, update
+        select = sql_query.startswith("SELECT")
+        insert = sql_query.startswith("INSERT")
         db = sqlite3.connect(config.DBPATH)
         with db:
-            cur = db.cursor()
             try:
+                result = None
+                cur = db.cursor()
                 if values:
                     cur.execute(sql_query, values)
                 else:
                     cur.execute(sql_query)
                 db.commit()
-
-                if sql_query.startswith("SELECT"):
-                    return True, cur.fetchall()
-
-                if sql_query.startswith("INSERT"):
-                    return True, cur.execute("SELECT last_insert_rowid();")
+                if select:
+                    result = cur.fetchall()
+                if insert:
+                    result = cur.lastrowid
 
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
                 return False, e
+        print("q: {}".format(sql_query))
+        print("v: {}".format(values))
+        print("r: {}".format(result))
+        return True, result
 
     def values_to_arg(self, values):
         # move id from first to last element
