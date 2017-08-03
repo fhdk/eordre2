@@ -9,7 +9,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_OrderDialog(object):
+    """
+    """
     def setupUi(self, OrderDialog):
+        """
+
+        Args:
+            OrderDialog:
+        """
         OrderDialog.setObjectName("OrderDialog")
         OrderDialog.resize(636, 568)
         self.formLayoutWidget = QtWidgets.QWidget(OrderDialog)
@@ -175,6 +182,11 @@ class Ui_OrderDialog(object):
         OrderDialog.setTabOrder(self.orderLinesWidget, self.buttonAddOrderLine)
 
     def retranslateUi(self, OrderDialog):
+        """
+
+        Args:
+            OrderDialog:
+        """
         _translate = QtCore.QCoreApplication.translate
         OrderDialog.setWindowTitle(_translate("OrderDialog", "Indkøbs ordre"))
         self.txtOrderVisitDate.setPlaceholderText(_translate("OrderDialog", "Ordre dato"))

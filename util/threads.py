@@ -34,7 +34,7 @@ class ImportCustomersThread(QThread):
             parent:
         """
         super(ImportCustomersThread, self).__init__(parent)
-        self.Settings = settings.Setting()  # assign settings object
+        self.Settings = settings.Settings()  # assign settings object
         self.Employee = employee.Employee()  # assign employee object
         self.Customer = customer.Customer()  # add customer object
         self.c = Communicate()
@@ -67,7 +67,7 @@ class ImportProductsThread(QThread):
             parent:
         """
         super(ImportProductsThread, self).__init__(parent)
-        self.Settings = settings.Setting()  # add settings object
+        self.Settings = settings.Settings()  # add settings object
         self.Product = product.Product()  # add product object
         self.c = Communicate()
 

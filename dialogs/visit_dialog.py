@@ -4,7 +4,9 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""Order dialog"""
+"""
+Visit Dialog Module
+"""
 from PyQt5.QtWidgets import QDialog
 
 from models import visit
@@ -12,13 +14,13 @@ from models import product
 from resources.visit_dialog_rc import Ui_VisitDialog
 
 
-class CreateVisitDialog(QDialog, Ui_VisitDialog):
+class VisitDialog(QDialog, Ui_VisitDialog):
     """
     Dialog for creating a new visit
     """
     def __init__(self, report, customer, employee, workdate, parent=None):
         """Initialize"""
-        super(CreateVisitDialog, self).__init__(parent)
+        super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
         self.workdate = workdate
         self.product = product.Product()  # Create Product object

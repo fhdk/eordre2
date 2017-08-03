@@ -26,7 +26,7 @@ class Query:
         Builds a sql query from definition
 
         Args:
-            query_type: create(table), drop(table), insert(row), select(row), update(row), delete(row))
+            query_type: create(table), drop(table), insert(row), load(row), update(row), delete(row))
 
             model_def: table model definition
             {"name": ("name" ...), "fields": ("field" ...), "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
@@ -36,7 +36,7 @@ class Query:
 
             aggregates: valid ["sum(column) AS 'expression'", "sum(column) AS 'expression'" ....]
 
-            filteron:  valid for select-, required for update- and delete query
+            filteron:  valid for load-, required for update- and delete query
             [("field", "operator", "value", "and/or"), (("field", "operator", "value"))]]
 
             sort_order: asc or desc
@@ -79,7 +79,7 @@ class Query:
         if querytype == "INSERT":
             return build_insert_query(model_def)
 
-        # build select row query
+        # build load row query
         if querytype == "SELECT":
             return build_select_query(model_def, aggregates, filteron, sort_order)
 
@@ -93,8 +93,11 @@ class Query:
 
         """
         if config.DEBUG_QUERY:
-            print("{}->execute->enter\nsql_query: {}\nvalues   :".format("QUERY", sql_query, values))
-        # query types: create, delete, insert, select, update
+            print("\033[1;31m\r")
+            print("{}\n ->execute\n  ->enter\n   ->sql_query: {}".format("QUERY", sql_query))
+            if values:
+                print(" ->execute\n  ->enter\n   ->values: {}".format("QUERY", values))
+        # query types: create, delete, insert, load, update
         select = sql_query.startswith("SELECT")
         insert = sql_query.startswith("INSERT")
         db = sqlite3.connect(config.DBPATH)
@@ -113,11 +116,11 @@ class Query:
                     result = cur.lastrowid
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
                 if config.DEBUG_QUERY:
-                    print("{}->execute->exception: {}".format("QUERY", e))
+                    print(" ->execute\n  ->exception: {}".format(e))
                 return False, e
         if config.DEBUG_QUERY:
-            print("{}->execute->exit\nresult: {}".format("QUERY", result))
-
+            print(" ->execute\n  ->exit\n   ->result: {}\r".format(result))
+            print("\033[1;m")
         return True, result
 
     def values_to_arg(self, values):
@@ -145,8 +148,8 @@ class Query:
         Returns:
              bool indicating if table was found
         """
-        statement = "select name from sqlite_master " \
-                    "where type='{}' and name='{}';".format("table", table)
+        statement = "SELECT name FROM sqlite_master " \
+                    "WHERE type='{}' AND name='{}';".format("table", table)
 
         success, data = self.execute(statement)
         if config.DEBUG_QUERY:

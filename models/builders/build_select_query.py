@@ -42,7 +42,7 @@ def build_select_query(model_def, aggregates=None, filters=None, sort_order=None
                 str_sa = str_sa + "{}, ".format(aggregate)
     # table selection
     # the field order cannot be guaranteed with * alias
-    # add a select field list with all fields
+    # add a load field list with all fields
     else:
         for idx, field in enumerate(model_def["fields"]):
             if (idx + 1) == fld_count:
@@ -66,25 +66,25 @@ def build_select_query(model_def, aggregates=None, filters=None, sort_order=None
                 else:
                     str_sw = str_sw + " {} {} ?".format(field, operator)
 
-    # select aggregated values where
+    # load aggregated values where
     if str_sa and str_sw:
         if s_orderby:
             return "SELECT {} FROM {} WHERE {} ORDER BY {}".format(str_sa, name, str_sw, s_orderby)
         else:
             return "SELECT {} FROM {} WHERE {};".format(str_sa, name, str_sw)
-    # select aggregated values
+    # load aggregated values
     elif str_sa and not str_sw:
         if s_orderby:
             return "SELECT {} FROM {} ORDER BY {}".format(str_sa, name, s_orderby)
         else:
             return "SELECT {} FROM {};".format(str_sa, name)
-    # select everything where
+    # load everything where
     elif str_sw and not str_sa:
         if s_orderby:
             return "SELECT {} FROM {} WHERE {} ORDER BY {}".format(str_sf, name, str_sw, s_orderby)
         else:
             return "SELECT {} FROM {} WHERE {};".format(str_sf, name, str_sw)
-    # select everything
+    # load everything
     else:
         if s_orderby:
             return "SELECT {} FROM {} ORDER BY {}".format(str_sf, name, s_orderby)

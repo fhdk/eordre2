@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScree
 
 # import resources.splash_rc
 from configuration import configfn, config
-from dialogs.visit_dialog import CreateOrderDialog
+from dialogs.visit_dialog import VisitDialog
 from dialogs.create_report_dialog import CreateReportDialog
 from dialogs.file_import_dialog import FileImportDialog
 from dialogs.http_cust_import_dialog import HttpCustImportDialog
@@ -55,7 +55,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.OrderLines = orderline.OrderLine()  # Initialize OrderLine object
         self.Products = product.Product()  # Initialize Product object
         self.Reports = report.Report()  # Initialize Report object
-        self.Settings = settings.Setting()  # Initialize Settings object
+        self.Settings = settings.Settings()  # Initialize Settings object
 
         # connect menu trigger signals
         self.actionAboutQt.triggered.connect(self.about_qt_action)
@@ -127,7 +127,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Customers.customer["factor"] = self.txtFactor.text()
         self.Customers.customer["infotext"] = self.txtInfoText.toPlainText()
         self.Customers.customer["modified"] = 1
-        self.Customers.save()
+        self.Customers.update()
 
     def close_event(self, event):
         """
@@ -177,11 +177,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
 
         if self.Customers.customer:
-            order_dialog = CreateOrderDialog(self,
-                                             self.Reports.report,
-                                             self.Customers.customer,
-                                             self.Employee.employee)
-            if order_dialog.exec_():
+            visit_dialog = VisitDialog(self,
+                                       self.Reports.report,
+                                       self.Customers.customer,
+                                       self.Employee.employee)
+            if visit_dialog.exec_():
                 pass
         else:
             msgbox = QMessageBox()
@@ -412,9 +412,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 check["mailpass"] = passwdfn.hash_password(check["mailpass"])
             # assign new settings
             self.Settings.settings = check
-            # save to database
-            self.Settings.update()
-            self.Employee.load()
         else:
             pass
 
@@ -450,10 +447,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 _ = self.Employee.employee["fullname"]
             except KeyError:
                 if httpfn.inet_conn_check():
-                    e = httpfn.get_employee_data(self.Settings.settings)
-                    if e:
-                        e = [1] + e
-                        self.Employee.insert(e)
+                    pass
                 else:
                     msgbox = QMessageBox()
                     msgbox.about(self,

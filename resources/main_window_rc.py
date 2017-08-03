@@ -9,7 +9,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
+    """
+    """
     def setupUi(self, MainWindow):
+        """
+
+        Args:
+            MainWindow:
+        """
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 770)
         MainWindow.setMinimumSize(QtCore.QSize(800, 700))
@@ -396,6 +403,11 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.txtInfoText, self.buttonArchiveChanges)
 
     def retranslateUi(self, MainWindow):
+        """
+
+        Args:
+            MainWindow:
+        """
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Eordre"))
         self.txtNewPhone1.setPlaceholderText(_translate("MainWindow", "Telefon"))

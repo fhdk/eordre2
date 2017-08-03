@@ -9,14 +9,14 @@
 import os
 
 DEBUG_CONTACT = False
-DEBUG_CUSTOMER = True
-DEBUG_EMPLOYEE = True
+DEBUG_CUSTOMER = False
+DEBUG_EMPLOYEE = False
 DEBUG_ORDERLINE = False
 DEBUG_PRODUCT = False
 DEBUG_QUERY = True
-DEBUG_REPORT = True
-DEBUG_REPORT_CALC = True
-DEBUG_SETTINGS = False
+DEBUG_REPORT = False
+DEBUG_REPORT_CALC = False
+DEBUG_SETTINGS = True
 DEBUG_VISIT = False
 
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]

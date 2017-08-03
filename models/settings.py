@@ -12,7 +12,7 @@ from configuration import config
 from models.query import Query
 
 
-class Setting:
+class Settings:
     """
     Settings class
     """
@@ -37,7 +37,6 @@ class Setting:
             success, data = self.q.execute(sql)
             if config.DEBUG_SETTINGS:
                 print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
-        self.load()
 
     @property
     def settings(self):
@@ -61,6 +60,7 @@ class Setting:
             settings:
         """
         self._settings = settings
+        self.update()
 
     def insert(self, values):
         """
@@ -91,6 +91,10 @@ class Setting:
         """
         # build query and execute
         sql = self.q.build("select", self.model)
+
+        if config.DEBUG_SETTINGS:
+            print("{} -> load\nsql: {}".format(self.model["name"].upper(), sql))
+
         success, data = self.q.execute(sql)
         if success and not data:
             # insert defaults and retry

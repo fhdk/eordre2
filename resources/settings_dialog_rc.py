@@ -9,7 +9,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_SettingsDialog(object):
+    """
+    """
     def setupUi(self, SettingsDialog):
+        """
+
+        Args:
+            SettingsDialog:
+        """
         SettingsDialog.setObjectName("SettingsDialog")
         SettingsDialog.setWindowModality(QtCore.Qt.ApplicationModal)
         SettingsDialog.resize(510, 281)
@@ -129,6 +136,11 @@ class Ui_SettingsDialog(object):
         SettingsDialog.setTabOrder(self.editMailUser, self.editMailPass)
 
     def retranslateUi(self, SettingsDialog):
+        """
+
+        Args:
+            SettingsDialog:
+        """
         _translate = QtCore.QCoreApplication.translate
         SettingsDialog.setWindowTitle(_translate("SettingsDialog", "Indstillinger"))
         self.editUserMail.setPlaceholderText(_translate("SettingsDialog", "brugers mail adresse: email@domæne.tld"))

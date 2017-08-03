@@ -9,7 +9,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_FileImportDialog(object):
+    """
+    """
     def setupUi(self, FileImportDialog):
+        """
+
+        Args:
+            FileImportDialog:
+        """
         FileImportDialog.setObjectName("FileImportDialog")
         FileImportDialog.resize(615, 278)
         FileImportDialog.setModal(True)
@@ -58,6 +65,11 @@ class Ui_FileImportDialog(object):
         FileImportDialog.setTabOrder(self.txtSelectedFile, self.listImported)
 
     def retranslateUi(self, FileImportDialog):
+        """
+
+        Args:
+            FileImportDialog:
+        """
         _translate = QtCore.QCoreApplication.translate
         FileImportDialog.setWindowTitle(_translate("FileImportDialog", "Data import"))
         self.buttonBrowse.setText(_translate("FileImportDialog", "Find import fil ..."))
