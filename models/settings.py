@@ -42,21 +42,12 @@ class Setting:
         self._settings = settings
 
     def insert(self, values):
-        """Insert settings data"""
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
         # build query and execute
+        print("settings -> insert -> values: {}".format(values))
         sql = self.q.build("insert", self.model)
-        self.q.execute(sql, values=value_list)
-
-    def insert_defaults(self):
-        """Create default settings in database"""
-        defaults = [(None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
-                    "customers", "invenprices", "employees", "", "", "", "", 0)]
-        self.insert(defaults)  # call insert function
+        success, data = self.q.execute(sql, values=values)
+        print("settings -> insert -> result:")
+        print("success: {}\ndata   : {}".format(success, data))
 
     def load(self):
         """Load settings"""
@@ -65,12 +56,19 @@ class Setting:
         success, data = self.q.execute(sql)
         if success and not data:
             # insert defaults and retry
-            self.insert_defaults()
+            values = (None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
+                      "customers", "invenprices", "employees", "", "", "", "", 0)
+            self._settings = dict(zip(self.model["fields"], values))
+            self.insert(values)
             # build query and execute
             sql = self.q.build("select", self.model)
             success, data = self.q.execute(sql)
+
         if success and data:
             self._settings = dict(zip(self.model["fields"], data[0]))
+        print("settings -> load -> result:")
+        print("success: {}\ndata   : {}".format(success, data))
+        exit(0)
 
     def update(self):
         """Update settings"""

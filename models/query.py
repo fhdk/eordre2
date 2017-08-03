@@ -81,6 +81,9 @@ class Query:
 
     def execute(self, sql_query, values=None):
         """Execute a query and return the result"""
+        print("query -> execute -> begin")
+        print("q: {}".format(sql_query))
+        print("v: {}".format(values))
         # query types: create, delete, insert, select, update
         select = sql_query.startswith("SELECT")
         insert = sql_query.startswith("INSERT")
@@ -101,8 +104,7 @@ class Query:
 
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
                 return False, e
-        print("q: {}".format(sql_query))
-        print("v: {}".format(values))
+        print("query -> execute -> exit")
         print("r: {}".format(result))
         return True, result
 

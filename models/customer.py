@@ -96,7 +96,8 @@ class Customer:
             success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._customer = dict(zip(self.model["fields"], data))
-        return self._customer
+            return True
+        return False
 
     def import_csv(self, filename, headers=False):
         """Import customer from csv file
@@ -142,25 +143,25 @@ class Customer:
         zipcode = zipcity[0].strip()
         city = zipcity[1].strip()
         # lookup existing customer
-        found = self.lookup_by_phone_name(values[0], values[1])
-        if found:  # this is a complet customer with all fields
+        if self.lookup_by_phone_name(values[0], values[1]):
             # sanitize and assign values
-            if found["account"] == 'NY':
-                found["account"] = values[0]
-            if found["modified"] == 1:
-                found["modified"] = 0
-            found["company"] = values[1].strip()
-            found["address1"] = values[2].strip()
-            found["address2"] = values[3].strip()
-            found["zipcode"] = zipcode  # zipcity[4]
-            found["city"] = city  # zipcity[4]
+            if self._customer["account"] == 'NY':
+                self._customer["account"] = values[0]
+            if self._customer["modified"] == 1:
+                self._customer["modified"] = 0
+            self._customer["company"] = values[1].strip()
+            self._customer["address1"] = values[2].strip()
+            self._customer["address2"] = values[3].strip()
+            self._customer["zipcode"] = zipcode  # zipcity[4]
+            self._customer["city"] = city  # zipcity[4]
             # skip over country[5] and salesrep[6]
-            found["phone1"] = values[7].strip()
-            found["vat"] = values[8].strip()
-            found["email"] = values[9].strip()
-            found["att"] = values[10].strip()
-            found["phone2"] = values[11].strip()
-            self.update(found.values())  # call update function
+            self._customer["phone1"] = values[7].strip()
+            self._customer["vat"] = values[8].strip()
+            self._customer["email"] = values[9].strip()
+            self._customer["att"] = values[10].strip()
+            self._customer["phone2"] = values[11].strip()
+            
+            self.update()  # call update function
         else:
             row_values = [None, values[0].strip(), values[1].strip(), values[2], values[3].strip(), zipcode, city,
                           values[5].strip(), values[6].strip(), values[7].strip(), values[8].strip(),
@@ -197,10 +198,6 @@ class Customer:
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
-
-    def save(self):
-        """Save current customer changes"""
-        self.update(list(self._customer.values()))
 
     def update(self):
         """Update current row
