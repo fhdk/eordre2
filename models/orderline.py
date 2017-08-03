@@ -15,9 +15,13 @@ from util import utils
 
 class OrderLine:
     """
+    OrderLine
     """
+
     def __init__(self):
-        """Initialize OrderLine class"""
+        """
+        Initialize OrderLine class
+        """
         self.model = {
             "name": "orderline",
             "id": "lineid",
@@ -38,16 +42,16 @@ class OrderLine:
     @property
     def orderlines_list(self):
         """
-
+        OrderLines
         Returns:
-
+            List of orderlines for a visit
         """
         return self._order_lines
 
     @orderlines_list.setter
     def orderlines_list(self, visitid):
         """
-
+        OrderLines
         Args:
             visitid:
         """
@@ -58,21 +62,25 @@ class OrderLine:
 
     def clear(self):
         """
-
+        Clear internal variables
         """
         self._order_line = {}
         self._order_lines = []
 
     def create(self, visit_id):
-        """Create a new orderline on visitid"""
+        """
+        Create a new orderline on visitid
+        Args:
+            visit_id:
+        """
         # add new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
         self.insert(values)
         self._order_line = dict(zip(self.model["fields"], values))
 
     def csv_import(self, filename, headers=False):
-        """Import orderline from file
-
+        """
+        Import orderline from file
         Args:
             filename: csv file
             headers: flag first row as fieldnames
@@ -95,7 +103,11 @@ class OrderLine:
             return True
 
     def insert(self, values):
-        """Insert row"""
+        """
+        Insert row
+        Args:
+            values:
+        """
         value_list = values
         try:
             _ = value_list[0]
@@ -106,7 +118,9 @@ class OrderLine:
         self.q.execute(sql, values=value_list)
 
     def load(self, visitid):
-        """Load orderlines"""
+        """
+        Load orderlines
+        """
         where_list = [("visitid", "=")]
         value_list = [visitid]
         # build query and execute
@@ -116,7 +130,9 @@ class OrderLine:
             self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
-        """Drop and create table"""
+        """
+        Drop and create table
+        """
         # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
@@ -124,7 +140,9 @@ class OrderLine:
         self.q.execute(sql)
 
     def update(self):
-        """Update orderline"""
+        """
+        Update orderline in database
+        """
         update_list = list(self.model["fields"])[1:]
         where_list = [("lineid", "=")]
         values = self.q.values_to_arg(self._order_line.values())

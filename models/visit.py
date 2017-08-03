@@ -4,20 +4,26 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""Orderhead class"""
+"""
+Visit module
+"""
 
 import csv
 
 from configuration import config
 from models.query import Query
+from util import utils
 
 
 # noinspection PyMethodMayBeStatic
 class Visit:
     """
+    Visit class
     """
     def __init__(self):
-        """Initialize visit class"""
+        """
+        Initialize visit class
+        """
         self.model = {
             "name": "visit",
             "id": "visitid",
@@ -42,25 +48,25 @@ class Visit:
     @property
     def visit(self):
         """
-
+        Visit
         Returns:
-
+            The current active visit
         """
         return self._visit
 
     @property
     def customer_visits(self):
         """
-
+        Customer Vist List
         Returns:
-
+            The current active list of visits for a customer
         """
         return self._customer_visits
 
     @customer_visits.setter
     def customer_visits(self, customerid):
         """
-
+        Load visits for supplied customer
         Args:
             customerid:
         """
@@ -74,16 +80,16 @@ class Visit:
     @property
     def report_visits(self):
         """
-
+        Report Visit List
         Returns:
-
+            The current active list of visits for a report
         """
         return self._report_visits
 
     @report_visits.setter
     def report_visits(self, reportid):
         """
-
+        Load visits for the requested report
         Args:
             reportid:
         """
@@ -96,7 +102,7 @@ class Visit:
 
     def clear(self):
         """
-
+        Clear internal variables
         """
         self._visit = {}
         self._customer_visits = []
@@ -104,7 +110,7 @@ class Visit:
 
     def create(self, reportid, employeeid, customerid, workdate):
         """
-
+        Create a new visit
         Args:
             reportid:
             employeeid:
@@ -116,7 +122,11 @@ class Visit:
         self.find(self.insert(values))
 
     def find(self, visitid):
-        """Look up a visit from visitid"""
+        """
+        Look up a visit from visitid
+        Args:
+            visitid:
+        """
         where_list = [(self.model["id"], "=")]
         value_list = [visitid]
         # build query and execute
@@ -126,8 +136,8 @@ class Visit:
             self._visit = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
-        """Import orders from file
-
+        """
+        Import orders from file
         Args:
             filename: 
             headers: 
@@ -153,22 +163,23 @@ class Visit:
                 self.insert(processed)  # call insert function
             return True
 
-    def insert(self, values=None):
-        """Save visit"""
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(self._visit.values())
+    def insert(self, values):
+        """
+        Save visit
+        Args:
+            values:
+        """
         # build query and execute
         sql = self.q.build("insert", self.model)
-        success, data = self.q.execute(sql, values=value_list)
+        success, data = self.q.execute(sql, values=values)
         if success and data:
             return data
         return False
 
     def recreate_table(self):
-        """Drop and create table"""
+        """
+        Drop and create table
+        """
         # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
@@ -176,7 +187,11 @@ class Visit:
         self.q.execute(sql)
 
     def select_by_customer(self, customerid):
-        """Load visits for specified customer"""
+        """
+        Load visits for specified customer
+        Args:
+            customerid:
+        """
         where_list = [(self.model["id"]), "="]
         value_list = [customerid]
         # build query and execute
@@ -186,7 +201,11 @@ class Visit:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def select_by_report(self, reportid):
-        """Load orders for specified customer"""
+        """
+        Load visits for specified report
+        Args:
+            reportid:
+        """
         where_list = [(self.model["id"], "=")]
         value_list = [reportid]
         # build query and execute
@@ -196,11 +215,15 @@ class Visit:
             self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def save(self):
-        """Save"""
+        """
+        Save
+        """
         self.update()
 
     def update(self):
-        """Save current visit"""
+        """
+        Update current visit to database
+        """
         update_list = list(self.model["fields"])[1:]
         where_list = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._visit.values())

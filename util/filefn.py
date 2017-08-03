@@ -10,9 +10,12 @@ import os
 
 
 def check_file(name, folder=False):
-    """Check if file exist
-    :param name:
-    :param folder:
+    """
+    Check if file exist
+    Args:
+        name: 
+        folder: 
+
     :returns bool if existing
     """
     if folder:
@@ -21,7 +24,9 @@ def check_file(name, folder=False):
 
 
 def create_dir(dirname):
-    """Create directory if not exist
-    :param dirname:
+    """
+    Create directory if not exist
+    Args:
+        dirname: 
     """
     os.makedirs(dirname, mode=0o744, exist_ok=True)

@@ -14,9 +14,12 @@ from util import utils
 
 class Customer:
     """
+    Customer
     """
     def __init__(self):
-        """Initialize Customer class"""
+        """
+        Initialize Customer class
+        """
         self.model = {
             "name": "customer",
             "id": "customerid",
@@ -40,19 +43,23 @@ class Customer:
 
     def clear(self):
         """
-
+        Clear internal variables
         """
         self._customer = {}
         self._customers = []
 
     @property
     def customer(self):
-        """Return current customer"""
+        """
+        Return current customer
+        """
         return self._customer
 
     @property
     def customers(self):
-        """Load customer into primary customer list"""
+        """
+        Load customer into primary customer list
+        """
         try:
             _ = self._customers[0]
         except IndexError:
@@ -62,7 +69,7 @@ class Customer:
     # TODO: refactor this
     def add(self, company, phone, createdate, country, salesrep):
         """
-
+        Add a new customer
         Args:
             company:
             phone:
@@ -85,7 +92,11 @@ class Customer:
                 self.lookup_by_id(data)
 
     def lookup_by_id(self, customerid):
-        """Find customer by id"""
+        """
+        Find customer by id
+        Args:
+            customerid
+        """
         where_list = [(self.model["id"], "=")]
         value_list = list(customerid)
         # build query and execute
@@ -95,8 +106,8 @@ class Customer:
             self._customer = dict(zip(self.model["fields"], data))
 
     def lookup_by_phone_name(self, phone, company):
-        """Look up customer
-
+        """
+        Look up customer
         Args:
             phone: 
             company: 
@@ -120,11 +131,11 @@ class Customer:
         return False
 
     def import_csv(self, filename, headers=False):
-        """Import customer from csv file
-
+        """
+        Import customers from csv file
         Args:
             filename: 
-            headers: 
+            headers:
 
         The expected file format contains data in the following sequence
         in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
@@ -150,8 +161,8 @@ class Customer:
             return True
 
     def import_http(self, values):
-        """Insert a new customer
-
+        """
+        Insert a new customer
         Args:
             values: List with values from http request
 
@@ -195,7 +206,11 @@ class Customer:
             self.insert(row_values)
 
     def insert(self, values):
-        """Insert a new customer
+        """
+        Insert a new customer
+        Args:
+            values:
+
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
         value_list = values
@@ -210,7 +225,9 @@ class Customer:
             return data
 
     def load(self):
-        """Load customers into primary customer list"""
+        """
+        Load customers into primary customer list
+        """
         # build query and execute
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
@@ -218,7 +235,9 @@ class Customer:
             self._customers = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
-        """Drop and create table"""
+        """
+        Drop and create table
+        """
         # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
@@ -226,7 +245,9 @@ class Customer:
         self.q.execute(sql)
 
     def update(self):
-        """Update current row
+        """
+        Update customer in database
+
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
         update_list = list(self.model["fields"])[1:]

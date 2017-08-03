@@ -4,16 +4,21 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
+"""
+Report Calculation module
+"""
+
 from configuration import config
 from models.query import Query
 
 
 class ReportCalc:
     """
+    Report Calculation
     """
     def __init__(self):
         """
-
+        Initialize ReportCalc
         """
         self.model = {
             "name": "totals",
@@ -41,22 +46,18 @@ class ReportCalc:
     @property
     def totals(self):
         """
-
+        Totals
         Returns:
-
+            The current totals
         """
         return self._totals
 
-    def seed(self, aggregate_list):
-        """
-
-        Args:
-            aggregate_list:
-        """
-        pass
-
     def insert(self, values):
-        """Save values to database"""
+        """
+        Save values to database and sets totals with the supplied values
+        Args:
+            values:
+        """
         # build query and execute
         sql = self.q.build("insert", self.model)
         success, data = self.q.execute(sql, values=values)
@@ -68,7 +69,11 @@ class ReportCalc:
             self.select_by_id(data)
 
     def select_by_id(self, totals_id):
-        """Select by id"""
+        """
+        Select by id
+        Returns:
+            bool indicating totals has been set for the requested id
+        """
         where_list = [(self.model["id"], "=")]
         values = [totals_id]
         # build query and execute
@@ -84,7 +89,15 @@ class ReportCalc:
         return False
 
     def select_by_date_employee(self, workdate, employeeid):
-        """Select totals for employeeid and workdate"""
+        """
+        Select totals for employeeid and workdate
+
+        Args:
+            workdate:
+            employeeid:
+        Returns:
+            bool indicating totals for the selected report is now set
+        """
         where_list = [("workdate", "=", "and"), ("employeeid", "=")]
         values = [workdate, employeeid]
         # build query and execute
@@ -100,7 +113,12 @@ class ReportCalc:
         return False
 
     def update(self):
-        """Update totals"""
+        """
+        Update totals in database if necessary
+
+        Returns:
+            bool indicating if update was a success
+        """
         update_list = list(self.model["fields"])[1:]
         where_list = [(self.model["id"]), "="]
         values = self.q.values_to_arg(self._totals.values())

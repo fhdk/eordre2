@@ -4,7 +4,9 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""Settings class"""
+"""
+Settings module
+"""
 
 from configuration import config
 from models.query import Query
@@ -12,9 +14,12 @@ from models.query import Query
 
 class Setting:
     """
+    Settings class
     """
     def __init__(self):
-        """Initialize the Settings class"""
+        """
+        Initialize the Settings class
+        """
         self.model = {
             "name": "settings",
             "id": "settingsid",
@@ -32,13 +37,14 @@ class Setting:
             success, data = self.q.execute(sql)
             if config.DEBUG_SETTINGS:
                 print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+        self.load()
 
     @property
     def settings(self):
         """
-
+        Settings
         Returns:
-
+            The settings
         """
         try:
             _ = self._settings["usermail"]
@@ -50,7 +56,7 @@ class Setting:
     @settings.setter
     def settings(self, settings):
         """
-
+        Pushing new settings
         Args:
             settings:
         """
@@ -58,7 +64,7 @@ class Setting:
 
     def insert(self, values):
         """
-
+        Inserts in database and activates the settings values
         Args:
             values:
 
@@ -77,12 +83,12 @@ class Setting:
             print("{} -> insert\nsuccess: {}\ndata   : {}".format(self.model["name"], success, data))
 
         if success and data:
-            return data
-
-        return False
+            self._settings = dict(zip(self.model["fields"], values))
 
     def load(self):
-        """Load settings"""
+        """
+        Load settings
+        """
         # build query and execute
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
@@ -106,7 +112,9 @@ class Setting:
         return False
 
     def update(self):
-        """Update settings"""
+        """
+        Update settings
+        """
         update_list = list(self.model["fields"])[1:]
         where_list = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._settings.values())

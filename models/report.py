@@ -17,9 +17,12 @@ from util import utils
 # noinspection PyMethodMayBeStatic
 class Report:
     """
+    Report
     """
     def __init__(self):
-        """Initilize Report class"""
+        """
+        Initilize Report class
+        """
         self.model = {
             "name": "report",
             "id": "reportid",
@@ -48,18 +51,18 @@ class Report:
                 print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     @property
-    def current_report(self):
+    def report(self):
         """
-
+        Report
         Returns:
-
+            Current report
         """
         return self._report
 
-    @current_report.setter
-    def current_report(self, workdate):
+    @report.setter
+    def report(self, workdate):
         """
-
+        Set report to workdate
         Args:
             workdate:
         """
@@ -71,16 +74,16 @@ class Report:
     @property
     def reportlist(self):
         """
-
+        Report List
         Returns:
-
+            Current list of reports
         """
         return self._reports
 
     @reportlist.setter
     def reportlist(self, year=None, month=None):
         """
-
+        Set the current list of reports to specified filter
         Args:
             year:
             month:
@@ -89,8 +92,8 @@ class Report:
         self.load_reports(year=year, month=month)
 
     def create(self, employee, workdate):
-        """Create report for employee and date supplied
-
+        """
+        Create report for employee and date supplied
         Args:
             employee: object
             workdate: iso formatted str representing the report date
@@ -152,7 +155,9 @@ class Report:
         # print("TODO: add report in database!")
 
     def insert(self, values):
-        """Insert new report in table"""
+        """
+        Insert new report in table
+        """
         value_list = values
         try:
             _ = value_list[0]
@@ -165,8 +170,8 @@ class Report:
             return data
 
     def import_csv(self, filename, employee, headers=False):
-        """Import report from file
-
+        """
+        Import report from file
         Args:
             filename: 
             employee: 
@@ -198,7 +203,8 @@ class Report:
             return True
 
     def load_report(self, workdate):
-        """Load report for supplied date
+        """
+        Load report for supplied date
 
         Args:
             workdate: iso formatted str representing the date for the report to be loaded
@@ -212,9 +218,12 @@ class Report:
             self._report = dict(zip(self.model["fields"], data))
 
     def load_reports(self, year=None, month=None):
-        """Load report matching year and month or all if no params are given
-        :type year: str
-        :type month: str
+        """
+        Load report matching year and month or all if no params are given
+
+        Args:
+            :type year: str
+            :type month: str
         """
         where_list = ["repdate", "like"]
         value = "{}-{}-{}".format("%", "%", "%")
@@ -232,7 +241,9 @@ class Report:
             self._reports = []
 
     def recreate_table(self):
-        """Drop and create table"""
+        """
+        Drop and create table
+        """
         # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
@@ -241,7 +252,7 @@ class Report:
 
     def update_report(self):
         """
-
+        Update report in database
         """
         # update_list = list(self.model["fields"])[1:]
         # update_where = [self.model["id"], "="]

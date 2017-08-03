@@ -12,9 +12,12 @@ from models.query import Query
 
 class Employee:
     """
+    Employee
     """
     def __init__(self):
-        """Initialize Employee class"""
+        """
+        Initialize Employee class
+        """
         # model for zipping dictionary
         self.model = {
             "name": "employee",
@@ -33,7 +36,9 @@ class Employee:
 
     @property
     def employee(self):
-        """Return current and only employee"""
+        """
+        Return current and only employee
+        """
         try:
             _ = self._employee["fullname"]
         except KeyError:
@@ -41,7 +46,11 @@ class Employee:
         return self._employee
 
     def insert(self, values):
-        """Insert employee in database"""
+        """
+        Insert employee in database
+        Args:
+            values:
+        """
         value_list = values
         try:
             _ = value_list[0]
@@ -52,7 +61,9 @@ class Employee:
         self.q.execute(sql, values=value_list)
 
     def load(self):
-        """Load the employee"""
+        """
+        Load the employee
+        """
         # build query and execute
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
@@ -60,7 +71,9 @@ class Employee:
             self._employee = dict(zip(self.model["fields"], data[0]))
 
     def update(self):
-        """Update the employee"""
+        """
+        Update employee in database
+        """
         update_list = list(self.model["fields"])[1:]
         where_list = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._employee.values())

@@ -4,7 +4,9 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""Eordre application"""
+"""
+Eordre application module
+"""
 
 import datetime
 import sys
@@ -32,10 +34,14 @@ __module__ = "main"
 
 # noinspection PyMethodMayBeStatic
 class MainWindow(QMainWindow, Ui_MainWindow):
-    """Main Application Window"""
+    """
+    Main Application Window
+    """
 
     def __init__(self):
-        """Initialize MainWindow class"""
+        """
+        Initialize MainWindow class
+        """
         super(MainWindow, self).__init__()
         self.setupUi(self)
 
@@ -82,19 +88,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.buttonVisitData.clicked.connect(self.visit_data_action)
 
     def about_qt_action(self):
-        """Slot for aboutQt triggered signal"""
+        """
+        Slot for aboutQt triggered signal
+        """
         msgbox = QMessageBox()
         msgbox.aboutQt(self, __appname__)
 
     def about_software_action(self):
-        """Slot for aboutSoftware triggered signal"""
+        """
+        Slot for aboutSoftware triggered signal
+        """
         msgbox = QMessageBox()
         msgbox.about(self, __appname__,
                      "Bygget med Python 3.6 og Qt framework<br/><br/>Frede Hundewadt (c) 2017<br/><br/>"
                      "<a href='https://www.gnu.org/licenses/agpl.html'>https://www.gnu.org/licenses/agpl.html</a>")
 
     def archive_customer_action(self):
-        """Slot for updateCustomer triggered signal"""
+        """
+        Slot for updateCustomer triggered signal
+        """
         if not self.Customers.customer:
             # msgbox triggered if no customer is selected
             msgbox = QMessageBox()
@@ -118,17 +130,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Customers.save()
 
     def close_event(self, event):
-        """Slot for close event signal
+        """
+        Slot for close event signal
+        Args:
+            event:
+
         intended use is warning about unsaved data
         """
         pass
 
     def contact_data_action(self):
-        """Slot for contactData triggered signal"""
+        """
+        Slot for contactData triggered signal
+        """
         self.customerInfoStack.setCurrentIndex(1)
 
     def create_customer_action(self):
-        """Slot for createCustomer triggered signal"""
+        """
+        Slot for createCustomer triggered signal
+        """
         if not self.txtNewCompany.text() or not self.txtNewPhone1.text():
             msgbox = QMessageBox()
             msgbox.information(self,
@@ -145,7 +165,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                QMessageBox.Ok)
 
     def create_visit_action(self):
-        """Slot for createOrder triggered signal"""
+        """
+        Slot for createOrder triggered signal
+        """
         if not self.Reports.load_report(self.txtWorkdate.text()):
             msgbox = QMessageBox()
             msgbox.information(self,
@@ -156,7 +178,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.Customers.customer:
             order_dialog = CreateOrderDialog(self,
-                                             self.Reports.current_report,
+                                             self.Reports.report,
                                              self.Customers.customer,
                                              self.Employee.employee)
             if order_dialog.exec_():
@@ -169,9 +191,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                QMessageBox.Ok)
 
     def customer_changed_action(self, current, previous):
-        """Slot for listbox current item changed signal
-        propagate changes to currently selected customer
-        to related customer info pages
+        """
+        Slot for listbox current item changed signal
+        Used to respond to changes in the currently selected customer
+        and update the related customer info pages
 
         Args:
             current: currently selected item
@@ -211,13 +234,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.Contacts.clear()
 
     def data_export_action(self):
-        """Slot for dataExport triggered signal"""
+        """
+        Slot for dataExport triggered signal
+        """
         msgbox = QMessageBox()
         msgbox.information(self, __appname__, "Opret CSV data backup", QMessageBox.Ok)
 
     def display_sync_status(self):
         """
-
+        Update status fields
         """
         self.txtCustLocal.setText(self.Settings.settings["lsc"])
         self.txtCustServer.setText(self.Settings.settings["sac"])
@@ -225,13 +250,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txtProdServer.setText(self.Settings.settings["sap"])
 
     def exit_action(self):
-        """Slot for exit triggered signal"""
+        """
+        Slot for exit triggered signal
+        """
         self.close_event(self)
         app.quit()
 
     def file_import_action(self):
-        """Slot for fileImport triggered signal"""
-        if self.Customers.customers or self.Reports.current_report:
+        """
+        Slot for fileImport triggered signal
+        """
+        if self.Customers.customers or self.Reports.report:
             # Warn user that import deletes existing data
             msgbox = QMessageBox()
             msgbox.warning(self,
@@ -250,17 +279,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
     def file_import_customer_done(self):
-        """Slot for customer import done. Used to trigger populate_customer_list"""
+        """
+        Slot for customer import done. Used to trigger populate_customer_list
+        """
         self.populate_customer_list()
 
     def get_http_customers_action(self):
-        """Slot for getCustomers triggered signal"""
+        """
+        Slot for getCustomers triggered signal
+        """
         import_customers = HttpCustImportDialog()  # Create dialog object
         import_customers.c.finished.connect(self.get_customers_finished)
         import_customers.exec_()  # Execute the dialog - show it
 
     def get_customers_finished(self):
-        """Slot for getCustomers finished signal"""
+        """
+        Slot for getCustomers finished signal
+        """
         self.populate_customer_list()  # select_by_customer customers
         lsc = datetime.date.today().isoformat()  # get sync date
         self.txtCustLocal.setText(lsc)  # get update display
@@ -269,13 +304,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.Settings.update()  # save settings
 
     def get_http_product_action(self):
-        """Slot for getProducts triggered signal"""
+        """
+        Slot for getProducts triggered signal
+        """
         import_product = HttpProdImportDialog()  # Create dialog object
         import_product.c.finished.connect(self.get_product_finished)
         import_product.exec_()  # Execute the dialog - show it
 
     def get_product_finished(self):
-        """Slot for getProducts finished signal"""
+        """
+        Slot for getProducts finished signal
+        """
         self.Products.load()  # select_by_customer products
         lsp = datetime.date.today().isoformat()  # get sync date
         self.txtProdLocal.setText(lsp)  # update display
@@ -283,15 +322,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Settings.update()  # save settings
 
     def master_data_action(self):
-        """Slot for masterData triggered signal"""
+        """
+        Slot for masterData triggered signal
+        """
         self.customerInfoStack.setCurrentIndex(0)
 
     def order_data_action(self):
-        """Slot for orderData triggered signal"""
+        """
+        Slot for orderData triggered signal
+        """
         self.customerInfoStack.setCurrentIndex(3)
 
     def populate_customer_list(self):
-        """Populate customer tree"""
+        """
+        Populate customer tree
+        """
         self.customerList.clear()  # shake the tree for leaves
         self.customerList.setColumnCount(2)  # set columns
         self.customerList.setColumnWidth(0, 230)  # set width of name col
@@ -307,9 +352,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.customerList.scrollToTop()
 
     def report_action(self):
-        """Slot for Report triggered signal"""
+        """
+        Slot for Report triggered signal
+        """
         try:
-            repdate = self.Reports.current_report["repdate"]
+            repdate = self.Reports.report["repdate"]
             if not repdate == self.txtWorkdate.text():
                 infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
                     repdate, self.txtWorkdate.text())
@@ -336,17 +383,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                    QMessageBox.Ok)
 
     def report_list_action(self):
-        """Slot for Report List triggered signal"""
+        """
+        Slot for Report List triggered signal
+        """
         pass
 
     def resizeEvent(self, event):
-        """Slot for the resize event signal
+        """
+        Slot for the resize event signal
+        Args:
+            event:
         intended use is resize content to window
         """
         pass
 
     def settings_dialog_action(self):
-        """Slot for settingsDialog triggered signal"""
+        """
+        Slot for settingsDialog triggered signal
+        """
         settings_dialog = SettingsDialog(self.Settings.settings)
         if settings_dialog.exec_():
             # do check if password has been changed
@@ -365,11 +419,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
     def visit_data_action(self):
-        """Slot for visitData triggered signal"""
+        """
+        Slot for visitData triggered signal
+        """
         self.customerInfoStack.setCurrentIndex(2)
 
     def zero_database_action(self):
-        """Slot for zeroDatabase triggered signal"""
+        """
+        Slot for zeroDatabase triggered signal
+        """
         self.Contacts.recreate_table()
         self.Customers.recreate_table()
         self.OrderLines.recreate_table()
@@ -382,7 +440,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msgbox.information(self, __appname__, "Salgsdata er nulstillet!", QMessageBox.Ok)
 
     def run(self):
-        """Setup database and basic configuration"""
+        """
+        Setup database and basic configuration
+        """
         # Settings needs to be up for inet connection to work
         is_set = check_settings(self.Settings.settings)
         if is_set:

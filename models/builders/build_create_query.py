@@ -5,7 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
-def create_query(model):
+def build_create_query(model):
     """
     Builds a query for supplied model
     Args:

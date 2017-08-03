@@ -11,7 +11,14 @@ from util.passwdfn import check_password
 
 
 def sanitize_customer_data(rawdata, sr):
-    """Sanitizing the raw data from http data file"""
+    """
+    Sanitizing the raw data from http data file
+    Args:
+        rawdata:
+        sr:
+    Returns:
+        List of customers filtered by sr
+    """
     clist = []
     if not rawdata:
         return clist
@@ -31,7 +38,15 @@ def sanitize_customer_data(rawdata, sr):
 
 
 def sanitize_employee_data(rawdata, em, hp):
-    """Sanitizing the raw data from http data file"""
+    """
+    Sanitizing the raw data from http data file
+    Args:
+        rawdata:
+        em:
+        hp:
+    Returns:
+        Employee data if passwords match
+    """
     emp = []
     if not rawdata:
         return emp
@@ -52,7 +67,13 @@ def sanitize_employee_data(rawdata, em, hp):
 
 
 def sanitize_product_data(rawdata):
-    """Sanitizing the raw data from http data file"""
+    """
+    Sanitizing the raw data from http data file
+    Args:
+        rawdata:
+    Returns:
+        List with products
+    """
     plist = []
     if not rawdata:
         return plist

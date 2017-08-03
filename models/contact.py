@@ -14,6 +14,7 @@ from models.query import Query
 
 class Contact:
     """
+    Customer Contacts
     """
     def __init__(self):
         """Initialize Contact class"""
@@ -34,63 +35,24 @@ class Contact:
             if config.DEBUG_CONTACT:
                 print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
-    @property
-    def contact(self):
-        """
-
-        Returns:
-
-        """
-        return self._contact
-
-    @contact.setter
-    def contact(self, contact):
-        """
-
-        Args:
-            contact:
-        """
-        self.contact = contact
-
-    @property
-    def contacts(self):
-        """
-
-        Returns:
-
-        """
-        return self._contacts
-
-    @contacts.setter
-    def contacts(self, customerid):
-        """
-
-        Args:
-            customerid:
-        """
-        try:
-            custid = self._contacts[0]["customerid"]
-            if not custid == customerid:
-                self.load_for_customer(customerid)
-        except IndexError:
-            self.load_for_customer(customerid)
-
     def clear(self):
         """
-
+        Clear internal variables
         """
         self._contact = {}
         self._contacts = []
 
     def create(self, customerid, name):
-        """Create a contact"""
+        """
+        Create a contact
+        """
         values = (None, customerid, name, "", "", "", "")
         data = self.insert(values)
         self.find(data)
 
     def find(self, contactid):
         """
-
+        Load specific contact by id
         Args:
             contactid:
         """
@@ -102,8 +64,8 @@ class Contact:
             self._contact = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
-        """Import contact from file
-
+        """
+        Import contact from file
         Args:
             filename: 
             headers: 
@@ -126,8 +88,8 @@ class Contact:
             return True
 
     def insert(self, values):
-        """Insert items
-
+        """
+        Insert items
         Args:
             values: contact data to insert in contact table
         """
@@ -138,7 +100,11 @@ class Contact:
             return data
 
     def load_for_customer(self, customerid):
-        """Load contact"""
+        """
+        Load contacts for customer
+        Args:
+            customerid:
+        """
         filteron = [self.model["id"]]
         values = (customerid,)
         # build query and execute
@@ -150,7 +116,9 @@ class Contact:
             self._contacts = []
 
     def recreate_table(self):
-        """Drop and create table"""
+        """
+        Drop and create table
+        """
         # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
@@ -158,7 +126,9 @@ class Contact:
         self.q.execute(sql)
 
     def update(self):
-        """Update item"""
+        """
+        Update item
+        """
         fields = list(self.model["fields"])[1:]
         filteron = (self.model["id"],)
         # move id from first to last element

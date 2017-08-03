@@ -8,14 +8,21 @@
 
 
 def validate_fields():
-    """Validates the QLineEdits based on RegEx"""
+    """
+    Validates the QLineEdits based on RegEx
+    """
     print("TODO: Create validation rules")
 
 
 def check_settings(settings):
-    """Check the vital settings
-    :type settings: dict
-    :returns: True False
+    """
+    Check the vital settings
+
+    Args:
+        settings: dict
+
+    Returns:
+        bool indicating if settings is missing
     """
     try:
         return bool(

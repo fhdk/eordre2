@@ -13,9 +13,12 @@ from models.query import Query
 # noinspection PyMethodMayBeStatic
 class Product:
     """
+    Product
     """
     def __init__(self):
-        """Initialize product class"""
+        """
+        Initialize product class
+        """
         self.model = {
             "name": "product",
             "id": "productid",
@@ -35,7 +38,7 @@ class Product:
 
     def clear(self):
         """
-
+        Clear internal variables
         """
         self._product = {}
         self._products = []
@@ -43,9 +46,9 @@ class Product:
     @property
     def product_list(self):
         """
-
+        ProductList
         Returns:
-
+            List of products
         """
         try:
             _ = self._products[0]
@@ -63,7 +66,11 @@ class Product:
         self.recreate_table()
 
     def insert(self, values):
-        """Insert a product in database"""
+        """
+        Insert a product in database
+        Args:
+            values:
+        """
         value_list = values
         try:
             _ = value_list[0]
@@ -74,7 +81,9 @@ class Product:
         self.q.execute(sql, values=value_list)
 
     def load(self):
-        """Load product list"""
+        """
+        Load product list
+        """
         # build query and execute
         sql = self.q.build("select", self.model)
         success, data = self.q.execute(sql)
@@ -84,7 +93,9 @@ class Product:
             self._products = []
 
     def recreate_table(self):
-        """Drop and create table"""
+        """
+        Drop and create table
+        """
         # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)

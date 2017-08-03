@@ -4,6 +4,9 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
+"""
+Threads module
+"""
 
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
 
@@ -12,16 +15,24 @@ from util import httpfn, utils
 
 
 class Communicate(QObject):
+    """
+    Communication Object
+    """
     processing = pyqtSignal(str)  # status message signal
     rowcount = pyqtSignal(int)  # rowcount signal
     finished = pyqtSignal()  # finished signal
-    SyncStatusDone = pyqtSignal()
 
 
 class ImportCustomersThread(QThread):
-    """Thread for importing customer through http"""
-
+    """
+    Thread for importing customer through http
+    """
     def __init__(self, parent=None):
+        """
+        Initialize thread
+        Args:
+            parent:
+        """
         super(ImportCustomersThread, self).__init__(parent)
         self.Settings = settings.Setting()  # assign settings object
         self.Employee = employee.Employee()  # assign employee object
@@ -29,7 +40,9 @@ class ImportCustomersThread(QThread):
         self.c = Communicate()
 
     def run(self):
-        """The run process - activated by the QTread start() method"""
+        """
+        The run process - activated by the QTread start() method
+        """
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
         data = httpfn.get_customers(self.Settings.settings,
@@ -44,16 +57,24 @@ class ImportCustomersThread(QThread):
 
 
 class ImportProductsThread(QThread):
-    """Thread for importing product through http"""
-
+    """
+    Thread for importing product through http
+    """
     def __init__(self, parent=None):
+        """
+        Initialize the thread
+        Args:
+            parent:
+        """
         super(ImportProductsThread, self).__init__(parent)
         self.Settings = settings.Setting()  # add settings object
         self.Product = product.Product()  # add product object
         self.c = Communicate()
 
     def run(self):
-        """The run process - activated by the QTread start() method"""
+        """
+        The run process - activated by the QTread start() method
+        """
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         self.Product.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
@@ -65,18 +86,3 @@ class ImportProductsThread(QThread):
             self.Product.insert(row)  # add row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
-
-
-class RefreshSyncStatus(QThread):
-    """Thread for updating sync status"""
-
-    def __init__(self, parent=None):
-        super(RefreshSyncStatus, self).__init__(parent)
-        self.Settings = settings.Setting()
-        self.c = Communicate()
-
-    def run(self):
-        """The run process - activated by QThread start() methcod"""
-        status = utils.refresh_sync_status(self.Settings.settings)
-        self.Settings.update_avail_sync(status)
-        self.c.SyncStatusDone.emit()

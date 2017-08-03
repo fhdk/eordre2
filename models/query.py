@@ -9,37 +9,43 @@
 import sqlite3
 
 from configuration import config
-from models.builders.build_delete_query import delete_query
-from models.builders.build_insert_query import insert_query
-from models.builders.build_select_query import select_query
-from models.builders.build_update_query import update_query
-from models.builders.create_query import create_query
-from models.builders.build_drop_query import drop_query
+from models.builders.build_delete_query import build_delete_query
+from models.builders.build_insert_query import build_insert_query
+from models.builders.build_select_query import build_select_query
+from models.builders.build_update_query import build_update_query
+from models.builders.build_create_query import build_create_query
+from models.builders.build_drop_query import build_drop_query
 
 
 class Query:
     """
     """
+
     def build(self, query_type, model_def, update=None, aggregates=None, filteron=None, sort_order=None):
         """
         Builds a sql query from definition
-        :param query_type: add(table), insert, select, update, delete)
-        :type query_type: str "add"
-        :param model_def: table model definition
-        :type model_def: object
-            {"name": ("name" ...),
-             "fields": ("field" ...),
-             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
-        :param update: fields to update
-        :type update: iterable ("field", "field" ...)
-        :type aggregates: iterable ["sum(column) AS 'expression'", "sum(column) AS 'expression'" ....]
-        :param aggregates: aggregates to  be returned
-        :type filteron: iterable [("field", "operator", "value", "and/or"), (("field", "operator", "value"))]]
-        :param where: valid with read-, update- and delete query
-        :type sort_order: str
-        :param sort_order: asc or desc
-        :return: str
+
+        Args:
+            query_type: create(table), drop(table), insert(row), select(row), update(row), delete(row))
+
+            model_def: table model definition
+            {"name": ("name" ...), "fields": ("field" ...), "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
+
+            update: fields to update
+            ("field", "field" ...)
+
+            aggregates: valid ["sum(column) AS 'expression'", "sum(column) AS 'expression'" ....]
+
+            filteron:  valid for select-, required for update- and delete query
+            [("field", "operator", "value", "and/or"), (("field", "operator", "value"))]]
+
+            sort_order: asc or desc
+
+        Returns:
+            string with sql query
+
         """
+
         querytype = query_type.upper()
         if querytype not in ["CREATE", "DELETE", "DROP", "INSERT", "SELECT", "UPDATE"]:
             return "ERROR! Unsupported type: {}, {}".format(querytype, model_def["name"])
@@ -59,30 +65,33 @@ class Query:
 
         # build create table query
         if querytype == "CREATE":
-            return create_query(model_def)
+            return build_create_query(model_def)
 
         # build delete row query
         if querytype == "DELETE":
-            return delete_query(model_def, filteron)
+            return build_delete_query(model_def, filteron)
 
         # builds drop table query
         if querytype == "DROP":
-            return drop_query(model_def)
+            return build_drop_query(model_def)
 
         # build insert row query
         if querytype == "INSERT":
-            return insert_query(model_def)
+            return build_insert_query(model_def)
 
         # build select row query
         if querytype == "SELECT":
-            return select_query(model_def, aggregates, filteron, sort_order)
+            return build_select_query(model_def, aggregates, filteron, sort_order)
 
         # build update row query
         if querytype == "UPDATE":
-            return update_query(model_def, update, filteron)
+            return build_update_query(model_def, update, filteron)
 
     def execute(self, sql_query, values=None):
-        """Execute a query and return the result"""
+        """
+        Execute a query and return the result
+
+        """
         if config.DEBUG_QUERY:
             print("{}->execute->enter\nsql_query: {}\nvalues   :".format("QUERY", sql_query, values))
         # query types: create, delete, insert, select, update
@@ -113,14 +122,13 @@ class Query:
 
     def values_to_arg(self, values):
         """
-
+        Moves the id field from first to last element
         Args:
             values:
 
         Returns:
-
+            Value list with id as the last field
         """
-        # move id from first to last element
         work = list(values)
         rowid = work[0]
         work = work[1:]
@@ -129,10 +137,13 @@ class Query:
         return work
 
     def exist_table(self, table):
-        """Check database if tablename exist
-
+        """
+        Check database if tablename exist
         Args:
-            table: 
+            table:
+
+        Returns:
+             bool indicating if table was found
         """
         statement = "select name from sqlite_master " \
                     "where type='{}' and name='{}';".format("table", table)
