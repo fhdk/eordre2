@@ -4,7 +4,7 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""Order dialog"""
+"""Create Report Dialog"""
 import datetime
 
 from PyQt5.QtWidgets import QDialog, QMessageBox
@@ -13,6 +13,9 @@ from resources.create_report_dialog_rc import Ui_CreateReportDialog
 
 
 class CreateReportDialog(QDialog, Ui_CreateReportDialog):
+    """
+    Create a new report for date
+    """
     def __init__(self, workdate, parent=None):
         """Initialize Dialog"""
         super(CreateReportDialog, self).__init__(parent)

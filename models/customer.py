@@ -7,11 +7,14 @@
 """CustomerNg class"""
 import csv
 
+from configuration import config
 from models.query import Query
-from util import dbfn, utils
+from util import utils
 
 
 class Customer:
+    """
+    """
     def __init__(self):
         """Initialize Customer class"""
         self.model = {
@@ -19,20 +22,26 @@ class Customer:
             "id": "customerid",
             "fields": ("customerid", "account", "company", "address1", "address2", "zipcode", "city", "country",
                        "salesrep", "phone1", "vat", "email", "deleted", "modified", "created", "infotext", "att",
-                       "phone2", "factor"),
-            "types": ("INTEGER PRIMARY KEY NOT NUL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
-                      "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "REAL")
+                       "phone2", "factor", "body", "plate", "paint", "industry"),
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "REAL",
+                      "INTEGER", "INTEGER", "INTEGER", "INTEGER")
         }
         self._customers = []
         self._customer = {}
         self.csv_field_count = 20
         self.q = Query()
-        if not dbfn.exist_table(self.model["name"]):
+        if not self.q.exist_table(self.model["name"]):
             # build query and execute
             sql = self.q.build("create", self.model)
-            self.q.execute(sql)
+            success, data = self.q.execute(sql)
+            if config.DEBUG_CUSTOMER:
+                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     def clear(self):
+        """
+
+        """
         self._customer = {}
         self._customers = []
 
@@ -52,6 +61,15 @@ class Customer:
 
     # TODO: refactor this
     def add(self, company, phone, createdate, country, salesrep):
+        """
+
+        Args:
+            company:
+            phone:
+            createdate:
+            country:
+            salesrep:
+        """
         # do we have the customer
         found = self.lookup_by_phone_name(phone, company)
         if found:
@@ -71,28 +89,30 @@ class Customer:
         where_list = [(self.model["id"], "=")]
         value_list = list(customerid)
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
+        sql = self.q.build("select", self.model, filteron=where_list)
         success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._customer = dict(zip(self.model["fields"], data))
 
     def lookup_by_phone_name(self, phone, company):
         """Look up customer
-        :param phone:
-        :param company:
+
+        Args:
+            phone: 
+            company: 
         """
         # search by account
         where_list = [("phone", "=", "or"), ("account", "=")]
         value_list = [phone, phone]
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
+        sql = self.q.build("select", self.model, filteron=where_list)
         success, data = self.q.execute(sql, values=value_list)
         if not success:
             # retry search which "NY" as account
             where_list = [("account", "=", "and"), ("company", "=", "or"), ("phone", "=")]
             value_list = ["NY", company, phone]
             # build query and execute
-            sql = self.q.build("select", self.model, where=where_list)
+            sql = self.q.build("select", self.model, filteron=where_list)
             success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._customer = dict(zip(self.model["fields"], data))
@@ -101,8 +121,11 @@ class Customer:
 
     def import_csv(self, filename, headers=False):
         """Import customer from csv file
-        :param filename:
-        :param headers:
+
+        Args:
+            filename: 
+            headers: 
+
         The expected file format contains data in the following sequence
         in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         """
@@ -128,7 +151,10 @@ class Customer:
 
     def import_http(self, values):
         """Insert a new customer
-        :param values: List with values from http request
+
+        Args:
+            values: List with values from http request
+
         expected incoming fields: acc comp add1 add2 zipcity country s_rep phone1 vat email att phon2
         """
         # import file has 'zip  city'
@@ -203,8 +229,9 @@ class Customer:
         """Update current row
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """
+        update_list = list(self.model["fields"])[1:]
         where_list = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._customer.values())
         # build query and execute
-        sql = self.q.build("update", self.model, where=where_list)
+        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
         self.q.execute(sql, values=values)

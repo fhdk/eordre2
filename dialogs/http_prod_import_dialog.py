@@ -14,10 +14,16 @@ from util import threads
 
 
 class Communicate(QObject):
+    """
+    Broadcast signals
+    """
     finished = pyqtSignal()
 
 
 class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
+    """
+    Dialog for importing products from server
+    """
     def __init__(self, parent=None):
         """Initialize Dialog"""
         super(HttpProdImportDialog, self).__init__(parent)

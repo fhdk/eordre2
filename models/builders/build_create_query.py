@@ -5,12 +5,20 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
-def create_query(model_def):
-    string = ""
-    name = model_def["name"]
-    fld_count = len(model_def["fields"])
+def create_query(model):
+    """
+    Builds a query for supplied model
+    Args:
+        model:
 
-    for idx, field_def in enumerate(zip(model_def["fields"], model_def["types"])):
+    Returns:
+        valid sql statement for model
+    """
+    string = ""
+    name = model["name"]
+    fld_count = len(model["fields"])
+
+    for idx, field_def in enumerate(zip(model["fields"], model["types"])):
         field = field_def[0]
         define = field_def[1]
         if (idx + 1) == fld_count:

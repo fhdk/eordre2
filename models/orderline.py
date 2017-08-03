@@ -6,13 +6,16 @@
 
 """Orderline class"""
 
+from configuration import config
 import csv
 
 from models.query import Query
-from util import dbfn, utils
+from util import utils
 
 
 class OrderLine:
+    """
+    """
     def __init__(self):
         """Initialize OrderLine class"""
         self.model = {
@@ -25,23 +28,38 @@ class OrderLine:
         self._order_line = {}
         self.csv_field_count = 8
         self.q = Query()
-        if not dbfn.exist_table(self.model["name"]):
+        if not self.q.exist_table(self.model["name"]):
             # build query and execute
             sql = self.q.build("create", self.model)
-            self.q.execute(sql)
+            success, data = self.q.execute(sql)
+            if config.DEBUG_ORDERLINE:
+                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     @property
     def orderlines_list(self):
+        """
+
+        Returns:
+
+        """
         return self._order_lines
 
     @orderlines_list.setter
     def orderlines_list(self, visitid):
+        """
+
+        Args:
+            visitid:
+        """
         try:
             _ = self._order_lines[0]
         except IndexError:
             self.load(visitid)
 
     def clear(self):
+        """
+
+        """
         self._order_line = {}
         self._order_lines = []
 
@@ -54,8 +72,10 @@ class OrderLine:
 
     def csv_import(self, filename, headers=False):
         """Import orderline from file
-        :param filename: csv file
-        :param headers: flag first row as fieldnames
+
+        Args:
+            filename: csv file
+            headers: flag first row as fieldnames
         """
         self.recreate_table()
         filename.encode("utf8")
@@ -90,7 +110,7 @@ class OrderLine:
         where_list = [("visitid", "=")]
         value_list = [visitid]
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
+        sql = self.q.build("select", self.model, filteron=where_list)
         success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in data]
@@ -109,5 +129,5 @@ class OrderLine:
         where_list = [("lineid", "=")]
         values = self.q.values_to_arg(self._order_line.values())
         # build query and execute
-        sql = self.q.build("update", self.model, update=update_list, where=where_list)
+        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
         self.q.execute(sql, values=values)

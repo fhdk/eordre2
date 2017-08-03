@@ -15,10 +15,15 @@ from util import threads
 
 
 class Communicate(QObject):
+    """
+    Broadcasting signals
+    """
     finished = pyqtSignal()
 
 
 class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
+    """
+    """
     def __init__(self, parent=None):
         """Initialize Dialog"""
         super(HttpCustImportDialog, self).__init__(parent)

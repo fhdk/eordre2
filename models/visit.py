@@ -8,12 +8,14 @@
 
 import csv
 
+from configuration import config
 from models.query import Query
-from util import dbfn, utils
 
 
 # noinspection PyMethodMayBeStatic
 class Visit:
+    """
+    """
     def __init__(self):
         """Initialize visit class"""
         self.model = {
@@ -31,20 +33,37 @@ class Visit:
         self._visit = {}
         self.csv_field_count = 22
         self.q = Query()
-        if not dbfn.exist_table(self.model["name"]):
+        if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            self.q.execute(sql)
+            success, data = self.q.execute(sql)
+            if config.DEBUG_VISIT:
+                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     @property
     def visit(self):
+        """
+
+        Returns:
+
+        """
         return self._visit
 
     @property
     def customer_visits(self):
+        """
+
+        Returns:
+
+        """
         return self._customer_visits
 
     @customer_visits.setter
     def customer_visits(self, customerid):
+        """
+
+        Args:
+            customerid:
+        """
         try:
             cid = self._customer_visits[0]["customerid"]
             if not cid == customerid:
@@ -54,10 +73,20 @@ class Visit:
 
     @property
     def report_visits(self):
+        """
+
+        Returns:
+
+        """
         return self._report_visits
 
     @report_visits.setter
     def report_visits(self, reportid):
+        """
+
+        Args:
+            reportid:
+        """
         try:
             rid = self._report_visits[0]["reportid"]
             if not rid == reportid:
@@ -66,11 +95,22 @@ class Visit:
             self.select_by_report(reportid=reportid)
 
     def clear(self):
+        """
+
+        """
         self._visit = {}
         self._customer_visits = []
         self._report_visits = []
 
     def create(self, reportid, employeeid, customerid, workdate):
+        """
+
+        Args:
+            reportid:
+            employeeid:
+            customerid:
+            workdate:
+        """
         values = [None, reportid, employeeid, customerid, workdate,
                   0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0]
         self.find(self.insert(values))
@@ -80,15 +120,17 @@ class Visit:
         where_list = [(self.model["id"], "=")]
         value_list = [visitid]
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
+        sql = self.q.build("select", self.model, filteron=where_list)
         success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._visit = dict(zip(self.model["fields"], data))
 
     def import_csv(self, filename, headers=False):
         """Import orders from file
-        :param filename:
-        :param headers:
+
+        Args:
+            filename: 
+            headers: 
         """
         self.recreate_table()
         filename.encode("utf8")
@@ -123,6 +165,7 @@ class Visit:
         success, data = self.q.execute(sql, values=value_list)
         if success and data:
             return data
+        return False
 
     def recreate_table(self):
         """Drop and create table"""
@@ -137,7 +180,7 @@ class Visit:
         where_list = [(self.model["id"]), "="]
         value_list = [customerid]
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
+        sql = self.q.build("select", self.model, filteron=where_list)
         success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
@@ -147,7 +190,7 @@ class Visit:
         where_list = [(self.model["id"], "=")]
         value_list = [reportid]
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
+        sql = self.q.build("select", self.model, filteron=where_list)
         success, data = self.q.execute(sql, values=value_list)
         if success and data:
             self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
@@ -158,8 +201,13 @@ class Visit:
 
     def update(self):
         """Save current visit"""
-        where_list = [(self.model["id"]), "="]
+        update_list = list(self.model["fields"])[1:]
+        where_list = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._visit.values())
         # build query and execute
-        sql = self.q.build("update", self.model, where=where_list)
-        self.q.execute(sql, values=values)
+        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
+        success, data = self.q.execute(sql, values=values)
+        if success and data:
+            return data
+        return False
+

@@ -5,7 +5,15 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
-def drop_query(model_def):
-    name = model_def["name"]
+def build_drop_query(model):
+    """
+    Builds a query for supplied model
+    Args:
+        model:
+
+    Returns:
+        valid sql statement for model
+    """
+    name = model["name"]
 
     return "DROP TABLE IF EXISTS {};".format(name)

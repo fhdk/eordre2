@@ -5,22 +5,32 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
-def update_query(model_def, update_list, where_list):
+def build_update_query(model, fields, filters):
+    """
+    Builds a query for supplied model
+    Args:
+        model:
+        fields: list of one or more fields to update
+        filters: required list of one or more fields to filter query
+
+    Returns:
+        valid sql statement for model
+    """
     str_uf = ""
     str_uw = ""
-    name = model_def["name"]
-    fld_count = len(update_list)
-    whr_count = len(where_list)
+    name = model["name"]
+    fld_count = len(fields)
+    whr_count = len(filters)
 
     # field=value part
-    for idx, field in enumerate(update_list):
+    for idx, field in enumerate(fields):
         if (idx + 1) == fld_count:
             str_uf = str_uf + "{}=?".format(field)
         else:
             str_uf = str_uf + "{}=? , ".format(field)
 
     # where 'field' operator
-    for idx, u_item in enumerate(where_list):
+    for idx, u_item in enumerate(filters):
         field = u_item[0]
         operator = u_item[1].upper()
         andor = ""

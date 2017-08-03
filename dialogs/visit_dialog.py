@@ -12,10 +12,13 @@ from models import product
 from resources.visit_dialog_rc import Ui_VisitDialog
 
 
-class CreateOrderDialog(QDialog, Ui_VisitDialog):
+class CreateVisitDialog(QDialog, Ui_VisitDialog):
+    """
+    Dialog for creating a new visit
+    """
     def __init__(self, report, customer, employee, workdate, parent=None):
         """Initialize"""
-        super(CreateOrderDialog, self).__init__(parent)
+        super(CreateVisitDialog, self).__init__(parent)
         self.setupUi(self)
         self.workdate = workdate
         self.product = product.Product()  # Create Product object

@@ -23,7 +23,7 @@ from dialogs.http_prod_import_dialog import HttpProdImportDialog
 from dialogs.settings_dialog import SettingsDialog
 from models import contact, customer, employee, visit, orderline, product, report, settings
 from resources.main_window_rc import Ui_MainWindow
-from util import httpfn, dbfn, passwdfn, utils
+from util import httpfn, passwdfn, utils
 from util.rules import check_settings
 
 __appname__ = "Eordre NG"
@@ -172,8 +172,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Slot for listbox current item changed signal
         propagate changes to currently selected customer
         to related customer info pages
-        :param current: currently selected item
-        :param previous: previous selected item
+
+        Args:
+            current: currently selected item
+            previous: previous selected item
         """
         self.Customers.lookup_by_phone_name(current.text(1), current.text(0))
         try:
@@ -214,6 +216,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msgbox.information(self, __appname__, "Opret CSV data backup", QMessageBox.Ok)
 
     def display_sync_status(self):
+        """
+
+        """
         self.txtCustLocal.setText(self.Settings.settings["lsc"])
         self.txtCustServer.setText(self.Settings.settings["sac"])
         self.txtProdLocal.setText(self.Settings.settings["lsp"])

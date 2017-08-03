@@ -6,11 +6,13 @@
 
 """Settings class"""
 
+from configuration import config
 from models.query import Query
-from util import dbfn
 
 
 class Setting:
+    """
+    """
     def __init__(self):
         """Initialize the Settings class"""
         self.model = {
@@ -25,29 +27,59 @@ class Setting:
         }
         self._settings = {}
         self.q = Query()
-        if not dbfn.exist_table(self.model["name"]):
+        if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            self.q.execute(sql)
+            success, data = self.q.execute(sql)
+            if config.DEBUG_SETTINGS:
+                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     @property
     def settings(self):
+        """
+
+        Returns:
+
+        """
         try:
             _ = self._settings["usermail"]
         except KeyError:
             self.load()
+
         return self._settings
 
     @settings.setter
     def settings(self, settings):
+        """
+
+        Args:
+            settings:
+        """
         self._settings = settings
 
     def insert(self, values):
+        """
+
+        Args:
+            values:
+
+        Returns:
+
+        """
         # build query and execute
-        print("settings -> insert -> values: {}".format(values))
         sql = self.q.build("insert", self.model)
+
+        if config.DEBUG_SETTINGS:
+            print("{} -> insert\nsql: {}\nvalues: {}".format(self.model["name"].upper(), sql, values))
+
         success, data = self.q.execute(sql, values=values)
-        print("settings -> insert -> result:")
-        print("success: {}\ndata   : {}".format(success, data))
+
+        if config.DEBUG_SETTINGS:
+            print("{} -> insert\nsuccess: {}\ndata   : {}".format(self.model["name"], success, data))
+
+        if success and data:
+            return data
+
+        return False
 
     def load(self):
         """Load settings"""
@@ -58,23 +90,38 @@ class Setting:
             # insert defaults and retry
             values = (None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
                       "customers", "invenprices", "employees", "", "", "", "", 0)
-            self._settings = dict(zip(self.model["fields"], values))
             self.insert(values)
-            # build query and execute
-            sql = self.q.build("select", self.model)
+            # execute query again
             success, data = self.q.execute(sql)
 
         if success and data:
             self._settings = dict(zip(self.model["fields"], data[0]))
-        print("settings -> load -> result:")
-        print("success: {}\ndata   : {}".format(success, data))
-        exit(0)
+
+        if config.DEBUG_SETTINGS:
+            print("{} -> load\nsuccess: {}\ndata   : {}".format(self.model["name"], success, data))
+
+        if success and data:
+            return data
+
+        return False
 
     def update(self):
         """Update settings"""
-        update_list = list(self.model["fields"])
+        update_list = list(self.model["fields"])[1:]
         where_list = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._settings.values())
+
+        if config.DEBUG_SETTINGS:
+            print("{} -> update\nupdate_list: {}\nwhere_list: {}\nvalues: {}".format(self.model["name"].upper(), update_list, where_list, values))
+
         # use query to update
-        sql = self.q.build("update", self.model, update=update_list, where=where_list)
-        self.q.execute(sql, values=values)
+        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_SETTINGS:
+            print("{} -> update\nsuccess: {}\ndata   : {}".format(self.model["name"], success, data))
+
+        if success and data:
+            return data
+
+        return False

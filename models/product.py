@@ -6,35 +6,47 @@
 
 """"productNg class"""
 
+from configuration import config
 from models.query import Query
-from util import dbfn
 
 
 # noinspection PyMethodMayBeStatic
 class Product:
+    """
+    """
     def __init__(self):
         """Initialize product class"""
         self.model = {
             "name": "product",
             "id": "productid",
             "fields": ("productid", "sku", "name1", "name2", "name3", "item", "price", "d2", "d4", "d6", "d8", "d12",
-                       "d24", "d48", "d96", "min", "net", "group"),
+                       "d24", "d48", "d96", "min", "net", "groupid"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "REAL", "REAL",
                       "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "TEXT")}
         self._products = []
         self._product = {}
         self.q = Query()
-        if not dbfn.exist_table(self.model["name"]):
+        if not self.q.exist_table(self.model["name"]):
             # build query and execute
             sql = self.q.build("create", self.model)
-            self.q.execute(sql)
+            success, data = self.q.execute(sql)
+            if config.DEBUG_PRODUCT:
+                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     def clear(self):
+        """
+
+        """
         self._product = {}
         self._products = []
 
     @property
     def product_list(self):
+        """
+
+        Returns:
+
+        """
         try:
             _ = self._products[0]
         except IndexError:

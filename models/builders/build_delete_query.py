@@ -5,12 +5,21 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
-def delete_query(model_def, where_list):
-    name = model_def["name"]
-    whr_count = len(where_list)
+def build_delete_query(model, filters):
+    """
+    Builds a query for supplied model
+    Args:
+        model:
+        filters: required list of one or more fields to filter on
+
+    Returns:
+        valid sql statement for model
+    """
+    name = model["name"]
+    whr_count = len(filters)
     string = ""
     # where 'field' operator
-    for idx, d_item in enumerate(where_list):
+    for idx, d_item in enumerate(filters):
         field = d_item[0]
         operator = d_item[1].upper()
         andor = ""

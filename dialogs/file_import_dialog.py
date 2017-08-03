@@ -15,10 +15,16 @@ from resources import file_import_dialog_rc
 
 
 class Communication(QObject):
+    """
+    Broadcast signals
+    """
     customersdone = pyqtSignal()
 
 
 class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
+    """
+    Dialog for importing CSV data
+    """
     def __init__(self, table_list, employee, parent=None):
         """Initialize Dialog"""
         super(FileImportDialog, self).__init__(parent)

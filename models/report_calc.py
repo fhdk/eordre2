@@ -4,16 +4,21 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
+from configuration import config
 from models.query import Query
-from util import dbfn
 
 
 class ReportCalc:
+    """
+    """
     def __init__(self):
+        """
+
+        """
         self.model = {
             "name": "totals",
             "id": "totalsid",
-            "fields": ("totalsid", "workdate", "reportid", "employeeid",
+            "fields": ("totalsid", "preworkdate", "reportid", "employeeid",
                        "new_visit", "new_demo", "new_sale", "new_turnover",
                        "recall_visit", "recall_demo", "recall_sale", "recall_turnover",
                        "sas", "sas_turnover", "visit", "demo", "sale", "turnover",
@@ -26,55 +31,86 @@ class ReportCalc:
         }
         self._totals = {}
         self.q = Query()
-        if not dbfn.exist_table(self.model["name"]):
+        if not self.q.exist_table(self.model["name"]):
             # build query and execute
             sql = self.q.build("create", self.model)
-            self.q.execute(sql)
+            success, data = self.q.execute(sql)
+            if config.DEBUG_REPORT_CALC:
+                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     @property
     def totals(self):
+        """
+
+        Returns:
+
+        """
         return self._totals
 
     def seed(self, aggregate_list):
+        """
+
+        Args:
+            aggregate_list:
+        """
         pass
 
     def insert(self, values):
         """Save values to database"""
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
         # build query and execute
         sql = self.q.build("insert", self.model)
-        success, data = self.q.execute(sql, values=value_list)
-        if success:
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_REPORT_CALC:
+            print("{} -> insert\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+
+        if success and data:
             self.select_by_id(data)
 
     def select_by_id(self, totals_id):
         """Select by id"""
         where_list = [(self.model["id"], "=")]
-        value_list = [totals_id]
+        values = [totals_id]
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
-        success, data = self.q.execute(sql, values=value_list)
-        if success:
-            self._totals = dict(zip(self.model["fields"], data))
+        sql = self.q.build("select", self.model, filteron=where_list)
+        success, data = self.q.execute(sql, values=values)
 
-    def select_by_employee_date(self, employeeid, workdate):
-        """Select by employeeid and workdate"""
+        if config.DEBUG_REPORT_CALC:
+            print("{} -> select_by_id\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+
+        if success and data:
+            self._totals = dict(zip(self.model["fields"], data[0]))
+            return True
+        return False
+
+    def select_by_date_employee(self, workdate, employeeid):
+        """Select totals for employeeid and workdate"""
         where_list = [("workdate", "=", "and"), ("employeeid", "=")]
-        value_list = [workdate, employeeid]
+        values = [workdate, employeeid]
         # build query and execute
-        sql = self.q.build("select", self.model, where=where_list)
-        success, data = self.q.execute(sql, values=value_list)
-        if success:
-            self._totals = dict(zip(self.model["fields"], data))
+        sql = self.q.build("select", self.model, filteron=where_list)
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_REPORT_CALC:
+            print("{} -> select_by_id\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+
+        if success and data:
+            self._totals = dict(zip(self.model["fields"], data[0]))
+            return True
+        return False
 
     def update(self):
         """Update totals"""
+        update_list = list(self.model["fields"])[1:]
         where_list = [(self.model["id"]), "="]
         values = self.q.values_to_arg(self._totals.values())
         # build query and execute
-        sql = self.q.build("update", self.model, where=where_list)
-        self.q.execute(sql, values=values)
+        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_REPORT_CALC:
+            print("{} -> select_by_id\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+
+        if success and data:
+            return True
+        return False

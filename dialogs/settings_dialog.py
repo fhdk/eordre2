@@ -12,7 +12,9 @@ from util import utils
 
 
 class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
-    """Settings dialog class"""
+    """
+    Dialog for entering and updating settings
+    """
 
     def __init__(self, settings, parent=None):
         """Initialize the dialog"""

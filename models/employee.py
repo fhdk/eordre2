@@ -6,11 +6,13 @@
 
 """"Employee class"""
 
+from configuration import config
 from models.query import Query
-from util import dbfn
 
 
 class Employee:
+    """
+    """
     def __init__(self):
         """Initialize Employee class"""
         # model for zipping dictionary
@@ -22,10 +24,12 @@ class Employee:
         }
         self._employee = {}
         self.q = Query()
-        if not dbfn.exist_table(self.model["name"]):
+        if not self.q.exist_table(self.model["name"]):
             # build query and execute
             sql = self.q.build("create", self.model)
-            self.q.execute(sql)
+            success, data = self.q.execute(sql)
+            if config.DEBUG_EMPLOYEE:
+                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
 
     @property
     def employee(self):
@@ -61,5 +65,5 @@ class Employee:
         where_list = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._employee.values())
         # build query and execute
-        sql = self.q.build("update", self.model, update=update_list, where=where_list)
+        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
         self.q.execute(sql, values=values)

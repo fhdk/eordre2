@@ -8,6 +8,17 @@
 
 import os
 
+DEBUG_CONTACT = False
+DEBUG_CUSTOMER = True
+DEBUG_EMPLOYEE = True
+DEBUG_ORDERLINE = False
+DEBUG_PRODUCT = False
+DEBUG_QUERY = True
+DEBUG_REPORT = True
+DEBUG_REPORT_CALC = True
+DEBUG_SETTINGS = False
+DEBUG_VISIT = False
+
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
 COUNTRIES = [("dk", "Danmark"), ("no", "Norge"), ("s", "Sverige")]
 HOME = os.path.expanduser("~")
