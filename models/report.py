@@ -164,9 +164,11 @@ class Report:
             month = data
             month = list(month)
             report_count = month[0]
+            next_report = report_count + 1
             month = [workdate, "None", employee["employeeid"]] + list(month)
             created = datetime.today().isoformat()
-            new_report = (None, employee["employeeid"], (report_count + 1), workdate,
+
+            new_report = (None, employee["employeeid"], next_report, workdate,
                           None, None, None, None, None, None, None, None, None, None, None, None,
                           None, None, None, None, None, None, None, None, None, None, created)
             report_id = self.insert(new_report)
