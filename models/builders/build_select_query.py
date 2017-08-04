@@ -62,9 +62,9 @@ def build_select_query(model_def, aggregates=None, filters=None, sort_order=None
                 str_sw = str_sw + " {} {} ?".format(field, operator)
             else:
                 if andor:
-                    str_sw = str_sw + " {} {} ? {}".format(field, operator, andor)
+                    str_sw = str_sw + " {} {} ? {} ".format(field, operator, andor)
                 else:
-                    str_sw = str_sw + " {} {} ?".format(field, operator)
+                    str_sw = str_sw + " {} {} ? ".format(field, operator)
 
     # load aggregated values where
     if str_sa and str_sw:

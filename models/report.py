@@ -138,9 +138,10 @@ class Report:
                       "(sum(workday = 1)) AS 'workdays'",
                       "(sum(offday = 1)) AS 'offdays'"]
         # filter on
-        filteron = [("repdate", "LIKE"), ("employeeid", "="), ("sent", "=")]
+        filteron = [("repdate", "LIKE", "and"), ("employeeid", "=", "and"), ("sent", "=")]
         # filter values
-        values = (workdate[:8] + "%", employee["employeeid"], 1)
+        ym_filter = "{}%".format(workdate[:8])
+        values = (ym_filter, employee["employeeid"], 1)
 
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filteron)
         month = self.q.execute(sql, values)
