@@ -9,14 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_HttpProdImportDialog(object):
-    """
-    """
     def setupUi(self, HttpProdImportDialog):
-        """
-
-        Args:
-            HttpProdImportDialog:
-        """
         HttpProdImportDialog.setObjectName("HttpProdImportDialog")
         HttpProdImportDialog.resize(540, 113)
         self.itemList = QtWidgets.QListWidget(HttpProdImportDialog)
@@ -37,11 +30,6 @@ class Ui_HttpProdImportDialog(object):
         QtCore.QMetaObject.connectSlotsByName(HttpProdImportDialog)
 
     def retranslateUi(self, HttpProdImportDialog):
-        """
-
-        Args:
-            HttpProdImportDialog:
-        """
         _translate = QtCore.QCoreApplication.translate
         HttpProdImportDialog.setWindowTitle(_translate("HttpProdImportDialog", "Prisliste import fra server"))
         self.buttonStart.setText(_translate("HttpProdImportDialog", "Start"))

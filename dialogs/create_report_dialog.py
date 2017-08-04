@@ -37,7 +37,7 @@ class CreateReportDialog(QDialog, Ui_CreateReportDialog):
             msgbox = QMessageBox
             msgbox.warning(self,
                            "Eordre",
-                           "Forkert format, skal være <strong>ÅÅÅÅ-MM-DD</strong>!",
+                           "Dato er forkert, det skal være en gyldig dato<br/><strong>Tip:</strong>ÅÅÅÅ-MM-DD!",
                            QMessageBox.Ok)
             return False
 

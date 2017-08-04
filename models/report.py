@@ -6,9 +6,10 @@
 
 """Report class"""
 
-from configuration import config
 import csv
+from datetime import datetime
 
+from configuration import config
 from models.query import Query
 from models.report_calc import ReportCalc
 from util import utils
@@ -32,26 +33,27 @@ class Report:
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
                        "sasday", "sasturnoverday", "demoday", "saleday",
                        "kmmorning", "kmevening", "supervisor", "territory",
-                       "workday", "infotext", "sent", "offday", "offtext", "kmprivate"),
+                       "workday", "infotext", "sent", "offday", "offtext", "kmprivate", "created"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "TEXT NOT NULL",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
                       "INTEGER DEFAULT 0", "REAL DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "TEXT", "TEXT",
                       "INTEGER DEFAULT 0", "TEXT", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "TEXT",
-                      "INTEGER DEFAULT 0")
+                      "INTEGER DEFAULT 0", "TEXT")
         }
         self._reports = []
         self._report = {}
         self.csv_field_count = 25
         self.q = Query()
+        self.c = ReportCalc()
         if not self.q.exist_table(self.model["name"]):
             # build query and execute
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
                 print(
-                    "\033[1;32m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    "\033[1;30m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[1;m".format(
                         self.model["name"].upper(), success, data))
 
     @property
@@ -145,34 +147,59 @@ class Report:
         values = (ym_filter, employee["employeeid"], 1)
 
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filteron)
-        month = self.q.execute(sql, values)
-        month = list(month)
-        report_count = month[0]
-        month = [workdate, "None", employee["employeeid"]] + list(month)
 
-        new_report = [None, employee["employeeid"], (report_count + 1), workdate,
-                      None, None, None, None, None, None, None, None, None, None, None, None,
-                      None, None, None, None, None, None, None, None, None, None]
-        report_id = self.insert(new_report)
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->create\n  ->aggregates: {}\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), aggregates, sql, values))
 
-        month = tuple(month)
+        success, data = self.q.execute(sql, values)
 
-        # print("TODO: add report in database!")
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->create\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
+
+        if success and data:
+            month = data
+            month = list(month)
+            report_count = month[0]
+            month = [workdate, "None", employee["employeeid"]] + list(month)
+            created = datetime.today().isoformat()
+            new_report = (None, employee["employeeid"], (report_count + 1), workdate,
+                          None, None, None, None, None, None, None, None, None, None, None, None,
+                          None, None, None, None, None, None, None, None, None, None, created)
+            report_id = self.insert(new_report)
+            month[1] = report_id
+            month = tuple(month)
+            if config.DEBUG_REPORT:
+                print(
+                    "\033[1;30m{}\n ->create\n  ->month: {}\033[1;m".format(
+                        self.model["name"].upper(), month))
+        else:
+            return False
 
     def insert(self, values):
         """
         Insert new report in table
         """
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
-        # build query and execute
         sql = self.q.build("insert", self.model)
-        success, data = self.q.execute(sql, values=value_list)
+
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->insert\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), sql, values))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->insert\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
+
         if success and data:
             return data
+        return False
 
     def import_csv(self, filename, employee, headers=False):
         """
@@ -190,6 +217,10 @@ class Report:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
+                if config.DEBUG_REPORT:
+                    print(
+                        "\033[1;30m{}\n ->import_csv\n  ->row: {}\033[1;m".format(
+                            self.model["name"].upper(), row))
                 if not len(row) == self.csv_field_count:
                     return False
                 line += 1
@@ -198,52 +229,85 @@ class Report:
                 # translate bool text to integer for col 19, 21
                 row[19] = utils.bool2int(utils.str2bool(row[19]))
                 row[21] = utils.bool2int(utils.str2bool(row[21]))
+                created = datetime.today().isoformat(sep="-")
                 values = (row[0], employeeid, row[1], row[2].strip(),
                           row[3], row[4], row[5], row[6],
                           row[7], row[8], row[9], row[10],
                           row[11], row[12], row[13], row[14],
                           row[15], row[16], row[17].strip(), row[18].strip(),
-                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24])
+                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24], created)
+                if config.DEBUG_REPORT:
+                    print(
+                        "\033[1;30m{}\n ->import_csv\n  ->values: {}\033[1;m".format(
+                            self.model["name"].upper(), values))
                 self.insert(values)
             return True
 
     def load_report(self, workdate):
         """
-        Load report for supplied date
+        Load report for supplied date arg
 
         Args:
             workdate: iso formatted str representing the date for the report to be loaded
         """
-        where_list = [("repdate", "like")]
-        value_list = [workdate]
-        # build query and execute
-        sql = self.q.build("select", self.model, filteron=where_list)
-        success, data = self.q.execute(sql, values=value_list)
+        filters = [("repdate", "=")]
+        values = (workdate,)
+
+        sql = self.q.build("select", self.model, filteron=filters)
+
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->insert\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), sql, values))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->insert\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
+
         if success and data:
             self._report = dict(zip(self.model["fields"], data))
+            return True
+        return False
 
     def load_reports(self, year=None, month=None):
         """
-        Load report matching year and month or all if no params are given
+        Load report matching args or all if no args
 
         Args:
             :type year: str
             :type month: str
         """
-        where_list = ["repdate", "like"]
+        filters = ["repdate", "like"]
         value = "{}-{}-{}".format("%", "%", "%")
         if year:
             value = "{}-{}-{}".format(year, "%", "%")
         if year and month:
             value = "{}-{}-{}".format(year, month, "%")
-        value_list = [value]
-        # build query and execute
-        sql = self.q.build("select", self.model, filteron=where_list)
-        success, data = self.q.execute(sql, values=value_list)
+        values = (value,)
+
+        sql = self.q.build("select", self.model, filteron=filters)
+
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->load_reports\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), sql, values))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_REPORT:
+            print(
+                "\033[1;30m{}\n ->load_reports\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
+
         if success and data:
             self._reports = [dict(zip(self.model["fields"], row)) for row in data]
-        else:
-            self._reports = []
+            return True
+
+        self._reports = []
+        return False
 
     def recreate_table(self):
         """
@@ -255,11 +319,22 @@ class Report:
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
 
-    def update_report(self):
+    def update(self):
         """
         Update report in database
         """
         # update_list = list(self.model["fields"])[1:]
         # update_where = [self.model["id"], "="]
         # self.q.values_to_arg(self._report.values())
+
+        # if config.DEBUG_REPORT:
+        #     print(
+        #         "\033[1;30m{}\n ->update\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+        #             self.model["name"].upper(), sql, values))
+
+        # if config.DEBUG_REPORT:
+        #     print(
+        #         "\033[1;30m{}\n ->update\n  ->success: {}\n  ->data: {}\033[1;m".format(
+        #             self.model["name"].upper(), success, data))
+
         pass

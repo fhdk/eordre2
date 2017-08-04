@@ -9,14 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_HttpCustImportDialog(object):
-    """
-    """
     def setupUi(self, HttpCustImportDialog):
-        """
-
-        Args:
-            HttpCustImportDialog:
-        """
         HttpCustImportDialog.setObjectName("HttpCustImportDialog")
         HttpCustImportDialog.resize(540, 109)
         self.itemList = QtWidgets.QListWidget(HttpCustImportDialog)
@@ -37,11 +30,6 @@ class Ui_HttpCustImportDialog(object):
         QtCore.QMetaObject.connectSlotsByName(HttpCustImportDialog)
 
     def retranslateUi(self, HttpCustImportDialog):
-        """
-
-        Args:
-            HttpCustImportDialog:
-        """
         _translate = QtCore.QCoreApplication.translate
         HttpCustImportDialog.setWindowTitle(_translate("HttpCustImportDialog", "Kunde import fra server"))
         self.buttonStart.setText(_translate("HttpCustImportDialog", "Start"))

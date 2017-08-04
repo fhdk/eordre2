@@ -9,14 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_CreateReportDialog(object):
-    """
-    """
     def setupUi(self, CreateReportDialog):
-        """
-
-        Args:
-            CreateReportDialog:
-        """
         CreateReportDialog.setObjectName("CreateReportDialog")
         CreateReportDialog.resize(383, 94)
         self.buttonBox = QtWidgets.QDialogButtonBox(CreateReportDialog)
@@ -45,11 +38,6 @@ class Ui_CreateReportDialog(object):
         QtCore.QMetaObject.connectSlotsByName(CreateReportDialog)
 
     def retranslateUi(self, CreateReportDialog):
-        """
-
-        Args:
-            CreateReportDialog:
-        """
         _translate = QtCore.QCoreApplication.translate
         CreateReportDialog.setWindowTitle(_translate("CreateReportDialog", "Eordre"))
         self.lineEdit.setPlaceholderText(_translate("CreateReportDialog", "2017-12-31"))

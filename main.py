@@ -274,10 +274,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                            QMessageBox.Ok)
         import_dialog = FileImportDialog(config.CSVDATA, self.Employee.employee)  # Create import dialog
 
-        if import_dialog.exec_():  # Execute the dialog - show it
-            self.populate_customer_list()  # Reload the customer list
-        else:
-            pass
+        import_dialog.exec_()  # Execute the dialog - show it
+        self.populate_customer_list()  # Reload the customer list
 
     def file_import_customer_done(self):
         """
@@ -358,6 +356,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         try:
             repdate = self.Reports.report["repdate"]
+            print("main.py -> report_action -> repdate: " + repdate)
             if not repdate == self.txtWorkdate.text():
                 infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
                     repdate, self.txtWorkdate.text())
