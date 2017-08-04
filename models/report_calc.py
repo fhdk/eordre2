@@ -43,7 +43,8 @@ class ReportCalc:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT_CALC:
-                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+                print("\033[1;36m{} -> table\nsuccess: {}\ndata   : {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
 
     @property
     def totals(self):
@@ -62,6 +63,11 @@ class ReportCalc:
         """
         # build query and execute
         sql = self.q.build("insert", self.model)
+
+        if config.DEBUG_REPORT_CALC:
+            print("\033[1;36m{} -> table\nsuccess: {}\ndata   : {}\033[1;m".format(
+                self.model["name"].upper(), success, data))
+
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT_CALC:

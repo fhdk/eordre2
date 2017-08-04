@@ -33,7 +33,7 @@ class Report:
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
                        "sasday", "sasturnoverday", "demoday", "saleday",
                        "kmmorning", "kmevening", "supervisor", "territory",
-                       "workday", "infotext", "sent", "offday", "offtext", "kmprivate", "created"),
+                       "workday", "infotext", "sent", "offday", "offtext", "kmprivate", "timestamp"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "TEXT NOT NULL",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
@@ -166,11 +166,11 @@ class Report:
             report_count = month[0]
             next_report = report_count + 1
             month = [workdate, "None", employee["employeeid"]] + list(month)
-            created = datetime.today().isoformat()
+            timestamp = datetime.today()
 
             new_report = (None, employee["employeeid"], next_report, workdate,
                           None, None, None, None, None, None, None, None, None, None, None, None,
-                          None, None, None, None, None, None, None, None, None, None, created)
+                          None, None, None, None, None, None, None, None, None, None, timestamp)
             report_id = self.insert(new_report)
             month[1] = report_id
             month = tuple(month)
@@ -178,6 +178,8 @@ class Report:
                 print(
                     "\033[1;30m{}\n ->create\n  ->month: {}\033[1;m".format(
                         self.model["name"].upper(), month))
+            self.c.insert(month)
+
         else:
             return False
 
@@ -231,13 +233,13 @@ class Report:
                 # translate bool text to integer for col 19, 21
                 row[19] = utils.bool2int(utils.str2bool(row[19]))
                 row[21] = utils.bool2int(utils.str2bool(row[21]))
-                created = datetime.today().isoformat(sep="-")
+                local_timestamp = datetime.today()
                 values = (row[0], employeeid, row[1], row[2].strip(),
                           row[3], row[4], row[5], row[6],
                           row[7], row[8], row[9], row[10],
                           row[11], row[12], row[13], row[14],
                           row[15], row[16], row[17].strip(), row[18].strip(),
-                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24], created)
+                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24], local_timestamp)
                 if config.DEBUG_REPORT:
                     print(
                         "\033[1;30m{}\n ->import_csv\n  ->values: {}\033[1;m".format(
