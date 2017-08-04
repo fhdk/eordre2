@@ -161,7 +161,7 @@ class Report:
                     self.model["name"].upper(), success, data))
 
         if success and data:
-            month = data
+            month = data[0]
             month = list(month)
             report_count = month[0]
             next_report = report_count + 1
