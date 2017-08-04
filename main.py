@@ -200,6 +200,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             current: currently selected item
             previous: previous selected item
         """
+
         self.Customers.lookup_by_phone_name(current.text(1), current.text(0))
         try:
             self.txtAccount.setText(self.Customers.customer["account"])
@@ -217,7 +218,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.Contacts.load_for_customer(self.Customers.customer["customerid"])
             self.Visits.select_by_customer(self.Customers.customer["customerid"])
 
-        except KeyError:
+        except (KeyError, AttributeError):
             self.txtAccount.clear()
             self.txtCompany.clear()
             self.txtAddress1.clear()

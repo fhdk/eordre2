@@ -26,7 +26,8 @@ class OrderLine:
             "name": "orderline",
             "id": "lineid",
             "fields": ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount"),
-            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "TEXT", "TEXT", "REAL", "INTEGER", "REAL")
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NUL", "INTEGER DEFAULT 0",
+                      "TEXT", "TEXT", "REAL", "INTEGER DEFAULT 0", "REAL DEFAULT 0")
         }
         self._order_lines = []
         self._order_line = {}
@@ -37,7 +38,9 @@ class OrderLine:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_ORDERLINE:
-                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+                print(
+                    "\033[1;35m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                        self.model["name"].upper(), success, data))
 
     @property
     def orderlines_list(self):

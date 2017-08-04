@@ -4,7 +4,7 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""Sqlite Query Builder"""
+"""Sqlite Query Module"""
 
 import sqlite3
 
@@ -19,6 +19,7 @@ from models.builders.build_drop_query import build_drop_query
 
 class Query:
     """
+    Query Build and Execute
     """
 
     def build(self, query_type, model_def, update=None, aggregates=None, filteron=None, sort_order=None):
@@ -119,7 +120,7 @@ class Query:
                     print(" ->execute\n  ->exception: {}".format(e))
                 return False, e
         if config.DEBUG_QUERY:
-            print(" ->execute\n  ->exit\n   ->result: {}\r".format(result))
+            print("   ->result: {}\n  ->exit\r".format(result))
             print("\033[1;m")
         return True, result
 

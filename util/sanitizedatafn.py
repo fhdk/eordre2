@@ -60,7 +60,6 @@ def sanitize_employee_data(rawdata, em, hp):
             if check_password(hp, line[4]):
                 email_lower = line[2].lower()
                 country_lower = line[3].lower()
-                print(country_lower)
                 emp = [line[0].strip(), line[1].strip(), email_lower.strip(),
                        country_lower.strip(), 0]
     return emp

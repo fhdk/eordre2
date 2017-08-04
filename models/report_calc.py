@@ -28,11 +28,12 @@ class ReportCalc:
                        "recall_visit", "recall_demo", "recall_sale", "recall_turnover",
                        "sas", "sas_turnover", "visit", "demo", "sale", "turnover",
                        "kmwork", "kmprivate", "workdays", "offdays", "reports"),
-            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "INTEGER", "INTEGER",
-                      "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "REAL", "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "INTEGER", "INTEGER", "INTEGER", "INTEGER")
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL",
+                      "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
+                      "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
+                      "INTEGER DEFAULT 0", "REAL DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0",
+                      "INTEGER DEFAULT 0", "REAL DEFAULT 0",
+                      "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0")
         }
         self._totals = {}
         self.q = Query()

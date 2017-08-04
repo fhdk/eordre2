@@ -32,12 +32,13 @@ class Report:
                        "sasday", "sasturnoverday", "demoday", "saleday",
                        "kmmorning", "kmevening", "supervisor", "territory",
                        "workday", "infotext", "sent", "offday", "offtext", "kmprivate"),
-            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "INTEGER", "TEXT",
-                      "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "INTEGER", "INTEGER", "REAL",
-                      "INTEGER", "REAL", "INTEGER", "INTEGER",
-                      "INTEGER", "INTEGER", "TEXT", "TEXT",
-                      "INTEGER", "TEXT", "INTEGER", "INTEGER", "TEXT", "INTEGER")
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "TEXT NOT NULL",
+                      "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
+                      "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
+                      "INTEGER DEFAULT 0", "REAL DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0",
+                      "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "TEXT", "TEXT",
+                      "INTEGER DEFAULT 0", "TEXT", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "TEXT",
+                      "INTEGER DEFAULT 0")
         }
         self._reports = []
         self._report = {}
@@ -48,7 +49,9 @@ class Report:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
-                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+                print(
+                    "\033[1;32m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                        self.model["name"].upper(), success, data))
 
     @property
     def report(self):

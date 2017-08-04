@@ -24,8 +24,10 @@ class Product:
             "id": "productid",
             "fields": ("productid", "sku", "name1", "name2", "name3", "item", "price", "d2", "d4", "d6", "d8", "d12",
                        "d24", "d48", "d96", "min", "net", "groupid"),
-            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "REAL", "REAL",
-                      "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "REAL", "TEXT")}
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0",
+                      "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0",
+                      "REAL DEFAULT 0", "TEXT")}
         self._products = []
         self._product = {}
         self.q = Query()
@@ -34,7 +36,9 @@ class Product:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_PRODUCT:
-                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+                print(
+                    "\033[1;34m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                        self.model["name"].upper(), success, data))
 
     def clear(self):
         """
@@ -71,14 +75,22 @@ class Product:
         Args:
             values:
         """
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
+        value_list = list(values)
+        value_list[0:0] = [None]
+        value_list = tuple(value_list)
         # build query and execute
         sql = self.q.build("insert", self.model)
-        self.q.execute(sql, values=value_list)
+        if config.DEBUG_PRODUCT:
+            print("\033[1;34m{}\n ->insert\n  ->sql: {}\033[1;m".format(
+                self.model["name"].upper(), sql))
+
+        success, data = self.q.execute(sql, values=value_list)
+        if config.DEBUG_PRODUCT:
+            print("\033[1;34m{}\n ->insert\n  ->execute\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                self.model["name"].upper(), success, data))
+        if success and data:
+            return data
+        return False
 
     def load(self):
         """

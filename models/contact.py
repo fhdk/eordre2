@@ -16,13 +16,14 @@ class Contact:
     """
     Customer Contacts
     """
+
     def __init__(self):
         """Initialize Contact class"""
         self.model = {
             "name": "contact",
             "id": "contactid",
             "fields": ("contactid", "customerid", "name", "department", "email", "phone", "infotext"),
-            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT")
+            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT")
         }
         self._contact = {}
         self._contacts = []
@@ -33,7 +34,9 @@ class Contact:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_CONTACT:
-                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+                print(
+                    "\033[1;36m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                        self.model["name"].upper(), success, data))
 
     def clear(self):
         """
@@ -105,7 +108,7 @@ class Contact:
         Args:
             customerid:
         """
-        filteron = [self.model["id"]]
+        filteron = (self.model["id"], "=")
         values = (customerid,)
         # build query and execute
         sql = self.q.build("select", self.model, filteron=filteron)
@@ -130,7 +133,7 @@ class Contact:
         Update item
         """
         fields = list(self.model["fields"])[1:]
-        filteron = (self.model["id"],)
+        filteron = (self.model["id"], "=")
         # move id from first to last element
         values = self.q.values_to_arg(self._contact.values())
         # build query and execute
