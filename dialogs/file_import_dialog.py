@@ -78,38 +78,35 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
         if self.selectedFile:
             # notice to add to list box
             notice = self.comboImport.currentText() + " er importeret."
-
+            success = False
             # import selected file to contact table
             if self.selectedTable == "contact":
-                self.listImported.addItem(notice)
-                self.c.customersdone.emit()
+                success = self.Contact.import_csv(self.selectedFile, self.checkHeaders.isChecked())
 
             # import selected file to customer table
             if self.selectedTable == "customer":
-                self.Customer.import_csv(self.selectedFile, self.checkHeaders.isChecked())
-                self.listImported.addItem(notice)
+                success = self.Customer.import_csv(self.selectedFile, self.checkHeaders.isChecked())
 
             # import selected file to ordervisit table
             if self.selectedTable == "visit":
-                self.OrderVisit.import_csv(self.selectedFile, self.checkHeaders.isChecked())
-                self.listImported.addItem(notice)
+                success = self.OrderVisit.import_csv(self.selectedFile, self.checkHeaders.isChecked())
 
             # import selected file to orderline table
             if self.selectedTable == "orderline":
-                self.OrderLine.csv_import(self.selectedFile, self.checkHeaders.isChecked())
-                self.listImported.addItem(notice)
+                success = self.OrderLine.import_csv(self.selectedFile, self.checkHeaders.isChecked())
 
             # import selected file to report table
             if self.selectedTable == "report":
                 success = self.Report.import_csv(self.selectedFile, self.employee, self.checkHeaders.isChecked())
-                if success:
-                    self.listImported.addItem(notice)
-                else:
-                    QMessageBox.information(self, "Doh!", "Der er opstået en fejl!", QMessageBox.Ok)
-                    return
+
+            if success:
+                self.listImported.addItem(notice)
+            else:
+                QMessageBox.information(self, "Doh!", "Der er opstået en fejl!", QMessageBox.Ok)
+                return
 
             self.selectedFile = ""
-            self.txtSelectedFile.setText(self.selectedFile)
+            self.txtSelectedFile.clear()
             self.comboImport.removeItem(self.comboImport.currentIndex())
             self.comboImport.setCurrentIndex(0)
 

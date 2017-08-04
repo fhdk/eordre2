@@ -178,6 +178,10 @@ class Customer:
             reader = csv.reader(csvfile, delimiter="|")
             line = 0
             for row in reader:
+                if config.DEBUG_CUSTOMER:
+                    print(
+                        "\033[1;33m{}\n ->import_csv\n  ->row: {}\033[1;m".format(
+                            self.model["name"].upper(), row))
                 if not len(row) == self.csv_field_count:
                     return False
                 line += 1
@@ -185,11 +189,15 @@ class Customer:
                     continue
                 # translate bool text in col 15
                 row[15] = utils.bool2int(utils.str2bool(row[15]))
-                values = [row[0],
+                values = (row[0],
                           row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
                           row[12].strip(), row[15], row[16], row[17],
-                          row[19].strip(), "", "", 0.0]
+                          row[19].strip(), "", "", 0.0, 0, 0, 0, 0)
+                if config.DEBUG_CUSTOMER:
+                    print(
+                        "\033[1;33m{}\n ->import_csv\n  ->values: {}\033[1;m".format(
+                            self.model["name"].upper(), values))
                 self.insert(values)
             return True
 

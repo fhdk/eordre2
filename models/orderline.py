@@ -39,7 +39,7 @@ class OrderLine:
             success, data = self.q.execute(sql)
             if config.DEBUG_ORDERLINE:
                 print(
-                    "\033[1;35m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    "\033[1;32m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
                         self.model["name"].upper(), success, data))
 
     @property
@@ -81,7 +81,7 @@ class OrderLine:
         self.insert(values)
         self._order_line = dict(zip(self.model["fields"], values))
 
-    def csv_import(self, filename, headers=False):
+    def import_csv(self, filename, headers=False):
         """
         Import orderline from file
         Args:
@@ -94,6 +94,10 @@ class OrderLine:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
+                if config.DEBUG_CONTACT:
+                    print(
+                        "\033[1;32m{}\n ->import_csv\n  ->row: {}\033[1;m".format(
+                            self.model["name"].upper(), row))
                 if not len(row) == self.csv_field_count:
                     return False
                 line += 1
@@ -101,8 +105,12 @@ class OrderLine:
                     continue
                 # translate bool text to integer col 6
                 row[6] = utils.bool2int(utils.str2bool(row[6]))
-                processed = [row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7]]
-                self.insert(processed)
+                values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7])
+                if config.DEBUG_ORDERLINE:
+                    print(
+                        "\033[1;32m{}\n ->import_csv\n  ->values: {}\033[1;m".format(
+                            self.model["name"].upper(), values))
+                self.insert(values)
             return True
 
     def insert(self, values):
@@ -111,26 +119,48 @@ class OrderLine:
         Args:
             values:
         """
-        value_list = values
-        try:
-            _ = value_list[0]
-        except IndexError:
-            value_list = list(values)
         # build query and execute
         sql = self.q.build("insert", self.model)
-        self.q.execute(sql, values=value_list)
+
+        if config.DEBUG_ORDERLINE:
+            print(
+                "\033[1;32m{}\n ->insert\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), sql, values))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_ORDERLINE:
+            print(
+                "\033[1;32m{}\n ->insert\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
+
+        if success and data:
+            return data
+        return False
 
     def load(self, visitid):
         """
         Load orderlines
         """
-        where_list = [("visitid", "=")]
-        value_list = [visitid]
+        filters = [("visitid", "=")]
+        values = [visitid]
         # build query and execute
-        sql = self.q.build("select", self.model, filteron=where_list)
-        success, data = self.q.execute(sql, values=value_list)
+        sql = self.q.build("select", self.model, filteron=filters)
+
+        if config.DEBUG_ORDERLINE:
+            print(
+                "\033[1;32m{}\n ->load\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), sql, values))
+
+        success, data = self.q.execute(sql, values=values)
+
         if success and data:
             self.orderlines_list = [dict(zip(self.model["fields"], row)) for row in data]
+
+        if config.DEBUG_ORDERLINE:
+            print(
+                "\033[1;32m{}\n ->load\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
 
     def recreate_table(self):
         """
@@ -146,9 +176,24 @@ class OrderLine:
         """
         Update orderline in database
         """
-        update_list = list(self.model["fields"])[1:]
-        where_list = [("lineid", "=")]
+        fields = list(self.model["fields"])[1:]
+        filters = [("lineid", "=")]
         values = self.q.values_to_arg(self._order_line.values())
         # build query and execute
-        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
-        self.q.execute(sql, values=values)
+        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+
+        if config.DEBUG_ORDERLINE:
+            print(
+                "\033[1;32m{}\n ->load\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), sql, values))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_ORDERLINE:
+            print(
+                "\033[1;32m{}\n ->update\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
+
+        if success and data:
+            return data
+        return False

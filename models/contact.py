@@ -75,19 +75,28 @@ class Contact:
         """
         self.recreate_table()
         filename.encode("utf8")
-        csv_field_count = 7
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-                if not len(row) == csv_field_count:
+                if config.DEBUG_CONTACT:
+                    print(
+                        "\033[1;36m{}\n ->import_csv\n  ->row: {}\033[1;m".format(
+                            self.model["name"].upper(), row))
+                if not len(row) == self.csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
+                # skip the
                 values = (row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[7].strip())
+                if config.DEBUG_CONTACT:
+                    print(
+                        "\033[1;36m{}\n ->import_csv\n  ->values: {}\033[1;m".format(
+                            self.model["name"].upper(), values))
                 self.insert(values)
+
             return True
 
     def insert(self, values):
@@ -98,9 +107,18 @@ class Contact:
         """
         # build query and execute
         sql = self.q.build("insert", self.model)
+        if config.DEBUG_CONTACT:
+            print(
+                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+                    self.model["name"].upper(), sql, values))
         success, data = self.q.execute(sql, values=values)
+        if config.DEBUG_CONTACT:
+            print(
+                "\033[1;36m{}\n ->insert\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
         if success and data:
             return data
+        return False
 
     def load_for_customer(self, customerid):
         """
@@ -112,8 +130,20 @@ class Contact:
         values = (customerid,)
         # build query and execute
         sql = self.q.build("select", self.model, filteron=filteron)
+
+        if config.DEBUG_CONTACT:
+            print(
+                "\033[1;36m{}\n ->select for customer\n  ->sql: {}\033[1;m".format(
+                    self.model["name"].upper(), sql))
+
         success, data = self.q.execute(sql, values=values)
-        if success:
+
+        if config.DEBUG_CONTACT:
+            print(
+                "\033[1;36m{}\n ->select for customer\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                    self.model["name"].upper(), success, data))
+
+        if success and data:
             self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._contacts = []

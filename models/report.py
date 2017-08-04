@@ -19,6 +19,7 @@ class Report:
     """
     Report
     """
+
     def __init__(self):
         """
         Initilize Report class
@@ -197,13 +198,13 @@ class Report:
                 # translate bool text to integer for col 19, 21
                 row[19] = utils.bool2int(utils.str2bool(row[19]))
                 row[21] = utils.bool2int(utils.str2bool(row[21]))
-                processed = [row[0], employeeid, row[1], row[2].strip(),
-                             row[3], row[4], row[5], row[6],
-                             row[7], row[8], row[9], row[10],
-                             row[11], row[12], row[13], row[14],
-                             row[15], row[16], row[17].strip(), row[18].strip(),
-                             row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24]]
-                self.insert(processed)
+                values = (row[0], employeeid, row[1], row[2].strip(),
+                          row[3], row[4], row[5], row[6],
+                          row[7], row[8], row[9], row[10],
+                          row[11], row[12], row[13], row[14],
+                          row[15], row[16], row[17].strip(), row[18].strip(),
+                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24])
+                self.insert(values)
             return True
 
     def load_report(self, workdate):

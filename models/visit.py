@@ -20,6 +20,7 @@ class Visit:
     """
     Visit class
     """
+
     def __init__(self):
         """
         Initialize visit class
@@ -156,12 +157,12 @@ class Visit:
                     continue
                 # translate bool text to integer col 5
                 row[5] = utils.bool2int(utils.str2bool(row[5]))
-                processed = [row[0], row[1], row[2], row[3], row[4].strip(),
-                             row[5], row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
-                             row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
-                             row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
-                             row[20], row[21]]
-                self.insert(processed)  # call insert function
+                values = (row[0], row[1], row[2], row[3], row[4].strip(),
+                          row[5], row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
+                          row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
+                          row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
+                          row[20], row[21])
+                self.insert(values)  # call insert function
             return True
 
     def insert(self, values):
@@ -234,4 +235,3 @@ class Visit:
         if success and data:
             return data
         return False
-
