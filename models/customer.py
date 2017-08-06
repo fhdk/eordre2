@@ -140,8 +140,8 @@ class Customer:
 
         if config.DEBUG_CUSTOMER:
             print(
-                "\033[1;33m{}\n ->lookup phone\n  ->sql: {}\033[1;m".format(
-                    self.model["name"].upper(), sql))
+                "\033[1;33m{}\n ->lookup phone\n  ->sql: {}\n  ->values: {}".format(
+                    self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 

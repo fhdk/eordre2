@@ -10,7 +10,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from configuration import config
-from models import contact, customer, visit, orderline, report
+from models import contact, customer, visit, saleline, report
 from resources import file_import_dialog_rc
 
 
@@ -50,7 +50,7 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
         self.Contact = contact.Contact()  # Create Contact object
         self.Customer = customer.Customer()  # Create Customer object
         self.OrderVisit = visit.Visit()  # Create OrderVisit object
-        self.OrderLine = orderline.OrderLine()  # Create OrderLine object
+        self.OrderLine = saleline.Saleline()  # Create OrderLine object
         self.Report = report.Report()  # Create Report object
 
     def button_browse_action(self):

@@ -30,12 +30,13 @@ class Contact:
         self.csv_field_count = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            # build query and execute
+
             sql = self.q.build("create", self.model)
+
             success, data = self.q.execute(sql)
+
             if config.DEBUG_CONTACT:
-                print(
-                    "\033[1;36m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                print("\033[1;36m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
                         self.model["name"].upper(), success, data))
 
     def clear(self):
@@ -50,8 +51,12 @@ class Contact:
         Create a contact
         """
         values = (None, customerid, name, "", "", "", "")
+
         data = self.insert(values)
+
         self.find(data)
+
+        return self._contact
 
     def find(self, contactid):
         """
@@ -60,11 +65,22 @@ class Contact:
             contactid:
         """
         values = (contactid,)
-        # build query and execute
+
         sql = self.q.build("select", self.model)
+
+        if config.DEBUG_CONTACT:
+            print("\033[1;36m{}\n ->find\n  ->row: {}".format(self.model["name"].upper(), values))
+
         success, data = self.q.execute(sql, values=values)
+
         if success and data:
             self._contact = dict(zip(self.model["fields"], data))
+
+        if config.DEBUG_CONTACT:
+            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+
+        if success and data:
+            return self._contact
 
     def import_csv(self, filename, headers=False):
         """
@@ -79,22 +95,22 @@ class Contact:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
+
                 if config.DEBUG_CONTACT:
-                    print(
-                        "\033[1;36m{}\n ->import_csv\n  ->row: {}\033[1;m".format(
-                            self.model["name"].upper(), row))
+                    print("\033[1;36m{}\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
+
                 if not len(row) == self.csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
-                # skip the
+
                 values = (row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[7].strip())
+
                 if config.DEBUG_CONTACT:
-                    print(
-                        "\033[1;36m{}\n ->import_csv\n  ->values: {}\033[1;m".format(
-                            self.model["name"].upper(), values))
+                    print("  ->values: {}\033[1;m".format(values))
+
                 self.insert(values)
 
             return True
@@ -105,17 +121,18 @@ class Contact:
         Args:
             values: contact data to insert in contact table
         """
-        # build query and execute
+
         sql = self.q.build("insert", self.model)
+
         if config.DEBUG_CONTACT:
-            print(
-                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}\033[1;m".format(
-                    self.model["name"].upper(), sql, values))
+            print("\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
+                self.model["name"].upper(), sql, values))
+
         success, data = self.q.execute(sql, values=values)
+
         if config.DEBUG_CONTACT:
-            print(
-                "\033[1;36m{}\n ->insert\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+
         if success and data:
             return data
         return False
@@ -126,27 +143,26 @@ class Contact:
         Args:
             customerid:
         """
-        filteron = (self.model["id"], "=")
+        filters = [("customerid", "=")]
         values = (customerid,)
-        # build query and execute
-        sql = self.q.build("select", self.model, filteron=filteron)
+
+        sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CONTACT:
             print(
-                "\033[1;36m{}\n ->select for customer\n  ->sql: {}\033[1;m".format(
-                    self.model["name"].upper(), sql))
+                "\033[1;36m{}\n ->load for customer\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
+                    self.model["name"].upper(), sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CONTACT:
-            print(
-                "\033[1;36m{}\n ->select for customer\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
 
         if success and data:
             self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._contacts = []
+        return self._contacts
 
     def recreate_table(self):
         """
@@ -163,9 +179,21 @@ class Contact:
         Update item
         """
         fields = list(self.model["fields"])[1:]
-        filteron = (self.model["id"], "=")
-        # move id from first to last element
+        filters = [(self.model["id"], "=")]
+
         values = self.q.values_to_arg(self._contact.values())
-        # build query and execute
-        sql = self.q.build("update", self.model, update=fields, filteron=filteron)
-        self.q.execute(sql, values=values)
+
+        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+
+        if config.DEBUG_CONTACT:
+            print("\033[1;36m{}\n ->update\n  ->sql: {}\n  ->values: {}".format(
+                self.model["name"].upper(), sql, values))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_CONTACT:
+            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+
+        if success and data:
+            return True
+        return False

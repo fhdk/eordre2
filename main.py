@@ -23,7 +23,7 @@ from dialogs.file_import_dialog import FileImportDialog
 from dialogs.http_cust_import_dialog import HttpCustImportDialog
 from dialogs.http_prod_import_dialog import HttpProdImportDialog
 from dialogs.settings_dialog import SettingsDialog
-from models import contact, customer, employee, visit, orderline, product, report, settings
+from models import contact, customer, employee, visit, saleline, product, report, settings
 from resources.main_window_rc import Ui_MainWindow
 from util import httpfn, passwdfn, utils
 from util.rules import check_settings
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Customers = customer.Customer()  # Initialize Customer object
         self.Employee = employee.Employee()  # Initialize Employee object
         self.Visits = visit.Visit()  # Initialize Visit object
-        self.OrderLines = orderline.OrderLine()  # Initialize OrderLine object
+        self.Salelines = saleline.Saleline()  # Initialize OrderLine object
         self.Products = product.Product()  # Initialize Product object
         self.Reports = report.Report()  # Initialize Report object
         self.Settings = settings.Settings()  # Initialize Settings object
@@ -200,7 +200,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             current: currently selected item
             previous: previous selected item
         """
-
+        print("{} {}".format(current.text(1), current.text(0)))
         self.Customers.lookup_by_phone_name(current.text(1), current.text(0))
         try:
             self.txtAccount.setText(self.Customers.customer["account"])
@@ -231,7 +231,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txtFactor.clear()
             self.txtInfoText.clear()
             self.Visits.clear()
-            self.OrderLines.clear()
+            self.Salelines.clear()
             self.Contacts.clear()
 
     def data_export_action(self):
@@ -427,7 +427,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.Contacts.recreate_table()
         self.Customers.recreate_table()
-        self.OrderLines.recreate_table()
+        self.Salelines.recreate_table()
         self.Visits.recreate_table()
         self.Reports.recreate_table()
         self.customerList.clear()
