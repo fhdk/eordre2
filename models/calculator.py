@@ -45,7 +45,7 @@ class Calculator:
             if config.DEBUG_CALCULATOR:
                 print(
                     "\033[1;30m{} ->create table\n  ->success: {}\n  ->data   : {}\033[0;m".format(
-                        self.model["name"].upper(), success, data))
+                        self.model["name"], success, data))
 
     @property
     def totals(self):
@@ -69,7 +69,7 @@ class Calculator:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;30m{} ->insert \n  ->sql: {}\n  ->data: {}".format(self.model["name"].upper(), sql, values))
+            print("\033[1;30m{} ->insert \n  ->sql: {}\n  ->data: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -80,20 +80,20 @@ class Calculator:
             return data
         return False
 
-    def select_by_id(self, totals_id):
+    def select_by_id(self, calc_id):
         """
         Select by id
         Returns:
             bool indicating totals has been set for the requested id
         """
-        filters = [(self.model["id"], "=")]
-        values = [totals_id]
+        filters = [("calcid", "=")]
+        values = (calc_id,)
 
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
             print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
-                self.model["name"].upper(), sql, filters, values))
+                self.model["name"], sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -116,13 +116,13 @@ class Calculator:
             bool indicating totals for the selected report is now set
         """
         filters = [("workdate", "=", "and"), ("employeeid", "=")]
-        values = [workdate, employeeid]
+        values = (workdate, employeeid)
 
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
             print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
-                self.model["name"].upper(), sql, filters, values))
+                self.model["name"], sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -142,14 +142,14 @@ class Calculator:
             bool indicating if update was a success
         """
         fields = list(self.model["fields"])[1:]
-        filters = [(self.model["id"]), "="]
+        filters = [("calcid", "=")]
         values = self.q.values_to_arg(self._totals.values())
 
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
             print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->fields: {}\n  ->filters: {}\n  ->values{}".format(
-                self.model["name"].upper(), sql, fields, filters, values))
+                self.model["name"], sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 

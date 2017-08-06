@@ -41,7 +41,7 @@ class Saleline:
             success, data = self.q.execute(sql)
             if config.DEBUG_SALELINE:
                 print("\033[1;37m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                    self.model["name"].upper(), success, data))
+                    self.model["name"], success, data))
 
     @property
     def saleline(self):
@@ -86,7 +86,7 @@ class Saleline:
         Args:
             visit_id:
         """
-        # add new with empty values
+        # create new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
 
         lineid = self.insert(values)
@@ -108,7 +108,7 @@ class Saleline:
 
         if config.DEBUG_SALELINE:
             print("\033[1;37m{}\n ->delete\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"].upper(), filters, values, sql))
+                self.model["name"], filters, values, sql))
 
         # if sql.startswith("ERROR"):
         #     print("{}".format(sql))
@@ -138,7 +138,7 @@ class Saleline:
             for row in reader:
 
                 if config.DEBUG_SALELINE:
-                    print("\033[1;37m{}\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
+                    print("\033[1;37m{}\n ->import_csv\n  ->row: {}".format(self.model["name"], row))
 
                 if not len(row) == self.csv_field_count:
                     return False
@@ -171,7 +171,7 @@ class Saleline:
 
         if config.DEBUG_SALELINE:
             print("\033[1;37m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
-                self.model["name"].upper(), sql, values))
+                self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -198,7 +198,7 @@ class Saleline:
         if config.DEBUG_SALELINE:
             print(
                 "\033[1;37m{}\n ->load\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
-                    self.model["name"].upper(), sql, filters, values))
+                    self.model["name"], sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -234,7 +234,7 @@ class Saleline:
 
         if config.DEBUG_SALELINE:
             print("\033[1;37m{}\n ->load\n  ->sql: {}\n  ->fields: {}\n  ->filters: {}\n  ->values: {}".format(
-                self.model["name"].upper(), sql, fields, filters, values))
+                self.model["name"], sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 

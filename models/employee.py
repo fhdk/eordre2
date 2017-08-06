@@ -38,7 +38,7 @@ class Employee:
             success, data = self.q.execute(sql)
             if config.DEBUG_EMPLOYEE:
                 print("\033[1;33m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                        self.model["name"].upper(), success, data))
+                        self.model["name"], success, data))
         self.s = Settings()
         if rules.check_settings(self.s.settings) and httpfn.inet_conn_check():
             self.load()
@@ -67,7 +67,7 @@ class Employee:
 
         if config.DEBUG_EMPLOYEE:
             print("\033[1;33m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
-                    self.model["name"].upper(), sql, values))
+                    self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -81,7 +81,7 @@ class Employee:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_EMPLOYEE:
-            print("\033[1;33m{}\n ->load\n  ->sql: {}".format(self.model["name"].upper(), sql))
+            print("\033[1;33m{}\n ->load\n  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql)
 
@@ -103,7 +103,7 @@ class Employee:
 
         if config.DEBUG_EMPLOYEE:
             print("\033[1;33m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                    self.model["name"].upper(), sql, fields, filters, values))
+                    self.model["name"], sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 

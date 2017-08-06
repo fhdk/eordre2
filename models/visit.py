@@ -46,7 +46,7 @@ class Visit:
             success, data = self.q.execute(sql)
             if config.DEBUG_VISIT:
                 print("\033[0;36m{} ->table\nsuccess: {}\ndata: {}\033[0;1m".format(
-                    self.model["name"].upper(), success, data))
+                    self.model["name"], success, data))
 
     @property
     def visit(self):
@@ -137,7 +137,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             print("\033[0;36m{}\n ->find\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"].upper(), filters, values, sql))
+                self.model["name"], filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -188,7 +188,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             print("\033[0;36m{}\n ->insert\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"].upper(), values, sql))
+                self.model["name"], values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -222,7 +222,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             print("\033[0;36m{}\n ->select_by_customer\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"].upper(), filters, values, sql))
+                self.model["name"], filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -245,7 +245,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             print("\033[0;36m{}\n ->select_by_report\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"].upper(), filters, values, sql))
+                self.model["name"], filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -267,7 +267,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             print("\033[0;36m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"].upper(), fields, filters, values, sql))
+                self.model["name"], fields, filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 

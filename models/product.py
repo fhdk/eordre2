@@ -38,7 +38,7 @@ class Product:
             success, data = self.q.execute(sql)
             if config.DEBUG_PRODUCT:
                 print("\033[1;34m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                    self.model["name"].upper(), success, data))
+                    self.model["name"], success, data))
 
     def clear(self):
         """
@@ -82,7 +82,7 @@ class Product:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_PRODUCT:
-            print("\033[1;34m{}\n ->insert\n  ->sql: {}".format(self.model["name"].upper(), sql))
+            print("\033[1;34m{}\n ->insert\n  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -101,7 +101,7 @@ class Product:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_PRODUCT:
-            print("\033[1;34m{}\n ->load\n  ->sql: {}".format(self.model["name"].upper(), sql))
+            print("\033[1;34m{}\n ->load\n  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql)
 

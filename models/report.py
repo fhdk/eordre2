@@ -53,7 +53,7 @@ class Report:
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
                 print("\033[1;36m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                        self.model["name"].upper(), success, data))
+                        self.model["name"], success, data))
 
     @property
     def report(self):
@@ -104,7 +104,7 @@ class Report:
             workdate: iso formatted str representing the report date
         """
         # we need to find the number of reports for the month of the supplied date
-        # then add 1 to that number
+        # then create 1 to that number
         # we need to calculate the sums for the previous report for month
         # those sums will be stored in seperate table
         # creating a new table with
@@ -149,7 +149,7 @@ class Report:
 
         if config.DEBUG_REPORT:
             print("\033[1;36m{}\n ->create\n  ->aggregates: {}\n  ->sql: {}\n  ->values: {}".format(
-                    self.model["name"].upper(), aggregates, sql, values))
+                    self.model["name"], aggregates, sql, values))
 
         success, data = self.q.execute(sql, values)
 
@@ -185,7 +185,7 @@ class Report:
 
         if config.DEBUG_REPORT:
             print(
-                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"].upper(), sql, values))
+                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -214,7 +214,7 @@ class Report:
             for row in reader:
 
                 if config.DEBUG_REPORT:
-                    print("\033[1;36m{}\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
+                    print("\033[1;36m{}\n ->import_csv\n  ->row: {}".format(self.model["name"], row))
 
                 if not len(row) == self.csv_field_count:
                     return False
@@ -251,7 +251,7 @@ class Report:
 
         if config.DEBUG_REPORT:
             print(
-                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"].upper(), sql, values))
+                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -284,7 +284,7 @@ class Report:
         if config.DEBUG_REPORT:
             print(
                 "\033[1;36m{}\n ->load_reports\n  ->sql: {}\n  ->values: {}".format(
-                    self.model["name"].upper(), sql, values))
+                    self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -319,11 +319,11 @@ class Report:
         # if config.DEBUG_REPORT:
         #     print(
         #         "\033[1;36m{}\n ->update\n  ->sql: {}\n  ->values: {}\033[0;m".format(
-        #             self.model["name"].upper(), sql, values))
+        #             self.model["name"], sql, values))
 
         # if config.DEBUG_REPORT:
         #     print(
         #         "\033[1;36m{}\n ->update\n  ->success: {}\n  ->data: {}\033[0;m".format(
-        #             self.model["name"].upper(), success, data))
+        #             self.model["name"], success, data))
 
         pass

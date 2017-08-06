@@ -37,7 +37,7 @@ class Settings:
             success, data = self.q.execute(sql)
             if config.DEBUG_SETTINGS:
                 print("\033[0;33m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;1m".format(
-                    self.model["name"].upper(), success, data))
+                    self.model["name"], success, data))
 
     @property
     def settings(self):
@@ -77,7 +77,7 @@ class Settings:
 
         if config.DEBUG_SETTINGS:
             print("\033[0;33m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
-                self.model["name"].upper(), sql, values))
+                self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -95,7 +95,7 @@ class Settings:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_SETTINGS:
-            print("\033[0;33m{}\n ->load\n  ->sql: {}".format(self.model["name"].upper(), sql))
+            print("\033[0;33m{}\n ->load\n  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql)
 
@@ -130,7 +130,7 @@ class Settings:
 
         if config.DEBUG_SETTINGS:
             print("\033[0;33m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"].upper(), fields, filters, values, sql))
+                self.model["name"], fields, filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 

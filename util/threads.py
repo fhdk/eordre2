@@ -36,7 +36,7 @@ class ImportCustomersThread(QThread):
         super(ImportCustomersThread, self).__init__(parent)
         self.Settings = settings.Settings()  # assign settings object
         self.Employee = employee.Employee()  # assign employee object
-        self.Customer = customer.Customer()  # add customer object
+        self.Customer = customer.Customer()  # create customer object
         self.c = Communicate()
 
     def run(self):
@@ -51,7 +51,7 @@ class ImportCustomersThread(QThread):
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.Customer.import_http(row)  # add row to database
+            self.Customer.import_http(row)  # create row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
 
@@ -67,8 +67,8 @@ class ImportProductsThread(QThread):
             parent:
         """
         super(ImportProductsThread, self).__init__(parent)
-        self.Settings = settings.Settings()  # add settings object
-        self.Product = product.Product()  # add product object
+        self.Settings = settings.Settings()  # create settings object
+        self.Product = product.Product()  # create product object
         self.c = Communicate()
 
     def run(self):
@@ -83,6 +83,6 @@ class ImportProductsThread(QThread):
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.Product.insert(row)  # add row to database
+            self.Product.insert(row)  # create row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
