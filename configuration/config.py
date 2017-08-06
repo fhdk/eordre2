@@ -8,7 +8,7 @@
 
 import os
 
-DEBUG_CONTACT = True
+DEBUG_CONTACT = False
 DEBUG_CUSTOMER = True
 DEBUG_EMPLOYEE = False
 DEBUG_SALELINE = False
@@ -17,7 +17,7 @@ DEBUG_QUERY = False
 DEBUG_REPORT = False
 DEBUG_CALCULATOR = False
 DEBUG_SETTINGS = False
-DEBUG_VISIT = False
+DEBUG_VISIT = True
 
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
 COUNTRIES = [("dk", "Danmark"), ("no", "Norge"), ("s", "Sverige")]

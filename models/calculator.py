@@ -44,7 +44,7 @@ class Calculator:
             success, data = self.q.execute(sql)
             if config.DEBUG_CALCULATOR:
                 print(
-                    "\033[1;36m{} ->create table\n  ->success: {}\n  ->data   : {}\033[1;m".format(
+                    "\033[1;30m{} ->create table\n  ->success: {}\n  ->data   : {}\033[0;m".format(
                         self.model["name"].upper(), success, data))
 
     @property
@@ -69,12 +69,12 @@ class Calculator:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;36m{} ->insert \n  ->sql: {}\n  ->data: {}".format(self.model["name"].upper(), sql, values))
+            print("\033[1;30m{} ->insert \n  ->sql: {}\n  ->data: {}".format(self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             return data
@@ -92,13 +92,13 @@ class Calculator:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;36m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
+            print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
                 self.model["name"].upper(), sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             self._totals = dict(zip(self.model["fields"], data[0]))
@@ -121,13 +121,13 @@ class Calculator:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;36m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
+            print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
                 self.model["name"].upper(), sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data   : {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data   : {}\033[0;m".format(success, data))
 
         if success and data:
             self._totals = dict(zip(self.model["fields"], data[0]))
@@ -148,13 +148,13 @@ class Calculator:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;36m{} ->select_by_id\n  ->sql: {}\n  ->fields: {}\n  ->filters: {}\n  ->values{}".format(
+            print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->fields: {}\n  ->filters: {}\n  ->values{}".format(
                 self.model["name"].upper(), sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data   : {}\033[1;36m".format(success, data))
+            print("  ->success: {}\n  ->data   : {}\033[1;30m".format(success, data))
 
         if success and data:
             return True

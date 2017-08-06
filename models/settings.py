@@ -36,7 +36,8 @@ class Settings:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_SETTINGS:
-                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+                print("\033[0;33m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;1m".format(
+                    self.model["name"].upper(), success, data))
 
     @property
     def settings(self):
@@ -71,16 +72,17 @@ class Settings:
         Returns:
 
         """
-        # build query and execute
+
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_SETTINGS:
-            print("{} -> insert\nsql: {}\nvalues: {}".format(self.model["name"].upper(), sql, values))
+            print("\033[0;33m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
+                self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SETTINGS:
-            print("{} -> insert\nsuccess: {}\ndata   : {}".format(self.model["name"], success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
 
         if success and data:
             self._settings = dict(zip(self.model["fields"], values))
@@ -93,22 +95,23 @@ class Settings:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_SETTINGS:
-            print("{} -> load\nsql: {}".format(self.model["name"].upper(), sql))
+            print("\033[0;33m{}\n ->load\n  ->sql: {}".format(self.model["name"].upper(), sql))
 
         success, data = self.q.execute(sql)
+
         if success and not data:
-            # insert defaults and retry
             values = (None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
                       "customers", "invenprices", "employees", "", "", "", "", 0)
+
             self.insert(values)
-            # execute query again
+
             success, data = self.q.execute(sql)
 
         if success and data:
             self._settings = dict(zip(self.model["fields"], data[0]))
 
         if config.DEBUG_SETTINGS:
-            print("{} -> load\nsuccess: {}\ndata   : {}".format(self.model["name"], success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
 
         if success and data:
             return data
@@ -119,19 +122,20 @@ class Settings:
         """
         Update settings
         """
-        update_list = list(self.model["fields"])[1:]
-        where_list = [(self.model["id"], "=")]
+        fields = list(self.model["fields"])[1:]
+        filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._settings.values())
 
-        if config.DEBUG_SETTINGS:
-            print("{} -> update\nupdate_list: {}\nwhere_list: {}\nvalues: {}".format(self.model["name"].upper(), update_list, where_list, values))
+        sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
-        # use query to update
-        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
+        if config.DEBUG_SETTINGS:
+            print("\033[0;33m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), fields, filters, values, sql))
+
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SETTINGS:
-            print("{} -> update\nsuccess: {}\ndata   : {}".format(self.model["name"], success, data))
+            print("  ->success: {}\ndata: {}\033[0;1m".format(success, data))
 
         if success and data:
             return data

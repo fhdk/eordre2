@@ -45,7 +45,8 @@ class Visit:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_VISIT:
-                print("{} -> table\nsuccess: {}\ndata   : {}".format(self.model["name"].upper(), success, data))
+                print("\033[0;36m{} ->table\nsuccess: {}\ndata: {}\033[0;1m".format(
+                    self.model["name"].upper(), success, data))
 
     @property
     def visit(self):
@@ -119,8 +120,8 @@ class Visit:
             customerid:
             workdate:
         """
-        values = [None, reportid, employeeid, customerid, workdate,
-                  0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0]
+        values = (None, reportid, employeeid, customerid, workdate,
+                  0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
         self.find(self.insert(values))
 
     def find(self, visitid):
@@ -129,13 +130,24 @@ class Visit:
         Args:
             visitid:
         """
-        where_list = [(self.model["id"], "=")]
-        value_list = [visitid]
-        # build query and execute
-        sql = self.q.build("select", self.model, filteron=where_list)
-        success, data = self.q.execute(sql, values=value_list)
+        filters = [("visitid", "=")]
+        values = (visitid,)
+
+        sql = self.q.build("select", self.model, filteron=filters)
+
+        if config.DEBUG_VISIT:
+            print("\033[0;36m{}\n ->find\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), filters, values, sql))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_VISIT:
+            print("  ->filters: {}\n  ->values: {}\n  ->sql: {}\033[0;1m".format(filters, values, sql))
+
         if success and data:
             self._visit = dict(zip(self.model["fields"], data))
+            return True
+        return False
 
     def import_csv(self, filename, headers=False):
         """
@@ -171,9 +183,18 @@ class Visit:
         Args:
             values:
         """
-        # build query and execute
+
         sql = self.q.build("insert", self.model)
+
+        if config.DEBUG_VISIT:
+            print("\033[0;36m{}\n ->insert\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), values, sql))
+
         success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_VISIT:
+            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+
         if success and data:
             return data
         return False
@@ -194,11 +215,20 @@ class Visit:
         Args:
             customerid:
         """
-        where_list = [(self.model["id"]), "="]
-        value_list = [customerid]
-        # build query and execute
-        sql = self.q.build("select", self.model, filteron=where_list)
-        success, data = self.q.execute(sql, values=value_list)
+        filters = [("customerid", "=")]
+        values = (customerid,)
+
+        sql = self.q.build("select", self.model, filteron=filters)
+
+        if config.DEBUG_VISIT:
+            print("\033[0;36m{}\n ->select_by_customer\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), filters, values, sql))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_VISIT:
+            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
@@ -208,30 +238,42 @@ class Visit:
         Args:
             reportid:
         """
-        where_list = [(self.model["id"], "=")]
-        value_list = [reportid]
-        # build query and execute
-        sql = self.q.build("select", self.model, filteron=where_list)
-        success, data = self.q.execute(sql, values=value_list)
+        filters = [("reportid", "=")]
+        values = (reportid,)
+
+        sql = self.q.build("select", self.model, filteron=filters)
+
+        if config.DEBUG_VISIT:
+            print("\033[0;36m{}\n ->select_by_report\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), filters, values, sql))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_VISIT:
+            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+
         if success and data:
             self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
-
-    def save(self):
-        """
-        Save
-        """
-        self.update()
 
     def update(self):
         """
         Update current visit to database
         """
-        update_list = list(self.model["fields"])[1:]
-        where_list = [(self.model["id"], "=")]
+        fields = list(self.model["fields"])[1:]
+        filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._visit.values())
-        # build query and execute
-        sql = self.q.build("update", self.model, update=update_list, filteron=where_list)
+
+        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+
+        if config.DEBUG_VISIT:
+            print("\033[0;36m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), fields, filters, values, sql))
+
         success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_VISIT:
+            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+
         if success and data:
             return data
         return False

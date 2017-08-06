@@ -94,7 +94,7 @@ class Query:
 
         """
         if config.DEBUG_QUERY:
-            print("\033[1;31m\r")
+            print("\033[1;35m\r")
             print("{}\n ->execute\n  ->enter\n   ->sql_query: {}".format("QUERY", sql_query))
             if values:
                 print(" ->execute\n  ->enter\n   ->values: {}".format("QUERY", values))
@@ -121,7 +121,7 @@ class Query:
                 return False, e
         if config.DEBUG_QUERY:
             print("   ->result: {}\n  ->exit\r".format(result))
-            print("\033[1;m")
+            print("\033[0;m")
         return True, result
 
     def values_to_arg(self, values):

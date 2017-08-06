@@ -52,7 +52,7 @@ class Report:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
-                print("\033[1;30m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                print("\033[1;36m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[0;m".format(
                         self.model["name"].upper(), success, data))
 
     @property
@@ -148,7 +148,7 @@ class Report:
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filteron)
 
         if config.DEBUG_REPORT:
-            print("\033[1;30m{}\n ->create\n  ->aggregates: {}\n  ->sql: {}\n  ->values: {}".format(
+            print("\033[1;36m{}\n ->create\n  ->aggregates: {}\n  ->sql: {}\n  ->values: {}".format(
                     self.model["name"].upper(), aggregates, sql, values))
 
         success, data = self.q.execute(sql, values)
@@ -171,7 +171,7 @@ class Report:
             month[1] = report_id
             month = tuple(month)
             if config.DEBUG_REPORT:
-                print("  ->month: {}\033[1;m".format(month))
+                print("  ->month: {}\033[0;m".format(month))
             self.c.insert(month)
 
         else:
@@ -185,12 +185,12 @@ class Report:
 
         if config.DEBUG_REPORT:
             print(
-                "\033[1;30m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"].upper(), sql, values))
+                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             return data
@@ -214,7 +214,7 @@ class Report:
             for row in reader:
 
                 if config.DEBUG_REPORT:
-                    print("\033[1;30m{}\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
+                    print("\033[1;36m{}\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
 
                 if not len(row) == self.csv_field_count:
                     return False
@@ -233,7 +233,7 @@ class Report:
                           row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24], local_timestamp)
 
                 if config.DEBUG_REPORT:
-                    print("  ->values: {}\033[1;m".format(values))
+                    print("  ->values: {}\033[0;m".format(values))
                 self.insert(values)
             return True
 
@@ -251,12 +251,12 @@ class Report:
 
         if config.DEBUG_REPORT:
             print(
-                "\033[1;30m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"].upper(), sql, values))
+                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             self._report = dict(zip(self.model["fields"], data))
@@ -283,13 +283,13 @@ class Report:
 
         if config.DEBUG_REPORT:
             print(
-                "\033[1;30m{}\n ->load_reports\n  ->sql: {}\n  ->values: {}".format(
+                "\033[1;36m{}\n ->load_reports\n  ->sql: {}\n  ->values: {}".format(
                     self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             self._reports = [dict(zip(self.model["fields"], row)) for row in data]
@@ -318,12 +318,12 @@ class Report:
 
         # if config.DEBUG_REPORT:
         #     print(
-        #         "\033[1;30m{}\n ->update\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+        #         "\033[1;36m{}\n ->update\n  ->sql: {}\n  ->values: {}\033[0;m".format(
         #             self.model["name"].upper(), sql, values))
 
         # if config.DEBUG_REPORT:
         #     print(
-        #         "\033[1;30m{}\n ->update\n  ->success: {}\n  ->data: {}\033[1;m".format(
+        #         "\033[1;36m{}\n ->update\n  ->success: {}\n  ->data: {}\033[0;m".format(
         #             self.model["name"].upper(), success, data))
 
         pass

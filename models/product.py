@@ -15,6 +15,7 @@ class Product:
     """
     Product
     """
+
     def __init__(self):
         """
         Initialize product class
@@ -36,9 +37,8 @@ class Product:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_PRODUCT:
-                print(
-                    "\033[1;34m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                        self.model["name"].upper(), success, data))
+                print("\033[1;34m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;m".format(
+                    self.model["name"].upper(), success, data))
 
     def clear(self):
         """
@@ -75,19 +75,20 @@ class Product:
         Args:
             values:
         """
-        value_list = list(values)
-        value_list[0:0] = [None]
-        value_list = tuple(value_list)
-        # build query and execute
-        sql = self.q.build("insert", self.model)
-        if config.DEBUG_PRODUCT:
-            print("\033[1;34m{}\n ->insert\n  ->sql: {}\033[1;m".format(
-                self.model["name"].upper(), sql))
+        values = list(values)
+        values[0:0] = [None]
+        values = tuple(values)
 
-        success, data = self.q.execute(sql, values=value_list)
+        sql = self.q.build("insert", self.model)
+
         if config.DEBUG_PRODUCT:
-            print("\033[1;34m{}\n ->insert\n  ->execute\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                self.model["name"].upper(), success, data))
+            print("\033[1;34m{}\n ->insert\n  ->sql: {}".format(self.model["name"].upper(), sql))
+
+        success, data = self.q.execute(sql, values=values)
+
+        if config.DEBUG_PRODUCT:
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+
         if success and data:
             return data
         return False
@@ -98,7 +99,15 @@ class Product:
         """
         # build query and execute
         sql = self.q.build("select", self.model)
+
+        if config.DEBUG_PRODUCT:
+            print("\033[1;34m{}\n ->load\n  ->sql: {}".format(self.model["name"].upper(), sql))
+
         success, data = self.q.execute(sql)
+
+        if config.DEBUG_PRODUCT:
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+
         if success and data:
             self._products = [dict(zip(self.model["fields"], row)) for row in data]
         else:

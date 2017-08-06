@@ -37,8 +37,7 @@ class Employee:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_EMPLOYEE:
-                print(
-                    "\033[1;37m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                print("\033[1;33m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[0;m".format(
                         self.model["name"].upper(), success, data))
         self.s = Settings()
         if rules.check_settings(self.s.settings) and httpfn.inet_conn_check():
@@ -67,16 +66,13 @@ class Employee:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_EMPLOYEE:
-            print(
-                "\033[1;37m{}\n ->insert\n  ->sql: {}\n  ->values: {}\033[1;m".format(
+            print("\033[1;33m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
                     self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_EMPLOYEE:
-            print(
-                "\033[1;37m{}\n ->insert\n  -->success: {}\n  -->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  -->success: {}\n  -->data: {}\033[0;m".format(success, data))
 
     def load(self):
         """
@@ -85,9 +81,7 @@ class Employee:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_EMPLOYEE:
-            print(
-                "\033[1;37m{}\n ->load\n  ->sql: {}\033[1;m".format(
-                    self.model["name"].upper(), sql))
+            print("\033[1;33m{}\n ->load\n  ->sql: {}".format(self.model["name"].upper(), sql))
 
         success, data = self.q.execute(sql)
 
@@ -95,9 +89,7 @@ class Employee:
             self._employee = dict(zip(self.model["fields"], data[0]))
 
         if config.DEBUG_EMPLOYEE:
-            print(
-                "\033[1;37m{}\n ->load\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
     def update(self):
         """
@@ -106,17 +98,14 @@ class Employee:
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._employee.values())
-        # build query and execute
+
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_EMPLOYEE:
-            print(
-                "\033[1;37m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}\033[1;m".format(
+            print("\033[1;33m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
                     self.model["name"].upper(), sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_EMPLOYEE:
-            print(
-                "\033[1;37m{}\n ->update\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))

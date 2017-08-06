@@ -36,7 +36,7 @@ class Contact:
             success, data = self.q.execute(sql)
 
             if config.DEBUG_CONTACT:
-                print("\033[1;36m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
+                print("\033[1;31m\n ->table\n  ->success: {}\n  ->data: {}\033[0;m".format(
                         self.model["name"].upper(), success, data))
 
     def clear(self):
@@ -69,7 +69,8 @@ class Contact:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_CONTACT:
-            print("\033[1;36m{}\n ->find\n  ->row: {}".format(self.model["name"].upper(), values))
+            print("\033[1;31m\n ->find\n  ->values: {}\n  ->values: {}".format(
+                self.model["name"].upper(), values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -77,7 +78,7 @@ class Contact:
             self._contact = dict(zip(self.model["fields"], data))
 
         if config.DEBUG_CONTACT:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             return self._contact
@@ -97,7 +98,7 @@ class Contact:
             for row in reader:
 
                 if config.DEBUG_CONTACT:
-                    print("\033[1;36m{}\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
+                    print("\033[1;31m\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
 
                 if not len(row) == self.csv_field_count:
                     return False
@@ -109,7 +110,7 @@ class Contact:
                           row[7].strip())
 
                 if config.DEBUG_CONTACT:
-                    print("  ->values: {}\033[1;m".format(values))
+                    print("  ->values: {}\033[0;m".format(values))
 
                 self.insert(values)
 
@@ -125,13 +126,13 @@ class Contact:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_CONTACT:
-            print("\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
-                self.model["name"].upper(), sql, values))
+            print("\033[1;31m\n ->insert\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CONTACT:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             return data
@@ -149,14 +150,13 @@ class Contact:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CONTACT:
-            print(
-                "\033[1;36m{}\n ->load for customer\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
-                    self.model["name"].upper(), sql, filters, values))
+            print("\033[1;31m\n ->load for customer\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                    self.model["name"].upper(), filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CONTACT:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
@@ -180,19 +180,18 @@ class Contact:
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-
         values = self.q.values_to_arg(self._contact.values())
 
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_CONTACT:
-            print("\033[1;36m{}\n ->update\n  ->sql: {}\n  ->values: {}".format(
-                self.model["name"].upper(), sql, values))
+            print("\033[1;31m\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), fields, filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CONTACT:
-            print("  ->success: {}\n  ->data: {}\033[1;m".format(success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             return True

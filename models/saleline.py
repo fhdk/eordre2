@@ -40,9 +40,8 @@ class Saleline:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_SALELINE:
-                print(
-                    "\033[1;32m{}\n ->table\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                        self.model["name"].upper(), success, data))
+                print("\033[1;37m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;m".format(
+                    self.model["name"].upper(), success, data))
 
     @property
     def saleline(self):
@@ -89,10 +88,40 @@ class Saleline:
         """
         # add new with empty values
         values = (None, visit_id, None, "", "", None, None, None)
+
         lineid = self.insert(values)
+
         self._saleline = dict(zip(self.model["fields"], values))
         self._saleline["lineid"] = lineid
         self._salelines.append(self._saleline)
+
+    def delete(self, lineid):
+        """
+        Delete line
+        Args:
+            lineid:
+        """
+        filters = [("lineid", "=")]
+        values = (lineid,)
+
+        sql = self.q.build("delete", self.model, filteron=filters)
+
+        if config.DEBUG_SALELINE:
+            print("\033[1;37m{}\n ->delete\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
+                self.model["name"].upper(), filters, values, sql))
+
+        # if sql.startswith("ERROR"):
+        #     print("{}".format(sql))
+        #     return False
+
+        success, data = self.q.execute(sql, values)
+
+        if config.DEBUG_SALELINE:
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+
+        if success and data:
+            return True
+        return False
 
     def import_csv(self, filename, headers=False):
         """
@@ -107,22 +136,23 @@ class Saleline:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-                if config.DEBUG_CONTACT:
-                    print(
-                        "\033[1;32m{}\n ->import_csv\n  ->row: {}\033[1;m".format(
-                            self.model["name"].upper(), row))
+
+                if config.DEBUG_SALELINE:
+                    print("\033[1;37m{}\n ->import_csv\n  ->row: {}".format(self.model["name"].upper(), row))
+
                 if not len(row) == self.csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
+
                 # translate bool text to integer col 6
                 row[6] = utils.bool2int(utils.str2bool(row[6]))
                 values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7])
+
                 if config.DEBUG_SALELINE:
-                    print(
-                        "\033[1;32m{}\n ->import_csv\n  ->values: {}\033[1;m".format(
-                            self.model["name"].upper(), values))
+                    print("  ->values: {}\033[0;m".format(values))
+
                 self.insert(values)
             return True
 
@@ -135,17 +165,18 @@ class Saleline:
         # build query and execute
         sql = self.q.build("insert", self.model)
 
+        # if sql.startswith("ERROR"):
+        #     print("{}".format(sql))
+        #     return False
+
         if config.DEBUG_SALELINE:
-            print(
-                "\033[1;32m{}\n ->insert\n  ->sql: {}\n  ->values: {}\033[1;m".format(
-                    self.model["name"].upper(), sql, values))
+            print("\033[1;37m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
+                self.model["name"].upper(), sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SALELINE:
-            print(
-                "\033[1;32m{}\n ->insert\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             return data
@@ -157,13 +188,17 @@ class Saleline:
         """
         filters = [("visitid", "=")]
         values = [visitid]
-        # build query and execute
+
         sql = self.q.build("select", self.model, filteron=filters)
+
+        # if sql.startswith("ERROR"):
+        #     print("{}".format(sql))
+        #     return False
 
         if config.DEBUG_SALELINE:
             print(
-                "\033[1;32m{}\n ->load\n  ->sql: {}\n  ->values: {}\033[1;m".format(
-                    self.model["name"].upper(), sql, values))
+                "\033[1;37m{}\n ->load\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
+                    self.model["name"].upper(), sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -171,9 +206,7 @@ class Saleline:
             self.salelines = [dict(zip(self.model["fields"], row)) for row in data]
 
         if config.DEBUG_SALELINE:
-            print(
-                "\033[1;32m{}\n ->load\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
     def recreate_table(self):
         """
@@ -192,20 +225,21 @@ class Saleline:
         fields = list(self.model["fields"])[1:]
         filters = [("lineid", "=")]
         values = self.q.values_to_arg(self._saleline.values())
-        # build query and execute
+
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
+        if sql.startswith("ERROR"):
+            print("{}".format(sql))
+            return False
+
         if config.DEBUG_SALELINE:
-            print(
-                "\033[1;32m{}\n ->load\n  ->sql: {}\n  ->values: {}\033[1;m".format(
-                    self.model["name"].upper(), sql, values))
+            print("\033[1;37m{}\n ->load\n  ->sql: {}\n  ->fields: {}\n  ->filters: {}\n  ->values: {}".format(
+                self.model["name"].upper(), sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SALELINE:
-            print(
-                "\033[1;32m{}\n ->update\n  ->success: {}\n  ->data: {}\033[1;m".format(
-                    self.model["name"].upper(), success, data))
+            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
 
         if success and data:
             return data

@@ -200,7 +200,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             current: currently selected item
             previous: previous selected item
         """
-        print("{} {}".format(current.text(1), current.text(0)))
+        print("customer_changed_action:\n    {}, {}".format(current.text(1), current.text(0)))
         self.Customers.lookup_by_phone_name(current.text(1), current.text(0))
         try:
             self.txtAccount.setText(self.Customers.customer["account"])
