@@ -15,7 +15,7 @@ class Ui_SettingsDialog(object):
         SettingsDialog.resize(510, 281)
         SettingsDialog.setMinimumSize(QtCore.QSize(0, 0))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/icons/settings/preferences-system-network.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/icons/current/preferences-system-network.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         SettingsDialog.setWindowIcon(icon)
         SettingsDialog.setWindowOpacity(1.0)
         SettingsDialog.setModal(True)

@@ -28,7 +28,7 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
         Initialize Dialog
         Args:
             product: main product objecæt
-            settings: main settings object
+            settings: main current object
         """
         super(HttpProdImportDialog, self).__init__(parent)
         self.setupUi(self)

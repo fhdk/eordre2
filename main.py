@@ -70,7 +70,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.reports = Report()  # Initialize Report object
         self.visits = Visit()  # Initialize Visit object
         self.visit_details = VisitDetail()  # Initialize Visit details object
-        self.settings = Settings()  # Initialize settings object
+        self.settings = Settings()  # Initialize current object
 
         # connect menu trigger signals
         self.actionAboutQt.triggered.connect(self.about_qt_action)
@@ -91,7 +91,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionVisitData.triggered.connect(self.visit_data_action)
         self.actionZeroDatabase.triggered.connect(self.zero_database_action)
         # connect list change
-        self.customerList.currentItemChanged.connect(self.customer_changed_action)
+        self.widgetCustomers.currentItemChanged.connect(self.customer_changed_action)
         # connect buttons
         self.buttonArchiveChanges.clicked.connect(self.archive_customer_action)
         self.buttonContactData.clicked.connect(self.contact_data_action)
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def customer_changed_action(self, current, previous):
         """
-        Slot for listbox current item changed signal
+        Slot for treewidget current item changed signal
         Used to respond to changes in the currently selected customer
         and update the related customer info pages
 
@@ -257,10 +257,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Update status fields
         """
-        self.txtCustLocal.setText(self.settings.settings["lsc"])
-        self.txtCustServer.setText(self.settings.settings["sac"])
-        self.txtProdLocal.setText(self.settings.settings["lsp"])
-        self.txtProdServer.setText(self.settings.settings["sap"])
+        self.txtCustLocal.setText(self.settings.current["lsc"])
+        self.txtCustServer.setText(self.settings.current["sac"])
+        self.txtProdLocal.setText(self.settings.current["lsp"])
+        self.txtProdServer.setText(self.settings.current["sap"])
 
     def exit_action(self):
         """
@@ -311,7 +311,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.populate_customer_list()  # load_by_customer customers
         lsc = datetime.date.today().isoformat()  # get sync date
         self.txtCustLocal.setText(lsc)  # get update display
-        self.settings.settings["lsc"] = lsc  # update settings
+        self.settings.current["lsc"] = lsc  # update current
 
     def get_http_product_action(self):
         """
@@ -328,8 +328,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.products.load()  # load_by_customer products
         lsp = datetime.date.today().isoformat()  # get sync date
         self.txtProdLocal.setText(lsp)  # update display
-        self.settings.settings["lsp"] = lsp  # update settings
-        self.settings.update()  # save settings
+        self.settings.current["lsp"] = lsp  # update current
+        self.settings.update()  # save current
 
     def master_data_action(self):
         """
@@ -412,17 +412,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot for settingsDialog triggered signal
         """
-        settings_dialog = SettingsDialog(self.settings.settings)
+        settings_dialog = SettingsDialog(self.settings)
         if settings_dialog.exec_():
             # do check if password has been changed
             # and hash it if necessary
-            check = settings_dialog.work_settings
+            check = settings_dialog.work
             if len(check["userpass"]) < 97:
                 check["userpass"] = passwdfn.hash_password(check["userpass"])
             if len(check["mailpass"]) < 97:
                 check["mailpass"] = passwdfn.hash_password(check["mailpass"])
-            # assign new settings
-            self.settings.settings = check
+            # assign new current
+            self.settings.current = check
         else:
             pass
 
@@ -436,14 +436,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot for zeroDatabase triggered signal
         """
-        self.customers.clear()
-        self.products.clear()
-
         self.contacts.recreate_table()
         self.customers.recreate_table()
         self.visit_details.recreate_table()
         self.visits.recreate_table()
         self.reports.recreate_table()
+        self.widgetCustomers.clear()
 
         msgbox = QMessageBox()
         msgbox.information(self, __appname__, "Salgsdata er nulstillet!", QMessageBox.Ok)
@@ -452,11 +450,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Setup database and basic configuration
         """
-        # settings needs to be up for inet connection to work
-        is_set = check_settings(self.settings.settings)
+        # current needs to be up for inet connection to work
+        is_set = check_settings(self.settings.current)
         if is_set:
             try:
-                _ = self.employee.employee["fullname"]
+                _ = self.employees.employee["fullname"]
             except KeyError:
                 if httpfn.inet_conn_check():
                     pass
@@ -474,11 +472,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.settings_dialog_action()
 
         self.populate_customer_list()
-        if utils.int2bool(self.settings.settings["sc"]):
+        if utils.int2bool(self.settings.current["sc"]):
             self.statusbar.setToolTip("Checker server for opdateringer ...")
-            status = utils.refresh_sync_status(self.settings.settings)
-            self.settings.settings["sac"] = status[0][1].split()[0]
-            self.settings.settings["sap"] = status[1][1].split()[0]
+            status = utils.refresh_sync_status(self.settings.current)
+            self.settings.current["sac"] = status[0][1].split()[0]
+            self.settings.current["sap"] = status[1][1].split()[0]
             self.settings.update()
         # update display
         self.display_sync_status()

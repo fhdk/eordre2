@@ -16,13 +16,13 @@ def validate_fields():
 
 def check_settings(settings):
     """
-    Check the vital settings
+    Check the vital current
 
     Args:
         settings: dict
 
     Returns:
-        bool indicating if settings is missing
+        bool indicating if current is missing
     """
     s = settings
     try:

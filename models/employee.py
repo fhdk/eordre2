@@ -49,10 +49,10 @@ class Employee:
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
         self.s = Settings()
-        if rules.check_settings(self.s.settings) and httpfn.inet_conn_check():
+        if rules.check_settings(self.s.current) and httpfn.inet_conn_check():
             self.load()
             if not self._employee:
-                data = httpfn.get_employee_data(self.s.settings)
+                data = httpfn.get_employee_data(self.s.current)
                 if data:
                     data = list(data)
                     data[0:0] = [None]

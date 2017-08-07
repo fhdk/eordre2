@@ -26,7 +26,7 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
         """
         Initialize Dialog
         Args:
-            settings: main settings object
+            settings: main current object
             employee: main employeeid object
             customer: main customer object
         """

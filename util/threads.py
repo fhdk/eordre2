@@ -32,11 +32,11 @@ class ImportCustomersThread(QThread):
         Args:
             customer: main customer object
             employee: main employeeid object
-            settings: main settings object
+            settings: main current object
             parent:
         """
         super(ImportCustomersThread, self).__init__(parent)
-        self.Settings = settings  # Assign settings object
+        self.Settings = settings  # Assign current object
         self.Employee = employee  # Assign employeeid object
         self.Customer = customer  # Assign customer object
         self.c = Communicate()
@@ -47,7 +47,7 @@ class ImportCustomersThread(QThread):
         """
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
-        data = httpfn.get_customers(self.Settings.settings,
+        data = httpfn.get_customers(self.Settings.current,
                                     self.Employee.employee)
         self.c.processing.emit("{}".format("Henter fra server ..."))
         self.c.rowcount.emit(len(data))
@@ -69,7 +69,7 @@ class ImportProductsThread(QThread):
             parent:
         """
         super(ImportProductsThread, self).__init__(parent)
-        self.Settings = settings  # assign settings object
+        self.Settings = settings  # assign current object
         self.Product = product  # assign product object
         self.c = Communicate()
 
@@ -81,7 +81,7 @@ class ImportProductsThread(QThread):
         self.Product.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
         # fetching datafile from http server
-        data = httpfn.get_products(self.Settings.settings)
+        data = httpfn.get_products(self.Settings.current)
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))

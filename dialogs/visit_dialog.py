@@ -38,7 +38,7 @@ class VisitDialog(QDialog, Ui_VisitDialog):
         self.reportid = report.report["reportid"]
         self.workdate = workdate
 
-        # If customerid need special settings on prices
+        # If customerid need special current on prices
         factor = customer["factor"]
         if factor > 0.0:
             for item in product.product_list:

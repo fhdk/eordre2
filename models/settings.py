@@ -5,7 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """
-settings module
+current module
 """
 
 from configuration import config
@@ -21,15 +21,15 @@ def printit(string):
 
 class Settings:
     """
-    settings class
+    current class
     """
 
     def __init__(self):
         """
-        Initialize the settings class
+        Initialize the current class
         """
         self.model = {
-            "name": "settings",
+            "name": "current",
             "id": "settingsid",
             "fields": ("settingsid", "usermail", "userpass", "usercountry", "pd", "pf", "sf",
                        "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
@@ -50,11 +50,11 @@ class Settings:
                         "  ->data: {}".format(self.model["name"], success, data))
 
     @property
-    def settings(self):
+    def current(self):
         """
-        settings
+        current
         Returns:
-            The settings
+            The current settings
         """
         try:
             _ = self._settings["usermail"]
@@ -63,10 +63,10 @@ class Settings:
 
         return self._settings
 
-    @settings.setter
-    def settings(self, settings):
+    @current.setter
+    def current(self, settings):
         """
-        Pushing new settings
+        Pushing new current settings
         Args:
             settings:
         """
@@ -75,7 +75,7 @@ class Settings:
 
     def insert(self, values):
         """
-        Inserts in database and activates the settings values
+        Inserts in database and activates the current settings values
         Args:
             values:
 
@@ -103,7 +103,7 @@ class Settings:
 
     def load(self):
         """
-        Load settings
+        Load current
         """
         # build query and execute
         sql = self.q.build("select", self.model)
@@ -138,7 +138,7 @@ class Settings:
 
     def update(self):
         """
-        Update settings
+        Update current
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]

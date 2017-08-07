@@ -24,8 +24,8 @@
         </property>
         <property name="windowIcon">
             <iconset>
-                <normaloff>:/icons/settings/preferences-system-network.png</normaloff>
-                :/icons/settings/preferences-system-network.png
+                <normaloff>:/icons/current/preferences-system-network.png</normaloff>
+                :/icons/current/preferences-system-network.png
             </iconset>
         </property>
         <property name="windowOpacity">

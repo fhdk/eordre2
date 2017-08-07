@@ -192,7 +192,7 @@ class Ui_VisitDialog(object):
         self.txtProductDemo.setPlaceholderText(_translate("VisitDialog", "Produkt demo"))
         self.txtProductSale.setPlaceholderText(_translate("VisitDialog", "Produkt salg"))
         item = self.visitWidget.horizontalHeaderItem(0)
-        item.setText(_translate("VisitDialog", "D.N.S."))
+        item.setText(_translate("VisitDialog", "d/n/s"))
         item = self.visitWidget.horizontalHeaderItem(1)
         item.setText(_translate("VisitDialog", "Antal"))
         item = self.visitWidget.horizontalHeaderItem(2)

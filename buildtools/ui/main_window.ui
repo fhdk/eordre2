@@ -57,9 +57,9 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QHBoxLayout" name="topGridLayout">
+      <layout class="QHBoxLayout" name="widgetHeaderBox">
        <item>
-        <layout class="QGridLayout" name="newCustomerGrid">
+        <layout class="QGridLayout" name="widgetCreateCustomer">
          <item row="1" column="1">
           <widget class="QLineEdit" name="txtNewPhone1">
            <property name="placeholderText">
@@ -77,28 +77,28 @@
          <item row="2" column="1">
           <widget class="QPushButton" name="buttonCreateCustomer">
            <property name="text">
-            <string>Opret kunde</string>
+            <string>Opret</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="labelCreateCustomer">
            <property name="text">
-            <string>Opret nyt besøg/kunde</string>
+            <string>Opret ny</string>
            </property>
           </widget>
          </item>
         </layout>
        </item>
        <item>
-        <widget class="Line" name="line">
+        <widget class="Line" name="line_1">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="widgetWorkdate">
          <item row="0" column="0">
           <widget class="QLabel" name="labelWorkdate">
            <property name="text">
@@ -145,7 +145,7 @@
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout" name="lastUpdateGrid">
+        <layout class="QGridLayout" name="widgetLastUpdate">
          <item row="0" column="2">
           <widget class="QLabel" name="lblAvailable">
            <property name="text">
@@ -196,7 +196,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="labelSync">
            <property name="text">
             <string>Synkroniseret</string>
            </property>
@@ -252,13 +252,18 @@
      <item>
       <layout class="QHBoxLayout" name="mainGrid">
        <item>
-        <widget class="QTreeWidget" name="customerList">
+        <widget class="QTreeWidget" name="widgetCustomers">
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
          <column>
           <property name="text">
-           <string notr="true">1</string>
+           <string notr="true">Telefon</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Firma</string>
           </property>
          </column>
         </widget>
@@ -273,7 +278,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <layout class="QGridLayout" name="gridLayout_2">
+          <layout class="QGridLayout" name="widgetInfoButtons">
            <item row="0" column="2">
             <widget class="QPushButton" name="buttonVisitData">
              <property name="text">
@@ -312,7 +317,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QStackedWidget" name="customerInfoStack">
+          <widget class="QStackedWidget" name="widgetCustomerInfo">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -321,7 +326,7 @@
            <property name="currentIndex">
             <number>0</number>
            </property>
-           <widget class="QWidget" name="masterPage">
+           <widget class="QWidget" name="widgetMasterPage">
             <widget class="QWidget" name="layoutWidget">
              <property name="geometry">
               <rect>
@@ -331,7 +336,7 @@
                <height>462</height>
               </rect>
              </property>
-             <layout class="QGridLayout" name="gridMasterData">
+             <layout class="QGridLayout" name="widgetMasterDetails">
               <item row="12" column="1">
                <widget class="QLineEdit" name="txtFactor">
                 <property name="placeholderText">
@@ -498,7 +503,7 @@
              </layout>
             </widget>
            </widget>
-           <widget class="QWidget" name="contactsPage">
+           <widget class="QWidget" name="widgetContactsPage">
             <widget class="QLabel" name="label_6">
              <property name="geometry">
               <rect>
@@ -513,7 +518,7 @@
              </property>
             </widget>
            </widget>
-           <widget class="QWidget" name="visitsPage">
+           <widget class="QWidget" name="widgetVisitsPage">
             <widget class="QLabel" name="label_5">
              <property name="geometry">
               <rect>
@@ -528,7 +533,7 @@
              </property>
             </widget>
            </widget>
-           <widget class="QWidget" name="ordersPage">
+           <widget class="QWidget" name="widgetVisitDetailsPage">
             <widget class="QLabel" name="label_2">
              <property name="geometry">
               <rect>
@@ -794,7 +799,7 @@
   <tabstop>txtCustServer</tabstop>
   <tabstop>txtProdLocal</tabstop>
   <tabstop>txtProdServer</tabstop>
-  <tabstop>customerList</tabstop>
+  <tabstop>widgetCustomers</tabstop>
   <tabstop>buttonMasterData</tabstop>
   <tabstop>buttonContactData</tabstop>
   <tabstop>buttonVisitData</tabstop>
