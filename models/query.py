@@ -21,9 +21,7 @@ E_COLOR = "\033[0;m"
 
 
 def printit(string):
-    print(B_COLOR)
-    print(string)
-    print(E_COLOR)
+    print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
 class Query:

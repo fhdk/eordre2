@@ -10,8 +10,7 @@ Threads module
 
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
 
-from models import customer, product, settings, employee
-from util import httpfn, utils
+from util import httpfn
 
 
 class Communicate(QObject):
@@ -27,16 +26,19 @@ class ImportCustomersThread(QThread):
     """
     Thread for importing customer through http
     """
-    def __init__(self, parent=None):
+    def __init__(self, customer, employee, settings, parent=None):
         """
         Initialize thread
         Args:
+            customer: main customer object
+            employee: main employeeid object
+            settings: main settings object
             parent:
         """
         super(ImportCustomersThread, self).__init__(parent)
-        self.Settings = settings.Settings()  # assign settings object
-        self.Employee = employee.Employee()  # assign employee object
-        self.Customer = customer.Customer()  # create customer object
+        self.Settings = settings  # Assign Settings object
+        self.Employee = employee  # Assign employeeid object
+        self.Customer = customer  # Assign customer object
         self.c = Communicate()
 
     def run(self):
@@ -60,15 +62,15 @@ class ImportProductsThread(QThread):
     """
     Thread for importing product through http
     """
-    def __init__(self, parent=None):
+    def __init__(self, product, settings, parent=None):
         """
         Initialize the thread
         Args:
             parent:
         """
         super(ImportProductsThread, self).__init__(parent)
-        self.Settings = settings.Settings()  # create settings object
-        self.Product = product.Product()  # create product object
+        self.Settings = settings  # assign Settings object
+        self.Product = product  # assign product object
         self.c = Communicate()
 
     def run(self):

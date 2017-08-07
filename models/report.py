@@ -19,9 +19,7 @@ E_COLOR = "\033[0;m"
 
 
 def printit(string):
-    print(B_COLOR)
-    print(string)
-    print(E_COLOR)
+    print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
 # noinspection PyMethodMayBeStatic
@@ -35,7 +33,7 @@ class Report:
         Initilize Report class
         """
         self.model = {
-            "name": "report",
+            "name": "reportid",
             "id": "reportid",
             "fields": ("reportid", "employeeid", "repno", "repdate",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
@@ -71,14 +69,14 @@ class Report:
         """
         Report
         Returns:
-            Current report
+            Current reportid
         """
         return self._report
 
     @report.setter
     def report(self, workdate):
         """
-        Set report to workdate
+        Set reportid to workdate
         Args:
             workdate:
         """
@@ -109,14 +107,14 @@ class Report:
 
     def create(self, employee, workdate):
         """
-        Create report for employee and date supplied
+        Create reportid for employeeid and date supplied
         Args:
             employee: object
-            workdate: iso formatted str representing the report date
+            workdate: iso formatted str representing the reportid date
         """
         # we need to find the number of reports for the month of the supplied date
         # then create 1 to that number
-        # we need to calculate the sums for the previous report for month
+        # we need to calculate the sums for the previous reportid for month
         # those sums will be stored in seperate table
         # creating a new table with
         #           sum demoes & sum sales
@@ -195,7 +193,7 @@ class Report:
 
     def insert(self, values):
         """
-        Insert new report in table
+        Insert new reportid in table
         """
         sql = self.q.build("insert", self.model)
 
@@ -218,7 +216,7 @@ class Report:
 
     def import_csv(self, filename, employee, headers=False):
         """
-        Import report from file
+        Import reportid from file
         Args:
             filename: 
             employee: 
@@ -262,10 +260,10 @@ class Report:
 
     def load_report(self, workdate):
         """
-        Load report for supplied date arg
+        Load reportid for supplied date arg
 
         Args:
-            workdate: iso formatted str representing the date for the report to be loaded
+            workdate: iso formatted str representing the date for the reportid to be loaded
         """
         filters = [("repdate", "=")]
         values = (workdate,)
@@ -290,7 +288,7 @@ class Report:
 
     def load_reports(self, year=None, month=None):
         """
-        Load report matching args or all if no args
+        Load reportid matching args or all if no args
 
         Args:
             :type year: str
@@ -338,7 +336,7 @@ class Report:
 
     def update(self):
         """
-        Update report in database
+        Update reportid in database
         """
         # update_list = list(self.model["fields"])[1:]
         # update_where = [self.model["id"], "="]

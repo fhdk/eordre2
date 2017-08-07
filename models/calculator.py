@@ -16,9 +16,7 @@ E_COLOR = ""
 
 
 def printit(string):
-    print(B_COLOR)
-    print(string)
-    print(E_COLOR)
+    print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
 class Calculator:
@@ -132,7 +130,7 @@ class Calculator:
             workdate:
             employeeid:
         Returns:
-            bool indicating totals for the selected report is now set
+            bool indicating totals for the selected reportid is now set
         """
         filters = [("workdate", "=", "and"), ("employeeid", "=")]
         values = (workdate, employeeid)

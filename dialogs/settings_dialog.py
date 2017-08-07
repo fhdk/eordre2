@@ -13,7 +13,7 @@ from util import utils
 
 class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
     """
-    Dialog for entering and updating settings
+    Dialog for entering and updating Settings
     """
 
     def __init__(self, settings, parent=None):
@@ -39,7 +39,7 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         self.buttonBox.rejected.connect(self.reject)
 
     def accept(self):
-        """User buttonbox_accepted_action settings"""
+        """User buttonbox_accepted_action Settings"""
         # assign input fields to settings
         self.app_settings["usermail"] = self.editUserMail.text().lower()
         self.app_settings["userpass"] = self.editUserPass.text()

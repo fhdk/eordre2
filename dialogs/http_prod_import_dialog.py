@@ -8,7 +8,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
-from models import settings
 from resources.http_prod_import_dialog_rc import Ui_HttpProdImportDialog
 from util import threads
 
@@ -24,16 +23,22 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
     """
     Dialog for importing products from server
     """
-    def __init__(self, parent=None):
-        """Initialize Dialog"""
+    def __init__(self, product, settings, parent=None):
+        """
+        Initialize Dialog
+        Args:
+            product: main product objecæt
+            settings: main settings object
+        """
         super(HttpProdImportDialog, self).__init__(parent)
         self.setupUi(self)
         self.c = Communicate()
-        self.settings = settings.Settings().settings  # Create settings object
+        self.Product = product
+        self.Settings = settings  # Assign Settings object
         self.progresscount = 1  # Used when setting progress values
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
-        self.import_thread = threads.ImportProductsThread()
+        self.import_thread = threads.ImportProductsThread(self.Product, self.Settings)
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_action)
         self.buttonClose.clicked.connect(self.button_close_action)

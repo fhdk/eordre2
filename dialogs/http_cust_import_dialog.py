@@ -8,8 +8,6 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
-from models import employee
-from models import settings
 from resources.http_cust_import_dialog_rc import Ui_HttpCustImportDialog
 from util import threads
 
@@ -24,19 +22,26 @@ class Communicate(QObject):
 class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
     """
     """
-    def __init__(self, parent=None):
-        """Initialize Dialog"""
+    def __init__(self, settings, employee, customer, parent=None):
+        """
+        Initialize Dialog
+        Args:
+            settings: main settings object
+            employee: main employeeid object
+            customer: main customer object
+        """
         super(HttpCustImportDialog, self).__init__(parent)
         self.setupUi(self)
 
         self.c = Communicate()
 
-        self.employee = employee.Employee().employee  # Create employe object
-        self.settings = settings.Settings().settings  # Create settings object
+        self.Customer = customer  # Assign Customer object
+        self.Employee = employee  # Assign Employe object
+        self.Settings = settings  # Assign Settings object
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
         self.progresscount = 0
-        self.import_thread = threads.ImportCustomersThread()
+        self.import_thread = threads.ImportCustomersThread(self.Settings, self.Employee, self.Customer)
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_action)
         self.buttonClose.clicked.connect(self.button_close_action)

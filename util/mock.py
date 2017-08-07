@@ -15,12 +15,12 @@ dates = [("2017-02-23",), ("2017-02-24",), ("2017-02-25",), ("2017-02-26",), ("2
          ("2017-05-05",)]
 
 with db:
-    db.execute("DROP TABLE IF EXISTS report")
+    db.execute("DROP TABLE IF EXISTS reportid")
     db.commit()
-    db.execute("CREATE TABLE report (repdate TEXT)")
+    db.execute("CREATE TABLE reportid (repdate TEXT)")
     db.commit()
     for d in dates:
         print(d)
-        db.execute("INSERT INTO report VALUES (?)", d)
+        db.execute("INSERT INTO reportid VALUES (?)", d)
 
     db.commit()

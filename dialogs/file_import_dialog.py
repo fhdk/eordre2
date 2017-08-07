@@ -95,8 +95,8 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
             if self.selectedTable == "orderline":
                 success = self.OrderLine.import_csv(self.selectedFile, self.checkHeaders.isChecked())
 
-            # import selected file to report table
-            if self.selectedTable == "report":
+            # import selected file to reportid table
+            if self.selectedTable == "reportid":
                 success = self.Report.import_csv(self.selectedFile, self.employee, self.checkHeaders.isChecked())
 
             if success:

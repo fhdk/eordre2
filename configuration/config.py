@@ -13,11 +13,12 @@ DEBUG_CUSTOMER = True
 DEBUG_EMPLOYEE = True
 DEBUG_SALELINE = True
 DEBUG_PRODUCT = True
-DEBUG_QUERY = True
 DEBUG_REPORT = True
 DEBUG_CALCULATOR = True
 DEBUG_SETTINGS = True
 DEBUG_VISIT = True
+
+DEBUG_QUERY = False
 
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
 COUNTRIES = [("dk", "Danmark"), ("no", "Norge"), ("s", "Sverige")]
@@ -25,7 +26,7 @@ HOME = os.path.expanduser("~")
 APP_DATA = "./appdata"
 DBPATH = APP_DATA + "/app.db"
 LOGPATH = APP_DATA + "/app.log"
-TABLES = ["contact", "customer", "employee", "visit", "orderline", "product", "report", "settings"]
+TABLES = ["contact", "customer", "employeeid", "visit", "orderline", "product", "reportid", "Settings"]
 CSVDATA = [("Kontakter", "contact"), ("Kunder", "customer"),
-           ("Ordrelinjer", "orderline"), ("Ordrer", "visit"), ("Rapporter", "report")]
+           ("Ordrelinjer", "orderline"), ("Ordrer", "visit"), ("Rapporter", "reportid")]
 DECODE_HTTP = "ISO-8859-1"

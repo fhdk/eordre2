@@ -32,6 +32,14 @@ __appname__ = "Eordre NG"
 __module__ = "main"
 
 
+B_COLOR = "\033[0;34m"
+E_COLOR = "\033[0;1m"
+
+
+def printit(string):
+    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+
+
 # noinspection PyMethodMayBeStatic
 class MainWindow(QMainWindow, Ui_MainWindow):
     """
@@ -200,7 +208,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             current: currently selected item
             previous: previous selected item
         """
-        print("customer_changed_action:\n    {}, {}".format(current.text(1), current.text(0)))
         self.Customers.lookup_by_phone_name(current.text(1), current.text(0))
         try:
             self.txtAccount.setText(self.Customers.customer["account"])
@@ -298,9 +305,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.populate_customer_list()  # select_by_customer customers
         lsc = datetime.date.today().isoformat()  # get sync date
         self.txtCustLocal.setText(lsc)  # get update display
-        self.Settings.settings["lsc"] = lsc  # update settings
-        print("{}".format(list(self.Settings.settings.values())))
-        # self.Settings.update()  # save settings
+        self.Settings.settings["lsc"] = lsc  # update Settings
 
     def get_http_product_action(self):
         """
@@ -317,8 +322,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.Products.load()  # select_by_customer products
         lsp = datetime.date.today().isoformat()  # get sync date
         self.txtProdLocal.setText(lsp)  # update display
-        self.Settings.settings["lsp"] = lsp  # update settings
-        self.Settings.update()  # save settings
+        self.Settings.settings["lsp"] = lsp  # update Settings
+        self.Settings.update()  # save Settings
 
     def master_data_action(self):
         """
@@ -410,7 +415,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 check["userpass"] = passwdfn.hash_password(check["userpass"])
             if len(check["mailpass"]) < 97:
                 check["mailpass"] = passwdfn.hash_password(check["mailpass"])
-            # assign new settings
+            # assign new Settings
             self.Settings.settings = check
         else:
             pass

@@ -19,9 +19,7 @@ E_COLOR = "\033[0;1m"
 
 
 def printit(string):
-    print(B_COLOR)
-    print(string)
-    print(E_COLOR)
+    print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
 # noinspection PyMethodMayBeStatic
@@ -96,14 +94,14 @@ class Visit:
         """
         Report Visit List
         Returns:
-            The current active list of visits for a report
+            The current active list of visits for a reportid
         """
         return self._report_visits
 
     @report_visits.setter
     def report_visits(self, reportid):
         """
-        Load visits for the requested report
+        Load visits for the requested reportid
         Args:
             reportid:
         """
@@ -260,7 +258,7 @@ class Visit:
 
     def select_by_report(self, reportid):
         """
-        Load visits for specified report
+        Load visits for specified reportid
         Args:
             reportid:
         """

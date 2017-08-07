@@ -11,14 +11,12 @@ Settings module
 from configuration import config
 from models.query import Query
 
-B_COLOR = "\033[0;33m\r"
-E_COLOR = "\033[0;1m\r"
+B_COLOR = "\033[0;34m"
+E_COLOR = "\033[0;1m"
 
 
 def printit(string):
-    print(B_COLOR)
-    print(string)
-    print(E_COLOR)
+    print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
 class Settings:
@@ -31,7 +29,7 @@ class Settings:
         Initialize the Settings class
         """
         self.model = {
-            "name": "settings",
+            "name": "Settings",
             "id": "settingsid",
             "fields": ("settingsid", "usermail", "userpass", "usercountry", "pd", "pf", "sf",
                        "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
@@ -56,7 +54,7 @@ class Settings:
         """
         Settings
         Returns:
-            The settings
+            The Settings
         """
         try:
             _ = self._settings["usermail"]
@@ -68,7 +66,7 @@ class Settings:
     @settings.setter
     def settings(self, settings):
         """
-        Pushing new settings
+        Pushing new Settings
         Args:
             settings:
         """
@@ -77,7 +75,7 @@ class Settings:
 
     def insert(self, values):
         """
-        Inserts in database and activates the settings values
+        Inserts in database and activates the Settings values
         Args:
             values:
 
@@ -105,7 +103,7 @@ class Settings:
 
     def load(self):
         """
-        Load settings
+        Load Settings
         """
         # build query and execute
         sql = self.q.build("select", self.model)
@@ -140,7 +138,7 @@ class Settings:
 
     def update(self):
         """
-        Update settings
+        Update Settings
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]

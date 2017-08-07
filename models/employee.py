@@ -18,9 +18,7 @@ E_COLOR = "\033[0;m"
 
 
 def printit(string):
-    print(B_COLOR)
-    print(string)
-    print(E_COLOR)
+    print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
 class Employee:
@@ -34,7 +32,7 @@ class Employee:
         """
         # model for zipping dictionary
         self.model = {
-            "name": "employee",
+            "name": "employeeid",
             "id": "employeeid",
             "fields": ("employeeid", "salesrep", "fullname", "email", "country", "sas"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER DEFAULT 0")
@@ -63,13 +61,13 @@ class Employee:
     @property
     def employee(self):
         """
-        Return current and only employee
+        Return current and only employeeid
         """
         return self._employee
 
     def insert(self, values):
         """
-        Insert employee in database
+        Insert employeeid in database
         Args:
             values:
         """
@@ -91,7 +89,7 @@ class Employee:
 
     def load(self):
         """
-        Load the employee
+        Load the employeeid
         """
         sql = self.q.build("select", self.model)
 
@@ -112,7 +110,7 @@ class Employee:
 
     def update(self):
         """
-        Update employee in database
+        Update employeeid in database
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]

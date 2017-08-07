@@ -14,7 +14,7 @@ from resources.create_report_dialog_rc import Ui_CreateReportDialog
 
 class CreateReportDialog(QDialog, Ui_CreateReportDialog):
     """
-    Create a new report for date
+    Create a new reportid for date
     """
     def __init__(self, workdate, parent=None):
         """Initialize Dialog"""
