@@ -35,7 +35,7 @@ class Report:
         self.model = {
             "name": "report",
             "id": "report_id",
-            "fields": ("report_id", "employeeid", "repno", "repdate",
+            "fields": ("report_id", "employee_id", "repno", "repdate",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
                        "sasday", "sasturnoverday", "demoday", "saleday",
@@ -51,7 +51,7 @@ class Report:
         }
         self._reports = []
         self._report = {}
-        self.csv_field_count = 25
+        self._csv_field_count = 25
         self.q = Query()
         self.c = Calculator()
         if not self.q.exist_table(self.model["name"]):
@@ -222,17 +222,16 @@ class Report:
             return data
         return False
 
-    def import_csv(self, filename, employee, headers=False):
+    def import_csv(self, filename, employee_id, headers=False):
         """
         Import reportid from file
         Args:
             filename: 
-            employee: 
+            employee_id:
             headers: 
         """
         self.recreate_table()
         filename.encode("utf8")
-        employeeid = employee["employeeid"]
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
@@ -243,7 +242,7 @@ class Report:
                             " ->import_csv\n"
                             "  ->row: {}".format(self.model["name"], row))
 
-                if not len(row) == self.csv_field_count:
+                if not len(row) == self._csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
@@ -252,7 +251,7 @@ class Report:
                 row[19] = utils.bool2int(utils.str2bool(row[19]))
                 row[21] = utils.bool2int(utils.str2bool(row[21]))
                 local_timestamp = datetime.today()
-                values = (row[0], employeeid, row[1], row[2].strip(),
+                values = (row[0], employee_id, row[1], row[2].strip(),
                           row[3], row[4], row[5], row[6],
                           row[7], row[8], row[9], row[10],
                           row[11], row[12], row[13], row[14],

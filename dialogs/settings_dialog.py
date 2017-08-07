@@ -22,7 +22,6 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         self.setupUi(self)  # setup ui from resource file
         self.settings = settings
         self.work = self.settings.current
-        print("SettingsDialog -> __init__: {}".format(settings.current))
 
         # assign values to input fields
         self.editUserMail.setText(self.settings.current["usermail"])

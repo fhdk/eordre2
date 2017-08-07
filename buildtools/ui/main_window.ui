@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>853</width>
+    <width>800</width>
     <height>600</height>
    </rect>
   </property>
@@ -49,10 +49,10 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>781</width>
-      <height>490</height>
+      <x>2</x>
+      <y>3</y>
+      <width>730</width>
+      <height>547</height>
      </rect>
     </property>
     <property name="font">
@@ -412,7 +412,7 @@
               <string>Vis historik</string>
              </property>
              <property name="statusTip">
-              <string>Tryk her for at få vise historik for kunde</string>
+              <string>Tryk her for at vise historik for kunde</string>
              </property>
              <property name="text">
               <string>Historik</string>
@@ -473,7 +473,7 @@
               <rect>
                <x>0</x>
                <y>34</y>
-               <width>460</width>
+               <width>410</width>
                <height>230</height>
               </rect>
              </property>
@@ -712,7 +712,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>460</width>
+               <width>400</width>
                <height>30</height>
               </rect>
              </property>
@@ -735,9 +735,12 @@
               <rect>
                <x>0</x>
                <y>30</y>
-               <width>461</width>
-               <height>251</height>
+               <width>410</width>
+               <height>340</height>
               </rect>
+             </property>
+             <property name="statusTip">
+              <string>Liste med kontakter</string>
              </property>
              <column>
               <property name="text">
@@ -765,7 +768,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>460</width>
+               <width>410</width>
                <height>30</height>
               </rect>
              </property>
@@ -779,8 +782,8 @@
             <widget class="QPushButton" name="buttonAddContact">
              <property name="geometry">
               <rect>
-               <x>290</x>
-               <y>310</y>
+               <x>240</x>
+               <y>380</y>
                <width>150</width>
                <height>29</height>
               </rect>
@@ -792,8 +795,8 @@
             <widget class="QPushButton" name="buttonSaveChanges">
              <property name="geometry">
               <rect>
-               <x>130</x>
-               <y>310</y>
+               <x>10</x>
+               <y>380</y>
                <width>151</width>
                <height>29</height>
               </rect>
@@ -808,8 +811,8 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>320</y>
-               <width>460</width>
+               <y>380</y>
+               <width>410</width>
                <height>32</height>
               </rect>
              </property>
@@ -822,7 +825,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>460</width>
+               <width>410</width>
                <height>30</height>
               </rect>
              </property>
@@ -838,9 +841,12 @@
               <rect>
                <x>0</x>
                <y>30</y>
-               <width>460</width>
-               <height>280</height>
+               <width>410</width>
+               <height>340</height>
               </rect>
+             </property>
+             <property name="statusTip">
+              <string>Kunde historik</string>
              </property>
              <column>
               <property name="text">
@@ -873,7 +879,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>853</width>
+     <width>800</width>
      <height>23</height>
     </rect>
    </property>
@@ -905,7 +911,7 @@
      </property>
      <addaction name="actionMasterInfo"/>
      <addaction name="actionContactsInfo"/>
-     <addaction name="actionVisitsList"/>
+     <addaction name="actionVisitsInfo"/>
      <addaction name="separator"/>
      <addaction name="actionArchiveChanges"/>
     </widget>
@@ -993,11 +999,15 @@
     <enum>RightToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <addaction name="actionExit"/>
   </widget>
   <action name="actionExit">
+   <property name="icon">
+    <iconset resource="../icons/system.qrc">
+     <normaloff>:/icons/system/logout.png</normaloff>:/icons/system/logout.png</iconset>
+   </property>
    <property name="text">
     <string>Afslut</string>
    </property>
@@ -1075,9 +1085,9 @@
     <string>Kontakter</string>
    </property>
   </action>
-  <action name="actionVisitsList">
+  <action name="actionVisitsInfo">
    <property name="text">
-    <string>Besøg</string>
+    <string>Historik</string>
    </property>
   </action>
   <action name="actionVisitDetails">
@@ -1130,6 +1140,8 @@
   <tabstop>buttonContactData</tabstop>
   <tabstop>buttonHistoryData</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../icons/system.qrc"/>
+ </resources>
  <connections/>
 </ui>

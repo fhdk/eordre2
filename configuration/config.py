@@ -26,7 +26,6 @@ HOME = os.path.expanduser("~")
 APP_DATA = "./appdata"
 DBPATH = APP_DATA + "/app.db"
 LOGPATH = APP_DATA + "/app.log"
-TABLES = ["contact", "current", "employeeid", "current", "orderline", "product", "reportid", "current"]
-CSVDATA = [("Kontakter", "contact"), ("Kunder", "current"),
-           ("Ordrelinjer", "orderline"), ("Ordrer", "current"), ("Rapporter", "reportid")]
+CSV_TABLES = [("Kontakter", "contact"), ("Kunder", "customer"),
+              ("Ordrelinjer", "detail"), ("Ordrer", "visit"), ("Rapporter", "report")]
 DECODE_HTTP = "ISO-8859-1"

@@ -31,7 +31,7 @@ class Calculator:
         self.model = {
             "name": "calc",
             "id": "calc_id",
-            "fields": ("calc_id", "calcdate", "reportid", "employeeid", "counted",
+            "fields": ("calc_id", "calc_date", "report_id", "employee_id", "reports_calculated",
                        "new_visit", "new_demo", "new_sale", "new_turnover",
                        "recall_visit", "recall_demo", "recall_sale", "recall_turnover",
                        "sas", "sas_turnover", "current", "demo", "sale", "turnover",

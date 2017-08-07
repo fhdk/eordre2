@@ -41,7 +41,7 @@ class Detail:
         }
         self._details = []
         self._detail = {}
-        self.csv_field_count = 8
+        self._csv_field_count = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             # build query and execute
@@ -153,7 +153,7 @@ class Detail:
                             " ->import_csv\n"
                             "  ->row: {}".format(self.model["name"], row))
 
-                if not len(row) == self.csv_field_count:
+                if not len(row) == self._csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:

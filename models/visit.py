@@ -35,7 +35,7 @@ class Visit:
         self.model = {
             "name": "visit",
             "id": "visit_id",
-            "fields": ("visit_id", "reportid", "employeeid", "customerid", "podate", "posent", "pocontact", "ponum",
+            "fields": ("visit_id", "report_id", "employee_id", "customer_id", "podate", "posent", "pocontact", "ponum",
                        "pocompany", "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry", "infotext",
                        "proddemo", "prodsale", "ordertype", "turnsas", "turnsale", "turntotal", "approved"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL",
@@ -46,7 +46,7 @@ class Visit:
         self._report_visits = []
         self._visit = {}
         self._customer_visits = []
-        self.csv_field_count = 22
+        self._csv_field_count = 22
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
@@ -155,7 +155,7 @@ class Visit:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-                if not len(row) == self.csv_field_count:
+                if not len(row) == self._csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:

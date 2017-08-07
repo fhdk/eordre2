@@ -29,7 +29,7 @@ def get_customers(settings, employee, maxwait=2):
     """
     s = settings.current
     e = employee.current
-    f = "".join([s["pd"], s["fc"], s["sf"]])
+    f = "".join([s["pf"], s["fc"], s["sf"]])
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
     uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
@@ -54,7 +54,7 @@ def get_employee_data(settings, maxwait=2):
         current data
     """
     s = settings.current
-    f = "".join([s["pd"], s["fe"], s["sf"]])
+    f = "".join([s["pf"], s["fe"], s["sf"]])
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
     uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
@@ -103,7 +103,7 @@ def get_products(settings, maxwait=2):
         products list
     """
     s = settings.current
-    f = "".join([s["pd"], s["fp"], s["sf"]])
+    f = "".join([s["pf"], s["fp"], s["sf"]])
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
     uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)

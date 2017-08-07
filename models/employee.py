@@ -36,6 +36,8 @@ class Employee:
             "fields": ("employee_id", "salesrep", "fullname", "email", "country", "sas"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER DEFAULT 0")
         }
+        # self._defaults = (None, "", "", "", "", 0)
+        # self._employee = dict(zip(self.model["fields"], self._defaults))
         self._employee = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
@@ -48,10 +50,11 @@ class Employee:
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
         self.s = Settings()
+        print("employee -> __init__ -> settings -> {}".format(self.s))
         if rules.check_settings(self.s.current) and httpfn.inet_conn_check():
             self.load()
             if not self._employee:
-                data = httpfn.get_employee_data(self.s.current)
+                data = httpfn.get_employee_data(self.s)
                 if data:
                     data = list(data)
                     data[0:0] = [None]
@@ -87,7 +90,7 @@ class Employee:
 
     def load(self):
         """
-        Load the employeeid
+        Load the employee
         """
         sql = self.q.build("select", self.model)
 

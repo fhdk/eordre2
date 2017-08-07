@@ -44,7 +44,7 @@ class Customer:
         }
         self._customers = []
         self._customer = {}
-        self.csv_field_count = 20
+        self._csv_field_count = 20
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
@@ -121,10 +121,12 @@ class Customer:
             for row in reader:
                 if config.DEBUG_CUSTOMER:
                     printit("{}\n"
-                            " ->import_csv\n"
-                            "  ->row: {}".format(self.model["name"], row))
-                if not len(row) == self.csv_field_count:
-                    return False
+                            " ->row length {}\n"
+                            "  ->row: {}".format(self.model["name"], len(row), row))
+                #
+                # if not len(row) == self._csv_field_count:
+                #     return False
+
                 line += 1
                 if headers and line == 1:
                     continue

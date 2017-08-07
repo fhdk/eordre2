@@ -14,7 +14,7 @@ from models import contact, customer, visit, detail, report
 from resources import file_import_dialog_rc
 
 
-class Communication(QObject):
+class CsvImportComm(QObject):
     """
     Broadcast signals
     """
@@ -25,15 +25,23 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
     """
     Dialog for importing CSV data
     """
-    def __init__(self, contact, customer, employee, report, visit, visitdetail, tables, parent=None):
+
+    def __init__(self, contacts, customers, details, employees, reports, visits, tables, parent=None):
         """Initialize Dialog"""
         super(FileImportDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.c = Communication()
+        self.contacts = contacts
+        self.customers = customers
+        self.employees = employees
+        self.visits = visits
+        self.details = details
+        self.reports = reports
 
-        self.file_dialog = QFileDialog()  # Create FileDialog object
-        self.employeeid = employee.current["employeeid"]
+        self.c = CsvImportComm()
+        self.file_dialog = QFileDialog()
+
+        self.employee_id = self.employees.current["employee_id"]
 
         self.buttonImport.enabled = False
         # connect to signals
@@ -42,18 +50,12 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
         self.buttonImport.clicked.connect(self.button_import_action)
         self.buttonClose.clicked.connect(self.button_close_action)
         # Setup which tables can be imported
-        for table_item in tables:
-            self.comboImport.addItem(table_item[0], table_item[1])
+        for item in tables:
+            self.comboImport.addItem(item[0], item[1])
             self.comboImport.setCurrentIndex(0)
         self.browseDir = config.HOME  # setup file import dir to home
         self.selectedFile = ""  # initalize selected file
         self.selectedTable = self.comboImport.itemData(0)  # initialize selected table
-        # initialize objects
-        self.contact = contact  # main contact object
-        self.customer = customer  # main current object
-        self.visit = visit  # main current object
-        self.visitdetail = visitdetail  # main current details object
-        self.report = report  # main current object
 
     def button_browse_action(self):
         """Slot for buttonBrowse clicked signal"""
@@ -83,29 +85,30 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
             success = False
             # import selected file to contact table
             if self.selectedTable == "contact":
-                success = self.contact.import_csv(self.selectedFile,
-                                                  self.checkHeaders.isChecked())
-
-            # import selected file to current table
-            if self.selectedTable == "current":
-                success = self.customer.import_csv(self.selectedFile,
+                success = self.contacts.import_csv(self.selectedFile,
                                                    self.checkHeaders.isChecked())
 
+            # import selected file to current table
+            if self.selectedTable == "customer":
+                success = self.customers.import_csv(self.selectedFile,
+                                                    self.checkHeaders.isChecked())
+                self.c.customersdone.emit()
+
             # import selected file to ordervisit table
-            if self.selectedTable == "current":
-                success = self.visit.import_csv(self.selectedFile,
-                                                self.checkHeaders.isChecked())
+            if self.selectedTable == "visit":
+                success = self.visits.import_csv(self.selectedFile,
+                                                 self.checkHeaders.isChecked())
 
             # import selected file to orderline table
-            if self.selectedTable == "orderline":
-                success = self.OrderLine.import_csv(self.selectedFile,
-                                                    self.checkHeaders.isChecked())
+            if self.selectedTable == "detail":
+                success = self.details.import_csv(self.selectedFile,
+                                                  self.checkHeaders.isChecked())
 
             # import selected file to reportid table
-            if self.selectedTable == "current":
-                success = self.report.import_csv(self.selectedFile,
-                                                 self.employeeid,
-                                                 self.checkHeaders.isChecked())
+            if self.selectedTable == "report":
+                success = self.reports.import_csv(self.selectedFile,
+                                                  self.employee_id,
+                                                  self.checkHeaders.isChecked())
 
             if success:
                 self.listImported.addItem(notice)
