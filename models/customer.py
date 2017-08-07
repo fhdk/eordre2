@@ -11,6 +11,15 @@ from configuration import config
 from models.query import Query
 from util import utils
 
+B_COLOR = "\033[1;32m"
+E_COLOR = "\033[0;m"
+
+
+def printit(string):
+    print(B_COLOR)
+    print(string)
+    print(E_COLOR)
+
 
 class Customer:
     """
@@ -43,8 +52,10 @@ class Customer:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_CUSTOMER:
-                print("\033[1;32m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                    self.model["name"], success, data))
+                printit("{}\n"
+                        " ->create table\n"
+                        "  ->success: {}\n"
+                        "  ->data: {}".format(self.model["name"], success, data))
 
     def clear(self):
         """
@@ -111,7 +122,9 @@ class Customer:
             line = 0
             for row in reader:
                 if config.DEBUG_CUSTOMER:
-                    print("\033[1;32m{}\n ->import_csv\n  ->row: {}".format(self.model["name"], row))
+                    printit("{}\n"
+                            " ->import_csv\n"
+                            "  ->row: {}".format(self.model["name"], row))
                 if not len(row) == self.csv_field_count:
                     return False
                 line += 1
@@ -125,8 +138,7 @@ class Customer:
                           row[12].strip(), row[15], row[16], row[17],
                           row[19].strip(), "", "", 0.0, 0, 0, 0, 0)
                 if config.DEBUG_CUSTOMER:
-                    print(
-                        "  ->values: {}\033[0;m".format(values))
+                    printit("  ->values: {}".format(values))
                 self.insert(values)
             return True
 
@@ -186,12 +198,17 @@ class Customer:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_CUSTOMER:
-            print("\033[1;32m{}\n ->insert\n  ->values: {}\n  ->sql: {}".format(self.model["name"], str(values), sql))
+            printit("{}\n"
+                    " ->insert\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], str(values), sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CUSTOMER:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data
@@ -205,7 +222,9 @@ class Customer:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_CUSTOMER:
-            print("\033[1;32m{}\n ->load\n  ->sql: {}".format(self.model["name"], sql))
+            printit("{}\n"
+                    " ->load\n"
+                    "  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql)
 
@@ -213,7 +232,9 @@ class Customer:
             self._customers = [dict(zip(self.model["fields"], row)) for row in data]
 
         if config.DEBUG_CUSTOMER:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
             return True
         return False
 
@@ -229,13 +250,18 @@ class Customer:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CUSTOMER:
-            print("\033[1;32m{}\n ->lookup_by_id\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], filters, str(values), sql))
+            printit("{}\n"
+                    " ->lookup_by_id\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], filters, str(values), sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CUSTOMER:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data[0]))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data[0]))
 
         if success and data:
             self._customer = dict(zip(self.model["fields"], data))
@@ -255,13 +281,16 @@ class Customer:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CUSTOMER:
-            print("\033[1;32m{}\n ->lookup_by_phone_name\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], filters, str(values), sql))
+            printit("{}\n"
+                    " ->lookup_by_phone_name\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], filters, str(values), sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CUSTOMER:
-            print("  ->success: {}\n  ->data: {}".format(success, data))
+            printit("  ->{}\n  ->success: {}\n  ->data: {}".format(self.model["name"], success, data))
 
         if not success:
 
@@ -271,13 +300,17 @@ class Customer:
             sql = self.q.build("select", self.model, filteron=filters)
 
             if config.DEBUG_CUSTOMER:
-                print("   ->filters: {}\n   ->values: {}\n   ->sql: {}".format(
-                    self.model["name"], filters, str(values), sql))
+                printit("   ->{}\n"
+                        "   ->filters: {}\n"
+                        "   ->values: {}\n"
+                        "   ->sql: {}".format(self.model["name"], filters, str(values), sql))
 
             success, data = self.q.execute(sql, values=values)
 
             if config.DEBUG_CUSTOMER:
-                print("   ->success: {}\n   ->data: {}\033[0;m".format(success, data))
+                printit("   ->{}\n"
+                        "   ->success: {}\n"
+                        "   ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             self._customer = dict(zip(self.model["fields"], data[0]))
@@ -307,10 +340,16 @@ class Customer:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_CUSTOMER:
-            print("\033[1;32m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], fields, filters, str(values), sql))
+            printit("{}\n"
+                    " ->update\n"
+                    "  ->fields: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], fields, filters, str(values), sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CUSTOMER:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))

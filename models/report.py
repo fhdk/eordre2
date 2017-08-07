@@ -14,6 +14,15 @@ from models.query import Query
 from models.calculator import Calculator
 from util import utils
 
+B_COLOR = "\033[1;36m"
+E_COLOR = "\033[0;m"
+
+
+def printit(string):
+    print(B_COLOR)
+    print(string)
+    print(E_COLOR)
+
 
 # noinspection PyMethodMayBeStatic
 class Report:
@@ -52,8 +61,10 @@ class Report:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
-                print("\033[1;36m{}\n ->create table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                        self.model["name"], success, data))
+                printit("{}\n"
+                        " ->create table\n"
+                        "  ->success: {}\n"
+                        "  ->data: {}".format(self.model["name"], success, data))
 
     @property
     def report(self):
@@ -148,13 +159,18 @@ class Report:
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filteron)
 
         if config.DEBUG_REPORT:
-            print("\033[1;36m{}\n ->create\n  ->aggregates: {}\n  ->sql: {}\n  ->values: {}".format(
-                    self.model["name"], aggregates, sql, values))
+            printit("{}\n"
+                    " ->create\n"
+                    "  ->aggregates: {}\n"
+                    "  ->sql: {}\n"
+                    "  ->values: {}".format(self.model["name"], aggregates, sql, values))
 
         success, data = self.q.execute(sql, values)
 
         if config.DEBUG_REPORT:
-            print("  ->success: {}\n  ->data: {}".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             month = data[0]
@@ -171,7 +187,7 @@ class Report:
             month[1] = report_id
             month = tuple(month)
             if config.DEBUG_REPORT:
-                print("  ->month: {}\033[0;m".format(month))
+                printit("  ->{}\n  ->month: {}".format(self.model["name"], month))
             self.c.insert(month)
 
         else:
@@ -184,13 +200,17 @@ class Report:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_REPORT:
-            print(
-                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"], sql, values))
+            printit("{}\n"
+                    " ->insert\n"
+                    "  ->sql: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data
@@ -214,7 +234,9 @@ class Report:
             for row in reader:
 
                 if config.DEBUG_REPORT:
-                    print("\033[1;36m{}\n ->import_csv\n  ->row: {}".format(self.model["name"], row))
+                    printit("{}\n"
+                            " ->import_csv\n"
+                            "  ->row: {}".format(self.model["name"], row))
 
                 if not len(row) == self.csv_field_count:
                     return False
@@ -233,7 +255,8 @@ class Report:
                           row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24], local_timestamp)
 
                 if config.DEBUG_REPORT:
-                    print("  ->values: {}\033[0;m".format(values))
+                    printit("  ->{}\n"
+                            "  ->values: {}".format(self.model["name"], values))
                 self.insert(values)
             return True
 
@@ -250,13 +273,15 @@ class Report:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_REPORT:
-            print(
-                "\033[1;36m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(self.model["name"], sql, values))
+            printit("{}\n"
+                    " ->insert\n"
+                    "  ->sql: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n  ->success: {}\n  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             self._report = dict(zip(self.model["fields"], data))
@@ -282,14 +307,17 @@ class Report:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_REPORT:
-            print(
-                "\033[1;36m{}\n ->load_reports\n  ->sql: {}\n  ->values: {}".format(
-                    self.model["name"], sql, values))
+            printit("{}\n"
+                    " ->load_reports\n"
+                    "  ->sql: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             self._reports = [dict(zip(self.model["fields"], row)) for row in data]
@@ -317,13 +345,13 @@ class Report:
         # self.q.values_to_arg(self._report.values())
 
         # if config.DEBUG_REPORT:
-        #     print(
-        #         "\033[1;36m{}\n ->update\n  ->sql: {}\n  ->values: {}\033[0;m".format(
+        #     printit(
+        #         "{}\n ->update\n  ->sql: {}\n  ->values: {}".format(
         #             self.model["name"], sql, values))
 
         # if config.DEBUG_REPORT:
-        #     print(
-        #         "\033[1;36m{}\n ->update\n  ->success: {}\n  ->data: {}\033[0;m".format(
+        #     printit(
+        #         "{}\n ->update\n  ->success: {}\n  ->data: {}".format(
         #             self.model["name"], success, data))
 
         pass

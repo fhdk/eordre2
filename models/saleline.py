@@ -14,6 +14,15 @@ import csv
 from models.query import Query
 from util import utils
 
+B_COLOR = "\033[1;37m"
+E_COLOR = "\033[0;m"
+
+
+def printit(string):
+    print(B_COLOR)
+    print(string)
+    print(E_COLOR)
+
 
 class Saleline:
     """
@@ -40,8 +49,10 @@ class Saleline:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_SALELINE:
-                print("\033[1;37m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                    self.model["name"], success, data))
+                printit("{}\n"
+                        " ->table\n"
+                        "  ->success: {}\n"
+                        "  ->data: {}".format(self.model["name"], success, data))
 
     @property
     def saleline(self):
@@ -107,17 +118,22 @@ class Saleline:
         sql = self.q.build("delete", self.model, filteron=filters)
 
         if config.DEBUG_SALELINE:
-            print("\033[1;37m{}\n ->delete\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], filters, values, sql))
+            printit("{}\n"
+                    " ->delete\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
 
         # if sql.startswith("ERROR"):
-        #     print("{}".format(sql))
+        #     printit("{}".format(sql))
         #     return False
 
         success, data = self.q.execute(sql, values)
 
         if config.DEBUG_SALELINE:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return True
@@ -138,7 +154,9 @@ class Saleline:
             for row in reader:
 
                 if config.DEBUG_SALELINE:
-                    print("\033[1;37m{}\n ->import_csv\n  ->row: {}".format(self.model["name"], row))
+                    printit("{}\n"
+                            " ->import_csv\n"
+                            "  ->row: {}".format(self.model["name"], row))
 
                 if not len(row) == self.csv_field_count:
                     return False
@@ -151,7 +169,8 @@ class Saleline:
                 values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7])
 
                 if config.DEBUG_SALELINE:
-                    print("  ->values: {}\033[0;m".format(values))
+                    printit("  ->{}\n"
+                            "  ->values: {}".format(self.model["name"], values))
 
                 self.insert(values)
             return True
@@ -166,17 +185,21 @@ class Saleline:
         sql = self.q.build("insert", self.model)
 
         # if sql.startswith("ERROR"):
-        #     print("{}".format(sql))
+        #     printit("{}".format(sql))
         #     return False
 
         if config.DEBUG_SALELINE:
-            print("\033[1;37m{}\n ->insert\n  ->sql: {}\n  ->values: {}".format(
-                self.model["name"], sql, values))
+            printit("{}\n"
+                    " ->insert\n"
+                    "  ->sql: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SALELINE:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data
@@ -192,13 +215,15 @@ class Saleline:
         sql = self.q.build("select", self.model, filteron=filters)
 
         # if sql.startswith("ERROR"):
-        #     print("{}".format(sql))
+        #     printit("{}".format(sql))
         #     return False
 
         if config.DEBUG_SALELINE:
-            print(
-                "\033[1;37m{}\n ->load\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
-                    self.model["name"], sql, filters, values))
+            printit("{}\n"
+                    " ->load\n"
+                    "  ->sql: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -206,7 +231,9 @@ class Saleline:
             self.salelines = [dict(zip(self.model["fields"], row)) for row in data]
 
         if config.DEBUG_SALELINE:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
     def recreate_table(self):
         """
@@ -229,17 +256,23 @@ class Saleline:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if sql.startswith("ERROR"):
-            print("{}".format(sql))
+            printit("{}".format(sql))
             return False
 
         if config.DEBUG_SALELINE:
-            print("\033[1;37m{}\n ->load\n  ->sql: {}\n  ->fields: {}\n  ->filters: {}\n  ->values: {}".format(
-                self.model["name"], sql, fields, filters, values))
+            printit("{}\n"
+                    " ->load\n"
+                    "  ->sql: {}\n"
+                    "  ->fields: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SALELINE:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data

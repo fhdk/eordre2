@@ -9,6 +9,15 @@
 from configuration import config
 from models.query import Query
 
+B_COLOR = "\033[1;34m"
+E_COLOR = "\033[0;m"
+
+
+def printit(string):
+    print(B_COLOR)
+    print(string)
+    print(E_COLOR)
+
 
 # noinspection PyMethodMayBeStatic
 class Product:
@@ -37,8 +46,10 @@ class Product:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_PRODUCT:
-                print("\033[1;34m{}\n ->table\n  ->success: {}\n  ->data: {}\033[0;m".format(
-                    self.model["name"], success, data))
+                printit("{}\n"
+                        " ->table\n"
+                        "  ->success: {}\n"
+                        "  ->data: {}".format(self.model["name"], success, data))
 
     def clear(self):
         """
@@ -82,12 +93,17 @@ class Product:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_PRODUCT:
-            print("\033[1;34m{}\n ->insert\n  ->sql: {}".format(self.model["name"], sql))
+            printit("{}\n"
+                    " ->insert\n"
+                    "  -> values"
+                    "  ->sql: {}".format(self.model["name"], values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_PRODUCT:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data
@@ -101,12 +117,16 @@ class Product:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_PRODUCT:
-            print("\033[1;34m{}\n ->load\n  ->sql: {}".format(self.model["name"], sql))
+            printit("{}\n"
+                    " ->load\n"
+                    "  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql)
 
         if config.DEBUG_PRODUCT:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             self._products = [dict(zip(self.model["fields"], row)) for row in data]

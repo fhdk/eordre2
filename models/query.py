@@ -16,6 +16,15 @@ from models.builders.build_update_query import build_update_query
 from models.builders.build_create_query import build_create_query
 from models.builders.build_drop_query import build_drop_query
 
+B_COLOR = "\033[1;35m"
+E_COLOR = "\033[0;m"
+
+
+def printit(string):
+    print(B_COLOR)
+    print(string)
+    print(E_COLOR)
+
 
 class Query:
     """
@@ -91,13 +100,17 @@ class Query:
     def execute(self, sql_query, values=None):
         """
         Execute a query and return the result
-
+        Args:
+            sql_query:
+            values:
+        Returns:
+            result of the query - may be an empty result
         """
         if config.DEBUG_QUERY:
-            print("\033[1;35m\r")
-            print("{}\n ->execute\n  ->enter\n   ->sql_query: {}".format("QUERY", sql_query))
-            if values:
-                print(" ->execute\n  ->enter\n   ->values: {}".format("QUERY", values))
+            printit("QUERY")
+            printit(" ->execute\n"
+                    "  ->sql: {}\n"
+                    "  ->values: {}".format(sql_query, values))
         # query types: create, delete, insert, load, update
         select = sql_query.startswith("SELECT")
         insert = sql_query.startswith("INSERT")
@@ -117,11 +130,10 @@ class Query:
                     result = cur.lastrowid
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
                 if config.DEBUG_QUERY:
-                    print(" ->execute\n  ->exception: {}".format(e))
+                    printit("  ->exception: {}".format(e))
                 return False, e
         if config.DEBUG_QUERY:
-            print("   ->result: {}\n  ->exit\r".format(result))
-            print("\033[0;m")
+            printit("  ->result: {}\r".format(result))
         return True, result
 
     def values_to_arg(self, values):
@@ -153,8 +165,6 @@ class Query:
                     "WHERE type='{}' AND name='{}';".format("table", table)
 
         success, data = self.execute(statement)
-        if config.DEBUG_QUERY:
-            print("{} -> exist_table\nsuccess: {}\ndata   : {}".format("QUERY", success, data))
         if data:
             return True
         return False

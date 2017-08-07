@@ -14,6 +14,15 @@ from configuration import config
 from models.query import Query
 from util import utils
 
+B_COLOR = "\033[0;36m"
+E_COLOR = "\033[0;1m"
+
+
+def printit(string):
+    print(B_COLOR)
+    print(string)
+    print(E_COLOR)
+
 
 # noinspection PyMethodMayBeStatic
 class Visit:
@@ -45,8 +54,10 @@ class Visit:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_VISIT:
-                print("\033[0;36m{} ->table\nsuccess: {}\ndata: {}\033[0;1m".format(
-                    self.model["name"], success, data))
+                printit("{}\n"
+                        " ->table\n"
+                        "  ->success: {}\n"
+                        "  ->data: {}".format(self.model["name"], success, data))
 
     @property
     def visit(self):
@@ -136,13 +147,19 @@ class Visit:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_VISIT:
-            print("\033[0;36m{}\n ->find\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], filters, values, sql))
+            printit("{}\n"
+                    " ->find\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            print("  ->filters: {}\n  ->values: {}\n  ->sql: {}\033[0;1m".format(filters, values, sql))
+            printit("  ->{}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
 
         if success and data:
             self._visit = dict(zip(self.model["fields"], data))
@@ -153,8 +170,8 @@ class Visit:
         """
         Import orders from file
         Args:
-            filename: 
-            headers: 
+            filename:
+            headers:
         """
         self.recreate_table()
         filename.encode("utf8")
@@ -187,13 +204,17 @@ class Visit:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_VISIT:
-            print("\033[0;36m{}\n ->insert\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], values, sql))
+            printit("{}\n"
+                    " ->insert\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n "
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data
@@ -221,13 +242,18 @@ class Visit:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_VISIT:
-            print("\033[0;36m{}\n ->select_by_customer\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], filters, values, sql))
+            printit("{}\n"
+                    " ->select_by_customer\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
@@ -244,13 +270,18 @@ class Visit:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_VISIT:
-            print("\033[0;36m{}\n ->select_by_report\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], filters, values, sql))
+            printit("{}\n"
+                    " ->select_by_report\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
@@ -266,13 +297,19 @@ class Visit:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_VISIT:
-            print("\033[0;36m{}\n ->update\n  ->fields: {}\n  ->filters: {}\n  ->values: {}\n  ->sql: {}".format(
-                self.model["name"], fields, filters, values, sql))
+            printit("{}\n"
+                    " ->update\n"
+                    "  ->fields: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(self.model["name"], fields, filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            print("  ->success: {}\n  ->data: {}\033[0;1m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data

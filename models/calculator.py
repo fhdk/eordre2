@@ -11,6 +11,15 @@ Calculation module
 from configuration import config
 from models.query import Query
 
+B_COLOR = "\033[1;31m"
+E_COLOR = ""
+
+
+def printit(string):
+    print(B_COLOR)
+    print(string)
+    print(E_COLOR)
+
 
 class Calculator:
     """
@@ -43,9 +52,10 @@ class Calculator:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_CALCULATOR:
-                print(
-                    "\033[1;30m{} ->create table\n  ->success: {}\n  ->data   : {}\033[0;m".format(
-                        self.model["name"], success, data))
+                printit("{}"
+                        " ->create table\n"
+                        "  ->success: {}\n"
+                        "  ->data   : {}".format(self.model["name"], success, data))
 
     @property
     def totals(self):
@@ -69,12 +79,16 @@ class Calculator:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;30m{} ->insert \n  ->sql: {}\n  ->data: {}".format(self.model["name"], sql, values))
+            printit("{}\n"
+                    " ->insert\n"
+                    "  ->sql: {}\n"
+                    "  ->data: {}".format(self.model["name"], sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             return data
@@ -92,13 +106,18 @@ class Calculator:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
-                self.model["name"], sql, filters, values))
+            printit("{}\n"
+                    " ->select_by_id\n"
+                    "  ->sql: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data: {}\033[0;m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
             self._totals = dict(zip(self.model["fields"], data[0]))
@@ -121,13 +140,18 @@ class Calculator:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->filters: {}\n  ->values: {}".format(
-                self.model["name"], sql, filters, values))
+            printit("{}\n"
+                    " ->select_by_id\n"
+                    "  ->sql: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data   : {}\033[0;m".format(success, data))
+            printit("  {}\n"
+                    "  ->success: {}\n"
+                    "  ->data   : {}".format(self.model["name"], success, data))
 
         if success and data:
             self._totals = dict(zip(self.model["fields"], data[0]))
@@ -148,13 +172,19 @@ class Calculator:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_CALCULATOR:
-            print("\033[1;30m{} ->select_by_id\n  ->sql: {}\n  ->fields: {}\n  ->filters: {}\n  ->values{}".format(
-                self.model["name"], sql, fields, filters, values))
+            printit("{}\n"
+                    " ->select_by_id\n"
+                    "  ->sql: {}\n"
+                    "  ->fields: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values{}".format(self.model["name"], sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_CALCULATOR:
-            print("  ->success: {}\n  ->data   : {}\033[1;30m".format(success, data))
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data   : {}".format(self.model["name"], success, data))
 
         if success and data:
             return True

@@ -8,15 +8,15 @@
 
 import os
 
-DEBUG_CONTACT = False
+DEBUG_CONTACT = True
 DEBUG_CUSTOMER = True
-DEBUG_EMPLOYEE = False
-DEBUG_SALELINE = False
-DEBUG_PRODUCT = False
-DEBUG_QUERY = False
-DEBUG_REPORT = False
-DEBUG_CALCULATOR = False
-DEBUG_SETTINGS = False
+DEBUG_EMPLOYEE = True
+DEBUG_SALELINE = True
+DEBUG_PRODUCT = True
+DEBUG_QUERY = True
+DEBUG_REPORT = True
+DEBUG_CALCULATOR = True
+DEBUG_SETTINGS = True
 DEBUG_VISIT = True
 
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
