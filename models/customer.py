@@ -11,7 +11,7 @@ from configuration import config
 from models.query import Query
 from util import utils
 
-B_COLOR = "\033[1;32m"
+B_COLOR = "\033[0;33m"
 E_COLOR = "\033[0;m"
 
 
@@ -319,11 +319,11 @@ class Customer:
         """
         Drop and create table
         """
-        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
+        self.clear()
 
     def update(self):
         """

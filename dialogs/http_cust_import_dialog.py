@@ -35,13 +35,10 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
 
         self.c = Communicate()
 
-        self.Customer = customer  # Assign Customer object
-        self.Employee = employee  # Assign Employe object
-        self.Settings = settings  # Assign Settings object
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
         self.progresscount = 0
-        self.import_thread = threads.ImportCustomersThread(self.Settings, self.Employee, self.Customer)
+        self.import_thread = threads.ImportCustomersThread(settings=settings, employee=employee, customer=customer)
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_action)
         self.buttonClose.clicked.connect(self.button_close_action)

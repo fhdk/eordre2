@@ -14,7 +14,7 @@ from configuration import config
 from models.query import Query
 from util import utils
 
-B_COLOR = "\033[0;36m"
+B_COLOR = "\033[1;36m"
 E_COLOR = "\033[0;1m"
 
 
@@ -85,9 +85,9 @@ class Visit:
         try:
             cid = self._customer_visits[0]["customerid"]
             if not cid == customerid:
-                self.select_by_customer(customerid=customerid)
+                self.load_by_customer(customerid=customerid)
         except IndexError:
-            self.select_by_customer(customerid=customerid)
+            self.load_by_customer(customerid=customerid)
 
     @property
     def report_visits(self):
@@ -108,9 +108,9 @@ class Visit:
         try:
             rid = self._report_visits[0]["reportid"]
             if not rid == reportid:
-                self.select_by_report(reportid)
+                self.load_by_report(reportid)
         except IndexError:
-            self.select_by_report(reportid=reportid)
+            self.load_by_report(reportid=reportid)
 
     def clear(self):
         """
@@ -222,13 +222,13 @@ class Visit:
         """
         Drop and create table
         """
-        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
+        self.clear()
 
-    def select_by_customer(self, customerid):
+    def load_by_customer(self, customerid):
         """
         Load visits for specified customer
         Args:
@@ -241,7 +241,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             printit("{}\n"
-                    " ->select_by_customer\n"
+                    " ->load_by_customer\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(self.model["name"], filters, values, sql))
@@ -256,7 +256,7 @@ class Visit:
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
-    def select_by_report(self, reportid):
+    def load_by_report(self, reportid):
         """
         Load visits for specified reportid
         Args:
@@ -269,7 +269,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             printit("{}\n"
-                    " ->select_by_report\n"
+                    " ->load_by_report\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(self.model["name"], filters, values, sql))

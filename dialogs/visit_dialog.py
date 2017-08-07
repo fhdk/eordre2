@@ -9,9 +9,6 @@ Visit Dialog Module
 """
 from PyQt5.QtWidgets import QDialog
 
-from models.visit import Visit
-from models.product import Product
-
 from resources.visit_dialog_rc import Ui_VisitDialog
 
 
@@ -20,32 +17,31 @@ class VisitDialog(QDialog, Ui_VisitDialog):
     Dialog for creating a new visit
     """
 
-    def __init__(self, report, customer, employee, workdate, parent=None):
+    def __init__(self, customer, employee, product, report, visit, workdate, parent=None):
         """
         Initialize
         Args:
-            report: populated Report object class
-            customer: current customer from main
-            employee: current employee from main
+            customer: main customer object
+            employee: main employee object
+            product: main product object
+            report: main report object
+            visit: main visit object
             workdate: workdate
             parent:
         """
         super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.Report = report  # this is an object class
-        self.Visit = Visit()  # Create an OrderVisit object
-        self.Product = Product()  # Create Product object
-
-        self.customerid = customer["customerid"]
-        self.employeeid = employee["employeeid"]
-        self.reportid = self.Report.report["reportid"]
+        self.visit = visit
+        self.customerid = customer.customer["customerid"]
+        self.employeeid = employee.employee["employeeid"]
+        self.reportid = report.report["reportid"]
         self.workdate = workdate
 
-        # If customerid need special Settings on prices
+        # If customerid need special settings on prices
         factor = customer["factor"]
         if factor > 0.0:
-            for item in self.Product.product_list:
+            for item in product.product_list:
                 item["price"] = item["price"] * factor
                 if not item["d2"] == 0.0:
                     item["d2"] = item["d2"] * factor

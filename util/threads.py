@@ -36,7 +36,7 @@ class ImportCustomersThread(QThread):
             parent:
         """
         super(ImportCustomersThread, self).__init__(parent)
-        self.Settings = settings  # Assign Settings object
+        self.Settings = settings  # Assign settings object
         self.Employee = employee  # Assign employeeid object
         self.Customer = customer  # Assign customer object
         self.c = Communicate()
@@ -69,7 +69,7 @@ class ImportProductsThread(QThread):
             parent:
         """
         super(ImportProductsThread, self).__init__(parent)
-        self.Settings = settings  # assign Settings object
+        self.Settings = settings  # assign settings object
         self.Product = product  # assign product object
         self.c = Communicate()
 
@@ -81,7 +81,7 @@ class ImportProductsThread(QThread):
         self.Product.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
         # fetching datafile from http server
-        data = httpfn.get_product(self.Settings.settings)
+        data = httpfn.get_products(self.Settings.settings)
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))

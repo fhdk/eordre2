@@ -16,22 +16,17 @@ def validate_fields():
 
 def check_settings(settings):
     """
-    Check the vital Settings
+    Check the vital settings
 
     Args:
         settings: dict
 
     Returns:
-        bool indicating if Settings is missing
+        bool indicating if settings is missing
     """
+    s = settings
     try:
-        return bool(
-            settings["usermail"] and
-            settings["userpass"] and
-            settings["usercountry"] and
-            settings["http"] and
-            settings["smtp"] and
-            settings["port"] and
-            settings["mailto"])
+        return bool(s["usermail"] and s["userpass"] and s["usercountry"] and
+                    s["http"] and s["smtp"] and s["port"] and s["mailto"])
     except KeyError:
         return False

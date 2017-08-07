@@ -11,8 +11,8 @@ Calculation module
 from configuration import config
 from models.query import Query
 
-B_COLOR = "\033[1;31m"
-E_COLOR = ""
+B_COLOR = "\033[0;31m"
+E_COLOR = "\033[0;m"
 
 
 def printit(string):
@@ -63,6 +63,12 @@ class Calculator:
             The current totals
         """
         return self._totals
+
+    def clear(self):
+        """
+        Clear internal variables
+        """
+        self._totals = {}
 
     def insert(self, values):
         """
@@ -187,3 +193,13 @@ class Calculator:
         if success and data:
             return True
         return False
+
+    def recreate_table(self):
+        """
+        Drop and create table
+        """
+        sql = self.q.build("drop", self.model)
+        self.q.execute(sql)
+        sql = self.q.build("create", self.model)
+        self.q.execute(sql)
+        self.clear()

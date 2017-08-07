@@ -45,7 +45,7 @@ def sanitize_employee_data(rawdata, em, hp):
         em:
         hp:
     Returns:
-        Employee data if passwords match
+        employee data if passwords match
     """
     emp = []
     if not rawdata:

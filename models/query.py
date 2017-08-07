@@ -16,7 +16,7 @@ from models.builders.build_update_query import build_update_query
 from models.builders.build_create_query import build_create_query
 from models.builders.build_drop_query import build_drop_query
 
-B_COLOR = "\033[1;35m"
+B_COLOR = "\033[0;36m"
 E_COLOR = "\033[0;m"
 
 

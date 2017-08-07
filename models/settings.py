@@ -5,13 +5,13 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """
-Settings module
+settings module
 """
 
 from configuration import config
 from models.query import Query
 
-B_COLOR = "\033[0;34m"
+B_COLOR = "\033[1;34m"
 E_COLOR = "\033[0;1m"
 
 
@@ -21,15 +21,15 @@ def printit(string):
 
 class Settings:
     """
-    Settings class
+    settings class
     """
 
     def __init__(self):
         """
-        Initialize the Settings class
+        Initialize the settings class
         """
         self.model = {
-            "name": "Settings",
+            "name": "settings",
             "id": "settingsid",
             "fields": ("settingsid", "usermail", "userpass", "usercountry", "pd", "pf", "sf",
                        "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
@@ -52,9 +52,9 @@ class Settings:
     @property
     def settings(self):
         """
-        Settings
+        settings
         Returns:
-            The Settings
+            The settings
         """
         try:
             _ = self._settings["usermail"]
@@ -66,7 +66,7 @@ class Settings:
     @settings.setter
     def settings(self, settings):
         """
-        Pushing new Settings
+        Pushing new settings
         Args:
             settings:
         """
@@ -75,7 +75,7 @@ class Settings:
 
     def insert(self, values):
         """
-        Inserts in database and activates the Settings values
+        Inserts in database and activates the settings values
         Args:
             values:
 
@@ -103,7 +103,7 @@ class Settings:
 
     def load(self):
         """
-        Load Settings
+        Load settings
         """
         # build query and execute
         sql = self.q.build("select", self.model)
@@ -138,7 +138,7 @@ class Settings:
 
     def update(self):
         """
-        Update Settings
+        Update settings
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]

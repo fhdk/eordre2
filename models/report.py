@@ -11,10 +11,10 @@ from datetime import datetime
 
 from configuration import config
 from models.query import Query
-from models.calculator import Calculator
+from models.report_calculator import Calculator
 from util import utils
 
-B_COLOR = "\033[1;36m"
+B_COLOR = "\033[0;37m"
 E_COLOR = "\033[0;m"
 
 
@@ -104,6 +104,14 @@ class Report:
         """
         self._reports = []
         self.load_reports(year=year, month=month)
+
+    def clear(self):
+        """
+        Clear internal variables
+        """
+        self.c.clear()
+        self._report = {}
+        self._reports = []
 
     def create(self, employee, workdate):
         """
@@ -328,11 +336,12 @@ class Report:
         """
         Drop and create table
         """
-        # build query and execute
+        self.c.recreate_table()
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
+        self.clear()
 
     def update(self):
         """

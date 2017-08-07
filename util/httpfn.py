@@ -25,16 +25,18 @@ def get_customers(settings, employee, maxwait=2):
         maxwait:
 
     Returns:
-        Customer data
+        customers list
     """
+    s = settings.settings
+    e = employee.employee
+    f = "".join([s["pd"], s["fc"], s["sf"]])
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
-    uri = "{}/{}/{}{}{}".format(settings["http"], employee["country"],
-                                settings["pf"], settings["fc"], settings["sf"])
+    uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
     try:
         with urlopen(uri, timeout=maxwait, context=context) as response:
             data = response.read()
-            data = sanitizedatafn.sanitize_customer_data(data, employee["salesrep"])
+            data = sanitizedatafn.sanitize_customer_data(data, e["salesrep"])
     except (HTTPException, timeout, URLError) as e:
         print("HTTP ERROR: {}".format(e))
 
@@ -49,36 +51,37 @@ def get_employee_data(settings, maxwait=2):
         maxwait:
 
     Returns:
-        Employee data
+        employee data
     """
+    s = settings.settings
+    f = "".join([s["pd"], s["fe"], s["sf"]])
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
-    uri = "{}/{}/{}{}{}".format(settings["http"], settings["usercountry"],
-                                settings["pf"], settings["fe"], settings["sf"])
+    uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
     try:
         with urlopen(uri, timeout=maxwait, context=context) as response:
             data = response.read()
-            data = sanitizedatafn.sanitize_employee_data(data, settings["usermail"], settings["userpass"])
+            data = sanitizedatafn.sanitize_employee_data(data, s["usermail"], s["userpass"])
     except (HTTPException, timeout, URLError) as e:
         print("HTTP ERROR: {}".format(e))
     return data
 
 
-def get_modified_data(settings, file, maxwait=2):
+def get_modified_date(server, country, file, maxwait=2):
     """
     Download a file and return content
 
     Args:
-        settings:
+        server
+        country:
         file:
         maxwait:
 
     Returns:
-        String with date and time
+        string with date and time
     """
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    uri = "{}/{}/{}{}{}".format(settings["http"], settings["usercountry"],
-                                settings["pd"], file, settings["sf"])
+    uri = "{}/{}/{}".format(server, country, file)
     try:
         with urlopen(uri, timeout=maxwait, context=context) as response:
             data = response.read().decode(config.DECODE_HTTP)
@@ -88,7 +91,7 @@ def get_modified_data(settings, file, maxwait=2):
     return ""
 
 
-def get_product(settings, maxwait=2):
+def get_products(settings, maxwait=2):
     """
     Download a file and return content
 
@@ -97,19 +100,20 @@ def get_product(settings, maxwait=2):
         maxwait:
 
     Returns:
-        Product data
+        products list
     """
+    s = settings.settings
+    f = "".join([s["pd"], s["fp"], s["sf"]])
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    productdata = []
-    uri = "{}/{}/{}{}{}".format(settings["http"], settings["usercountry"],
-                                settings["pf"], settings["fp"], settings["sf"])
+    data = []
+    uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
     try:
         with urlopen(uri, timeout=maxwait, context=context) as response:
             data = response.read()
-            productdata = sanitizedatafn.sanitize_product_data(data)
+            data = sanitizedatafn.sanitize_product_data(data)
     except (HTTPException, timeout, URLError) as e:
         print("HTTP ERROR: {}".format(e))
-    return productdata
+    return data
 
 
 def inet_conn_check(maxwait=2):
@@ -138,9 +142,11 @@ def update_last_sync_info(settings):
     Args:
         settings:
     Returns:
-        Two strings with date time values
-
+        Two tuples with target and date time values
     """
-    ac = get_modified_data(settings, settings["fc"])
-    ap = get_modified_data(settings, settings["fp"])
-    return [(settings["fc"], ac), (settings["fp"], ap)]
+    s = settings.settings
+    f = "".join([s["pd"], s["fc"], s["sf"]])
+    s["sac"] = get_modified_date(s["http"], s["usercountry"], f)
+    f = "".join([s["pd"], s["fc"], s["sf"]])
+    s["sap"] = get_modified_date(s["http"], s["usercountry"], f)
+    return [(settings["fc"], settings["sac"]), (settings["fp"], settings["sap"])]

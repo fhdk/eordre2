@@ -4,14 +4,14 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""Contact class"""
+"""contact class"""
 
 from configuration import config
 import csv
 
 from models.query import Query
 
-B_COLOR = "\033[1;31m"
+B_COLOR = "\033[0;32m"
 E_COLOR = "\033[0;m"
 
 
@@ -21,11 +21,11 @@ def printit(string):
 
 class Contact:
     """
-    Customer Contacts
+    Customer contacts
     """
 
     def __init__(self):
-        """Initialize Contact class"""
+        """Initialize contact class"""
         self.model = {
             "name": "contact",
             "id": "contactid",
@@ -192,11 +192,11 @@ class Contact:
         """
         Drop and create table
         """
-        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
+        self.clear()
 
     def update(self):
         """

@@ -5,7 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """
-Employee Module
+employee Module
 """
 
 from configuration import config
@@ -13,7 +13,7 @@ from models.query import Query
 from models.settings import Settings
 from util import httpfn, rules
 
-B_COLOR = "\033[1;33m"
+B_COLOR = "\033[0;34m"
 E_COLOR = "\033[0;m"
 
 
@@ -23,12 +23,12 @@ def printit(string):
 
 class Employee:
     """
-    Employee class
+    employee class
     """
 
     def __init__(self):
         """
-        Initialize Employee class
+        Initialize employee class
         """
         # model for zipping dictionary
         self.model = {

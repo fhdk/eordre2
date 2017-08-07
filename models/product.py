@@ -9,7 +9,7 @@
 from configuration import config
 from models.query import Query
 
-B_COLOR = "\033[1;34m"
+B_COLOR = "\033[0;35m"
 E_COLOR = "\033[0;m"
 
 
@@ -135,8 +135,8 @@ class Product:
         """
         Drop and create table
         """
-        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
+        self.clear()

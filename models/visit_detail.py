@@ -5,7 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """
-Saleline module
+Visit details module
 """
 
 from configuration import config
@@ -14,7 +14,7 @@ import csv
 from models.query import Query
 from util import utils
 
-B_COLOR = "\033[1;37m"
+B_COLOR = "\033[1;30m"
 E_COLOR = "\033[0;m"
 
 
@@ -22,9 +22,9 @@ def printit(string):
     print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
-class Saleline:
+class VisitDetail:
     """
-    Saleline class
+    Visit details class
     """
 
     def __init__(self):
@@ -32,14 +32,15 @@ class Saleline:
         Initialize Saleine class
         """
         self.model = {
-            "name": "saleline",
-            "id": "lineid",
-            "fields": ("lineid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount"),
+            "name": "visitdetail",
+            "id": "detailid",
+            "fields": ("detailid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount",
+                       "linetype", "extra"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER DEFAULT 0",
-                      "TEXT", "TEXT", "REAL", "INTEGER DEFAULT 0", "REAL DEFAULT 0")
+                      "TEXT", "TEXT", "REAL", "INTEGER DEFAULT 0", "REAL DEFAULT 0", "TEXT", "TEXT")
         }
-        self._salelines = []
-        self._saleline = {}
+        self._visitdetails = []
+        self._visitdetail = {}
         self.csv_field_count = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
@@ -53,32 +54,32 @@ class Saleline:
                         "  ->data: {}".format(self.model["name"], success, data))
 
     @property
-    def saleline(self):
+    def visitdetail(self):
         """
-        Saleline
+        Single visit detail
         Returns:
-             saleline
+             visitdetail
         """
-        return self._saleline
+        return self._visitdetail
 
     @property
-    def salelines(self):
+    def visitdetails(self):
         """
-        Salelines
+        Visit details list
         Returns:
-            List of orderlines for a visit
+            List of details for a visit
         """
-        return self._salelines
+        return self._visitdetails
 
-    @salelines.setter
-    def salelines(self, visitid):
+    @visitdetails.setter
+    def visitdetails(self, visitid):
         """
-        Salelines
+        Visit details setter. Load the details for at visit
         Args:
             visitid:
         """
         try:
-            _ = self._salelines[0]
+            _ = self._visitdetails[0]
         except IndexError:
             self.load(visitid)
 
@@ -86,32 +87,32 @@ class Saleline:
         """
         Clear internal variables
         """
-        self._saleline = {}
-        self._salelines = []
+        self._visitdetail = {}
+        self._visitdetails = []
 
     def create(self, visit_id):
         """
-        Create a new saleline on visitid
+        Create a new detail on visitid
         Args:
             visit_id:
         """
         # create new with empty values
-        values = (None, visit_id, None, "", "", None, None, None)
+        values = (None, visit_id, None, "", "", None, None, None, None, None)
 
-        lineid = self.insert(values)
+        detailid = self.insert(values)
 
-        self._saleline = dict(zip(self.model["fields"], values))
-        self._saleline["lineid"] = lineid
-        self._salelines.append(self._saleline)
+        self._visitdetail = dict(zip(self.model["fields"], values))
+        self._visitdetail["lineid"] = detailid
+        self._visitdetails.append(self._visitdetail)
 
-    def delete(self, lineid):
+    def delete(self, detailid):
         """
-        Delete line
+        Delete the detail
         Args:
-            lineid:
+            detailid:
         """
-        filters = [("lineid", "=")]
-        values = (lineid,)
+        filters = [("detailid", "=")]
+        values = (detailid,)
 
         sql = self.q.build("delete", self.model, filteron=filters)
 
@@ -121,10 +122,6 @@ class Saleline:
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(self.model["name"], filters, values, sql))
-
-        # if sql.startswith("ERROR"):
-        #     printit("{}".format(sql))
-        #     return False
 
         success, data = self.q.execute(sql, values)
 
@@ -139,7 +136,7 @@ class Saleline:
 
     def import_csv(self, filename, headers=False):
         """
-        Import salelines from file
+        Import details from file
         Args:
             filename: csv file
             headers: flag first row as fieldnames
@@ -164,7 +161,7 @@ class Saleline:
 
                 # translate bool text to integer col 6
                 row[6] = utils.bool2int(utils.str2bool(row[6]))
-                values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7])
+                values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7], "s", None)
 
                 if config.DEBUG_SALELINE:
                     printit("  ->{}\n"
@@ -179,12 +176,7 @@ class Saleline:
         Args:
             values:
         """
-        # build query and execute
         sql = self.q.build("insert", self.model)
-
-        # if sql.startswith("ERROR"):
-        #     printit("{}".format(sql))
-        #     return False
 
         if config.DEBUG_SALELINE:
             printit("{}\n"
@@ -205,16 +197,12 @@ class Saleline:
 
     def load(self, visitid):
         """
-        Load orderlines
+        Load details for visitid
         """
         filters = [("visitid", "=")]
         values = [visitid]
 
         sql = self.q.build("select", self.model, filteron=filters)
-
-        # if sql.startswith("ERROR"):
-        #     printit("{}".format(sql))
-        #     return False
 
         if config.DEBUG_SALELINE:
             printit("{}\n"
@@ -226,7 +214,7 @@ class Saleline:
         success, data = self.q.execute(sql, values=values)
 
         if success and data:
-            self.salelines = [dict(zip(self.model["fields"], row)) for row in data]
+            self.visitdetails = [dict(zip(self.model["fields"], row)) for row in data]
 
         if config.DEBUG_SALELINE:
             printit("  ->{}\n"
@@ -237,19 +225,19 @@ class Saleline:
         """
         Drop and create table
         """
-        # build query and execute
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
         sql = self.q.build("create", self.model)
         self.q.execute(sql)
+        self.clear()
 
     def update(self):
         """
-        Update saleline in database
+        Write the current detail to database
         """
         fields = list(self.model["fields"])[1:]
         filters = [("lineid", "=")]
-        values = self.q.values_to_arg(self._saleline.values())
+        values = self.q.values_to_arg(self._visitdetail.values())
 
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
