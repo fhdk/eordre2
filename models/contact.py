@@ -48,6 +48,27 @@ class Contact:
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
 
+    @property
+    def current(self):
+        """
+        Current contact
+        :return:
+        """
+        return self._contact
+
+    @current.setter
+    def current(self, contactid):
+        """
+        Active list of contacts
+        :return:
+        """
+        try:
+            cid = self._contact["contactid"][0]
+            if not cid == contactid:
+                self.find(contactid)
+        except (KeyError, IndexError):
+            self.find(contactid)
+
     def clear(self):
         """
         Clear internal variables
@@ -159,7 +180,7 @@ class Contact:
 
     def load_for_customer(self, customerid):
         """
-        Load contacts for customer
+        Load contacts for current
         Args:
             customerid:
         """
@@ -170,7 +191,7 @@ class Contact:
 
         if config.DEBUG_CONTACT:
             printit("{}\n"
-                    " ->load for customer\n"
+                    " ->load for current\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(self.model["name"], filters, values, sql))
@@ -186,7 +207,6 @@ class Contact:
             self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
         else:
             self._contacts = []
-        return self._contacts
 
     def recreate_table(self):
         """

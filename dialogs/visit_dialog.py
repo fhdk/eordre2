@@ -14,18 +14,18 @@ from resources.visit_dialog_rc import Ui_VisitDialog
 
 class VisitDialog(QDialog, Ui_VisitDialog):
     """
-    Dialog for creating a new visit
+    Dialog for creating a new current
     """
 
     def __init__(self, customer, employee, product, report, visit, workdate, parent=None):
         """
         Initialize
         Args:
-            customer: main customer object
-            employee: main employee object
+            customer: main current object
+            employee: main current object
             product: main product object
-            report: main report object
-            visit: main visit object
+            report: main current object
+            visit: main current object
             workdate: workdate
             parent:
         """
@@ -33,9 +33,9 @@ class VisitDialog(QDialog, Ui_VisitDialog):
         self.setupUi(self)
 
         self.visit = visit
-        self.customerid = customer.customer["customerid"]
-        self.employeeid = employee.employee["employeeid"]
-        self.reportid = report.report["reportid"]
+        self.customerid = customer.current["customerid"]
+        self.employeeid = employee.current["employeeid"]
+        self.reportid = report.current["reportid"]
         self.workdate = workdate
 
         # If customerid need special current on prices

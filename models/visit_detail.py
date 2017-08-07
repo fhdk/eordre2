@@ -32,7 +32,7 @@ class VisitDetail:
         Initialize Saleine class
         """
         self.model = {
-            "name": "visitdetail",
+            "name": "current",
             "id": "detailid",
             "fields": ("detailid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount",
                        "linetype", "extra"),
@@ -54,11 +54,11 @@ class VisitDetail:
                         "  ->data: {}".format(self.model["name"], success, data))
 
     @property
-    def visitdetail(self):
+    def current(self):
         """
-        Single visit detail
+        Single current detail
         Returns:
-             visitdetail
+             current
         """
         return self._visitdetail
 
@@ -67,14 +67,14 @@ class VisitDetail:
         """
         Visit details list
         Returns:
-            List of details for a visit
+            List of details for a current
         """
         return self._visitdetails
 
     @visitdetails.setter
     def visitdetails(self, visitid):
         """
-        Visit details setter. Load the details for at visit
+        Visit details setter. Load the details for at current
         Args:
             visitid:
         """

@@ -28,7 +28,7 @@ def get_customers(settings, employee, maxwait=2):
         customers list
     """
     s = settings.current
-    e = employee.employee
+    e = employee.current
     f = "".join([s["pd"], s["fc"], s["sf"]])
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
@@ -51,7 +51,7 @@ def get_employee_data(settings, maxwait=2):
         maxwait:
 
     Returns:
-        employee data
+        current data
     """
     s = settings.current
     f = "".join([s["pd"], s["fe"], s["sf"]])

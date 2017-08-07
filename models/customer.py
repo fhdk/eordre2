@@ -29,7 +29,7 @@ class Customer:
         Initialize Customer class
         """
         self.model = {
-            "name": "customer",
+            "name": "current",
             "id": "customerid",
             "fields": ("customerid", "account", "company",
                        "address1", "address2", "zipcode", "city", "country",
@@ -63,16 +63,16 @@ class Customer:
         self._customers = []
 
     @property
-    def customer(self):
+    def current(self):
         """
-        Return current customer
+        Return current current
         """
         return self._customer
 
     @property
     def customers(self):
         """
-        Load customer into primary customer list
+        Load current into primary current list
         """
         try:
             _ = self._customers[0]
@@ -82,7 +82,7 @@ class Customer:
 
     def create(self, phone, company, createdate, country, salesrep):
         """
-        Create a new customer
+        Create a new current
         Args:
             phone:
             company:
@@ -90,7 +90,7 @@ class Customer:
             country:
             salesrep:
         """
-        found = self.lookup_by_phone_name(phone, company)
+        found = self.lookup_by_phone_company(phone, company)
 
         if found:
             self._customer = found
@@ -142,7 +142,7 @@ class Customer:
 
     def import_http(self, values):
         """
-        Insert a new customer
+        Insert a new current
         Args:
             values: List with values from http request
 
@@ -159,8 +159,8 @@ class Customer:
         zipcity = zipcity.split("|")
         zipcode = zipcity[0].strip()
         city = zipcity[1].strip()
-        # lookup existing customer
-        if self.lookup_by_phone_name(values[0], values[1]):
+        # lookup existing current
+        if self.lookup_by_phone_company(values[0], values[1]):
             # sanitize and assign values
             if self._customer["account"] == 'NY':
                 self._customer["account"] = values[0]
@@ -186,7 +186,7 @@ class Customer:
 
     def insert(self, values):
         """
-        Insert a new customer
+        Insert a new current
         Args:
             values:
 
@@ -214,7 +214,7 @@ class Customer:
 
     def load(self):
         """
-        Load customers into primary customer list
+        Load customers into primary current list
         """
         # build query and execute
         sql = self.q.build("select", self.model)
@@ -238,7 +238,7 @@ class Customer:
 
     def lookup_by_id(self, customerid):
         """
-        Find customer by id
+        Find current by id
         Args:
             customerid
         """
@@ -266,9 +266,9 @@ class Customer:
             return self._customer
         return False
 
-    def lookup_by_phone_name(self, phone, company):
+    def lookup_by_phone_company(self, phone, company):
         """
-        Look up customer
+        Look up current
         Args:
             phone:
             company:
@@ -280,7 +280,7 @@ class Customer:
 
         if config.DEBUG_CUSTOMER:
             printit("{}\n"
-                    " ->lookup_by_phone_name\n"
+                    " ->lookup_by_phone_company\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(self.model["name"], filters, str(values), sql))
@@ -327,7 +327,7 @@ class Customer:
 
     def update(self):
         """
-        Update customer in database
+        Update current in database
 
         db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
         """

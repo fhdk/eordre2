@@ -65,7 +65,7 @@ class Report:
                         "  ->data: {}".format(self.model["name"], success, data))
 
     @property
-    def report(self):
+    def current(self):
         """
         Report
         Returns:
@@ -73,8 +73,8 @@ class Report:
         """
         return self._report
 
-    @report.setter
-    def report(self, workdate):
+    @current.setter
+    def current(self, workdate):
         """
         Set reportid to workdate
         Args:
@@ -148,7 +148,7 @@ class Report:
                       "sum(recallturnoverday) AS 'recall_turnover'",
                       "sum(sasday) AS 'sas'",
                       "sum(sasturnoverday) AS 'sas_turnover'",
-                      "(sum(newvisitday) + sum(recallvisitday)) AS 'visit'",
+                      "(sum(newvisitday) + sum(recallvisitday)) AS 'current'",
                       "(sum(newdemoday) + sum(recalldemoday)) AS 'demo'",
                       "(sum(newsaleday) +  sum(recallsaleday) + sum(sasday)) AS 'sale'",
                       "(sum(newturnoverday) + sum(recallturnoverday) + sum(sasturnoverday)) AS 'turnover'",

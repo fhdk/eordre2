@@ -33,7 +33,7 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
         self.c = Communication()
 
         self.file_dialog = QFileDialog()  # Create FileDialog object
-        self.employeeid = employee.employee["employeeid"]
+        self.employeeid = employee.current["employeeid"]
 
         self.buttonImport.enabled = False
         # connect to signals
@@ -50,10 +50,10 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
         self.selectedTable = self.comboImport.itemData(0)  # initialize selected table
         # initialize objects
         self.contact = contact  # main contact object
-        self.customer = customer  # main customer object
-        self.visit = visit  # main visit object
-        self.visitdetail = visitdetail  # main visit details object
-        self.report = report  # main report object
+        self.customer = customer  # main current object
+        self.visit = visit  # main current object
+        self.visitdetail = visitdetail  # main current details object
+        self.report = report  # main current object
 
     def button_browse_action(self):
         """Slot for buttonBrowse clicked signal"""
@@ -86,13 +86,13 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
                 success = self.contact.import_csv(self.selectedFile,
                                                   self.checkHeaders.isChecked())
 
-            # import selected file to customer table
-            if self.selectedTable == "customer":
+            # import selected file to current table
+            if self.selectedTable == "current":
                 success = self.customer.import_csv(self.selectedFile,
                                                    self.checkHeaders.isChecked())
 
             # import selected file to ordervisit table
-            if self.selectedTable == "visit":
+            if self.selectedTable == "current":
                 success = self.visit.import_csv(self.selectedFile,
                                                 self.checkHeaders.isChecked())
 
@@ -102,7 +102,7 @@ class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
                                                     self.checkHeaders.isChecked())
 
             # import selected file to reportid table
-            if self.selectedTable == "report":
+            if self.selectedTable == "current":
                 success = self.report.import_csv(self.selectedFile,
                                                  self.employeeid,
                                                  self.checkHeaders.isChecked())

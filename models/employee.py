@@ -5,7 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """
-employee Module
+current Module
 """
 
 from configuration import config
@@ -23,12 +23,12 @@ def printit(string):
 
 class Employee:
     """
-    employee class
+    current class
     """
 
     def __init__(self):
         """
-        Initialize employee class
+        Initialize current class
         """
         # model for zipping dictionary
         self.model = {
@@ -59,7 +59,7 @@ class Employee:
                     self.insert(tuple(data))
 
     @property
-    def employee(self):
+    def current(self):
         """
         Return current and only employeeid
         """

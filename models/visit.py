@@ -30,10 +30,10 @@ class Visit:
 
     def __init__(self):
         """
-        Initialize visit class
+        Initialize current class
         """
         self.model = {
-            "name": "visit",
+            "name": "current",
             "id": "visitid",
             "fields": ("visitid", "reportid", "employeeid", "customerid", "podate", "posent", "pocontact", "ponum",
                        "pocompany", "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry", "infotext",
@@ -58,11 +58,11 @@ class Visit:
                         "  ->data: {}".format(self.model["name"], success, data))
 
     @property
-    def visit(self):
+    def current(self):
         """
         Visit
         Returns:
-            The current active visit
+            The current active current
         """
         return self._visit
 
@@ -71,14 +71,14 @@ class Visit:
         """
         Customer Vist List
         Returns:
-            The current active list of visits for a customer
+            The current active list of visits for a current
         """
         return self._customer_visits
 
     @customer_visits.setter
     def customer_visits(self, customerid):
         """
-        Load visits for supplied customer
+        Load visits for supplied current
         Args:
             customerid:
         """
@@ -122,7 +122,7 @@ class Visit:
 
     def create(self, reportid, employeeid, customerid, workdate):
         """
-        Create a new visit
+        Create a new current
         Args:
             reportid:
             employeeid:
@@ -135,7 +135,7 @@ class Visit:
 
     def find(self, visitid):
         """
-        Look up a visit from visitid
+        Look up a current from visitid
         Args:
             visitid:
         """
@@ -194,7 +194,7 @@ class Visit:
 
     def insert(self, values):
         """
-        Save visit
+        Save current
         Args:
             values:
         """
@@ -230,7 +230,7 @@ class Visit:
 
     def load_by_customer(self, customerid):
         """
-        Load visits for specified customer
+        Load visits for specified current
         Args:
             customerid:
         """
@@ -286,7 +286,7 @@ class Visit:
 
     def update(self):
         """
-        Update current visit to database
+        Update current current to database
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]

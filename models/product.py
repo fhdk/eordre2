@@ -49,12 +49,12 @@ class Product:
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
 
-    def clear(self):
+    @property
+    def current(self):
         """
-        Clear internal variables
+        Return active product
         """
-        self._product = {}
-        self._products = []
+        return self._product
 
     @property
     def product_list(self):
@@ -68,6 +68,13 @@ class Product:
         except IndexError:
             self.load()
         return self._products
+
+    def clear(self):
+        """
+        Clear internal variables
+        """
+        self._product = {}
+        self._products = []
 
     def drop_table(self):
         """Drop the product table

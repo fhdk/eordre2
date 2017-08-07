@@ -590,10 +590,10 @@
      <property name="title">
       <string>Kunde</string>
      </property>
-     <addaction name="actionMasterData"/>
-     <addaction name="actionContactData"/>
-     <addaction name="actionVisitData"/>
-     <addaction name="actionOrderData"/>
+     <addaction name="actionMasterInfo"/>
+     <addaction name="actionContactsInfo"/>
+     <addaction name="actionVisitsList"/>
+     <addaction name="actionVisitDetails"/>
      <addaction name="separator"/>
      <addaction name="actionArchiveChanges"/>
     </widget>
@@ -739,22 +739,22 @@
     <string>Fil import</string>
    </property>
   </action>
-  <action name="actionMasterData">
+  <action name="actionMasterInfo">
    <property name="text">
     <string>Stamdata</string>
    </property>
   </action>
-  <action name="actionContactData">
+  <action name="actionContactsInfo">
    <property name="text">
     <string>Kontakter</string>
    </property>
   </action>
-  <action name="actionVisitData">
+  <action name="actionVisitsList">
    <property name="text">
     <string>Besøg</string>
    </property>
   </action>
-  <action name="actionOrderData">
+  <action name="actionVisitDetails">
    <property name="text">
     <string>Ordrer</string>
    </property>

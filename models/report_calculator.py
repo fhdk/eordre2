@@ -34,7 +34,7 @@ class Calculator:
             "fields": ("calcid", "calcdate", "reportid", "employeeid", "counted",
                        "new_visit", "new_demo", "new_sale", "new_turnover",
                        "recall_visit", "recall_demo", "recall_sale", "recall_turnover",
-                       "sas", "sas_turnover", "visit", "demo", "sale", "turnover",
+                       "sas", "sas_turnover", "current", "demo", "sale", "turnover",
                        "kmwork", "kmprivate", "workdays", "offdays"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0",
@@ -56,11 +56,11 @@ class Calculator:
                         "  ->data   : {}".format(self.model["name"], success, data))
 
     @property
-    def totals(self):
+    def current(self):
         """
         Totals
         Returns:
-            The current totals
+            The current current
         """
         return self._totals
 
@@ -72,7 +72,7 @@ class Calculator:
 
     def insert(self, values):
         """
-        Save values to database and sets totals with the supplied values
+        Save values to database and sets current with the supplied values
         Args:
             values:
         """
@@ -102,7 +102,7 @@ class Calculator:
         """
         Select by id
         Returns:
-            bool indicating totals has been set for the requested id
+            bool indicating current has been set for the requested id
         """
         filters = [("calcid", "=")]
         values = (calc_id,)
@@ -130,13 +130,13 @@ class Calculator:
 
     def select_by_date_employee(self, workdate, employeeid):
         """
-        Select totals for employeeid and workdate
+        Select current for employeeid and workdate
 
         Args:
             workdate:
             employeeid:
         Returns:
-            bool indicating totals for the selected reportid is now set
+            bool indicating current for the selected reportid is now set
         """
         filters = [("workdate", "=", "and"), ("employeeid", "=")]
         values = (workdate, employeeid)
@@ -164,7 +164,7 @@ class Calculator:
 
     def update(self):
         """
-        Update totals in database if necessary
+        Update current in database if necessary
 
         Returns:
             bool indicating if update was a success

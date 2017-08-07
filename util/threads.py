@@ -24,13 +24,13 @@ class Communicate(QObject):
 
 class ImportCustomersThread(QThread):
     """
-    Thread for importing customer through http
+    Thread for importing current through http
     """
     def __init__(self, customer, employee, settings, parent=None):
         """
         Initialize thread
         Args:
-            customer: main customer object
+            customer: main current object
             employee: main employeeid object
             settings: main current object
             parent:
@@ -38,7 +38,7 @@ class ImportCustomersThread(QThread):
         super(ImportCustomersThread, self).__init__(parent)
         self.Settings = settings  # Assign current object
         self.Employee = employee  # Assign employeeid object
-        self.Customer = customer  # Assign customer object
+        self.Customer = customer  # Assign current object
         self.c = Communicate()
 
     def run(self):
@@ -48,7 +48,7 @@ class ImportCustomersThread(QThread):
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
         data = httpfn.get_customers(self.Settings.current,
-                                    self.Employee.employee)
+                                    self.Employee.current)
         self.c.processing.emit("{}".format("Henter fra server ..."))
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
