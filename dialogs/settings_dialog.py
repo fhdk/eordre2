@@ -20,7 +20,8 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         """Initialize the dialog"""
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)  # setup ui from resource file
-        self.app_settings = settings  # assign settings object
+        self.work_settings = settings.settings
+
         # assign values to input fields
         self.editUserMail.setText(settings["usermail"])
         self.editUserPass.setText(settings["userpass"])
@@ -41,41 +42,40 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
     def accept(self):
         """User buttonbox_accepted_action settings"""
         # assign input fields to settings
-        self.app_settings["usermail"] = self.editUserMail.text().lower()
-        self.app_settings["userpass"] = self.editUserPass.text()
-        self.app_settings["usercountry"] = self.editUserCountry.text().lower()
-        self.app_settings["http"] = self.editHttp.text().lower()
-        self.app_settings["smtp"] = self.editSmtp.text().lower()
-        self.app_settings["port"] = self.editPort.text()
-        self.app_settings["mailto"] = self.editMailTo.text().lower()
-        self.app_settings["sc"] = utils.bool2int(self.checkServerData.isChecked())
-        self.app_settings["mailserver"] = self.editMailServer.text().lower()
-        self.app_settings["mailport"] = self.editMailPort.text()
-        self.app_settings["mailuser"] = self.editMailUser.text()
-        self.app_settings["mailpass"] = self.editMailPass.text()
+        self.work_settings["usermail"] = self.editUserMail.text().lower()
+        self.work_settings["userpass"] = self.editUserPass.text()
+        self.work_settings["usercountry"] = self.editUserCountry.text().lower()
+        self.work_settings["http"] = self.editHttp.text().lower()
+        self.work_settings["smtp"] = self.editSmtp.text().lower()
+        self.work_settings["port"] = self.editPort.text()
+        self.work_settings["mailto"] = self.editMailTo.text().lower()
+        self.work_settings["sc"] = utils.bool2int(self.checkServerData.isChecked())
+        self.work_settings["mailserver"] = self.editMailServer.text().lower()
+        self.work_settings["mailport"] = self.editMailPort.text()
+        self.work_settings["mailuser"] = self.editMailUser.text()
+        self.work_settings["mailpass"] = self.editMailPass.text()
         # check validity of vital settings
-        check = self.app_settings
         checkok = True
         items = []
-        if check["usermail"] == "":
+        if self.work_settings["usermail"] == "":
             items.append("Bruger email (fane 1)")
             checkok = False
-        if check["userpass"] == "":
+        if self.work_settings["userpass"] == "":
             items.append("Bruger kode (fane 1)")
             checkok = False
-        if check["usercountry"] == "":
+        if self.work_settings["usercountry"] == "":
             items.append("Bruger land (fane 1)")
             checkok = False
-        if check["smtp"] == "":
+        if self.work_settings["smtp"] == "":
             items.append("SMTP server (fane 2)")
             checkok = False
-        if check["port"] == "":
+        if self.work_settings["port"] == "":
             items.append("SMTP port (fane 2)")
             checkok = False
-        if check["mailto"] == "":
+        if self.work_settings["mailto"] == "":
             items.append("Ordremodtager (fane 2)")
             checkok = False
-        if check["http"] == "":
+        if self.work_settings["http"] == "":
             items.append("Web server (fane 2)")
             checkok = False
         # inform user about settings validity

@@ -416,7 +416,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if settings_dialog.exec_():
             # do check if password has been changed
             # and hash it if necessary
-            check = settings_dialog.app_settings
+            check = settings_dialog.work_settings
             if len(check["userpass"]) < 97:
                 check["userpass"] = passwdfn.hash_password(check["userpass"])
             if len(check["mailpass"]) < 97:
