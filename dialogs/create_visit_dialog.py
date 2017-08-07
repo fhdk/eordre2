@@ -9,10 +9,10 @@ Visit Dialog Module
 """
 from PyQt5.QtWidgets import QDialog
 
-from resources.visit_dialog_rc import Ui_VisitDialog
+from resources.create_visit_dialog_rc import Ui_createVisitDialog
 
 
-class VisitDialog(QDialog, Ui_VisitDialog):
+class CreateVisitDialog(QDialog, Ui_createVisitDialog):
     """
     Dialog for creating a new current
     """
@@ -29,7 +29,7 @@ class VisitDialog(QDialog, Ui_VisitDialog):
             workdate: workdate
             parent:
         """
-        super(VisitDialog, self).__init__(parent)
+        super(CreateVisitDialog, self).__init__(parent)
         self.setupUi(self)
 
         self.visit = visits

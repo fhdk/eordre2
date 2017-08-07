@@ -7,11 +7,11 @@
 
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
-from resources import settings_dialog_rc as settingsui
+from resources.settings_dialog_rc import Ui_settingsDialog
 from util import utils, passwdfn
 
 
-class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
+class SettingsDialog(QDialog, Ui_settingsDialog):
     """
     Dialog for entering and updating current
     """

@@ -55,19 +55,31 @@ class Customer:
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
 
-    def clear(self):
-        """
-        Clear internal variables
-        """
-        self._customer = {}
-        self._customers = []
-
     @property
     def current(self):
         """
         Return current current
         """
         return self._customer
+
+    @current.setter
+    def current(self, look_for):
+        """
+        Set customer based on look_for
+        Args:
+            look_for: str
+        """
+        try:
+            cp = look_for[1]
+            ph = look_for[0]
+            try:
+                name = self._customer["company"]
+                if not name == cp:
+                    self.lookup_by_phone_company(ph, cp)
+            except KeyError:
+                self.lookup_by_phone_company(ph, cp)
+        except IndexError:
+            self.lookup_by_id(look_for)
 
     @property
     def customers(self):
@@ -79,6 +91,13 @@ class Customer:
         except IndexError:
             self.load()
         return self._customers
+
+    def clear(self):
+        """
+        Clear internal variables
+        """
+        self._customer = {}
+        self._customers = []
 
     def create(self, phone, company, createdate, country, salesrep):
         """
@@ -265,7 +284,6 @@ class Customer:
 
         if success and data:
             self._customer = dict(zip(self.model["fields"], data))
-            return self._customer
         return False
 
     def lookup_by_phone_company(self, phone, company):
@@ -314,7 +332,6 @@ class Customer:
 
         if success and data:
             self._customer = dict(zip(self.model["fields"], data[0]))
-            return self._customer
         return False
 
     def recreate_table(self):

@@ -10,8 +10,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from configuration import config
-from models import contact, customer, visit, detail, report
-from resources import file_import_dialog_rc
+from resources.csv_file_import_dialog_rc import Ui_csvFileImportDialog
 
 
 class CsvImportComm(QObject):
@@ -21,14 +20,14 @@ class CsvImportComm(QObject):
     customersdone = pyqtSignal()
 
 
-class FileImportDialog(QDialog, file_import_dialog_rc.Ui_FileImportDialog):
+class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
     """
     Dialog for importing CSV data
     """
 
     def __init__(self, contacts, customers, details, employees, reports, visits, tables, parent=None):
         """Initialize Dialog"""
-        super(FileImportDialog, self).__init__(parent)
+        super(CsvFileImportDialog, self).__init__(parent)
         self.setupUi(self)
 
         self.contacts = contacts

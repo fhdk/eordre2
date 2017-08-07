@@ -9,16 +9,16 @@ targetdir="../../resources"
 cd ./ui
 echo "Building Main Window resource ..."
 pyuic5 --from-imports main_window.ui -o ${targetdir}/main_window_rc.py
-echo "Building File Import Dialog resource ..."
-pyuic5 --from-imports file_import_dialog.ui -o ${targetdir}/file_import_dialog_rc.py
+echo "Building Csv File Import Dialog resource ..."
+pyuic5 --from-imports csv_file_import_dialog.ui -o ${targetdir}/csv_file_import_dialog_rc.py
 echo "Building Settings Dialog resource ..."
 pyuic5 --from-imports settings_dialog.ui -o ${targetdir}/settings_dialog_rc.py
-echo "Building Order Dialog resource ..."
-pyuic5 --from-imports visit_dialog.ui -o ${targetdir}/visit_dialog_rc.py
-echo "Building Http Customer Import Dialog resource ..."
-pyuic5 --from-imports http_cust_import_dialog.ui -o ${targetdir}/http_cust_import_dialog_rc.py
-echo "Building Http Product Import Dialog resource ..."
-pyuic5 --from-imports http_prod_import_dialog.ui -o ${targetdir}/http_prod_import_dialog_rc.py
+echo "Building Create Visit Dialog resource ..."
+pyuic5 --from-imports create_visit_dialog.ui -o ${targetdir}/create_visit_dialog_rc.py
+echo "Building Customer Http Dialog resource ..."
+pyuic5 --from-imports get_customers_http_dialog.ui -o ${targetdir}/get_customers_http_dialog_rc.py
+echo "Building Product Http Dialog resource ..."
+pyuic5 --from-imports get_products_http_dialog.ui -o ${targetdir}/get_products_http_dialog_rc.py
 echo "Building Create Report Dialog resource ..."
 pyuic5 --from-imports create_report_dialog.ui -o ${targetdir}/create_report_dialog_rc.py
 echo "   Done!"

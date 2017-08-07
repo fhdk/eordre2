@@ -8,7 +8,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
-from resources.http_prod_import_dialog_rc import Ui_HttpProdImportDialog
+from resources.get_products_http_dialog_rc import Ui_getProductsHttpDialog
 from util import threads
 
 
@@ -19,7 +19,7 @@ class Communicate(QObject):
     finished = pyqtSignal()
 
 
-class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
+class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
     """
     Dialog for importing products from server
     """
@@ -30,7 +30,7 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
             products: main product object
             settings: main current object
         """
-        super(HttpProdImportDialog, self).__init__(parent)
+        super(GetProductsHttpDialog, self).__init__(parent)
         self.setupUi(self)
         self.c = Communicate()
         self.progresscount = 1  # Used when setting progress values

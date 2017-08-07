@@ -8,7 +8,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
-from resources.http_cust_import_dialog_rc import Ui_HttpCustImportDialog
+from resources.get_customers_http_dialog_rc import Ui_getCustomersHttpDialog
 from util import threads
 
 
@@ -19,7 +19,7 @@ class Communicate(QObject):
     finished = pyqtSignal()
 
 
-class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
+class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
     """
     """
     def __init__(self, customers, employees, settings, parent=None):
@@ -30,7 +30,7 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
             employees: main employeeid object
             settings: main current object
         """
-        super(HttpCustImportDialog, self).__init__(parent)
+        super(GetCustomersHttpDialog, self).__init__(parent)
         self.setupUi(self)
 
         self.c = Communicate()

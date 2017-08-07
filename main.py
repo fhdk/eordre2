@@ -17,27 +17,26 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScree
 
 # import resources.splash_rc
 from configuration import configfn, config
-from dialogs.create_visit_dialog import VisitDialog
+from dialogs.create_visit_dialog import CreateVisitDialog
 from dialogs.create_report_dialog import CreateReportDialog
-from dialogs.csv_file_import_dialog import FileImportDialog
-from dialogs.get_customers_http_dialog import HttpCustImportDialog
-from dialogs.get_products_http_dialog import HttpProdImportDialog
+from dialogs.csv_file_import_dialog import CsvFileImportDialog
+from dialogs.get_customers_http_dialog import GetCustomersHttpDialog
+from dialogs.get_products_http_dialog import GetProductsHttpDialog
 from dialogs.settings_dialog import SettingsDialog
 from models.contact import Contact
-from models.customer  import Customer
+from models.customer import Customer
 from models.employee import Employee
 from models.visit import Visit
 from models.detail import Detail
 from models.product import Product
 from models.report import Report
 from models.settings import Settings
-from resources.main_window_rc import Ui_MainWindow
-from util import httpfn, passwdfn, utils
+from resources.main_window_rc import Ui_mainWindow
+from util import httpfn, utils
 from util.rules import check_settings
 
 __appname__ = "Eordre NG"
 __module__ = "main"
-
 
 B_COLOR = "\033[0;34m"
 E_COLOR = "\033[0;1m"
@@ -48,7 +47,7 @@ def printit(string):
 
 
 # noinspection PyMethodMayBeStatic
-class MainWindow(QMainWindow, Ui_MainWindow):
+class MainWindow(QMainWindow, Ui_mainWindow):
     """
     Main Application Window
     """
@@ -80,14 +79,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionCreateCustomer.triggered.connect(self.action_create_customer)
         self.actionCreateVisit.triggered.connect(self.action_visit_dialog_show)
         self.actionImportCsvFiles.triggered.connect(self.action_file_import_dialog_show)
-        self.actionExit.triggered.connect(self.exit)
+        self.actionExit.triggered.connect(self.action_exit)
         self.actionGetCatalogHttp.triggered.connect(self.action_get_product_http_dialog_show)
         self.actionGetCustomersHttp.triggered.connect(self.action_get_customers_http_dialog_show)
         self.actionMasterInfo.triggered.connect(self.action_show_master_data)
         self.actionReport.triggered.connect(self.action_create_report_dialog_show)
         self.actionReportList.triggered.connect(self.action_show_reports)
         self.actionSettings.triggered.connect(self.action_settings_dialog_show)
-        self.actionVisitsInfo.triggered.connect(self.action_show_visits_data)
+        self.actionVisitsInfo.triggered.connect(self.action_show_history_data)
         self.actionZeroDatabase.triggered.connect(self.action_zero_database)
         # connect list change
         self.widgetCustomers.currentItemChanged.connect(self.action_customer_changed_signal)
@@ -97,7 +96,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.buttonCreateCustomer.clicked.connect(self.action_create_customer)
         self.buttonCreateVisit.clicked.connect(self.action_visit_dialog_show)
         self.buttonMasterData.clicked.connect(self.action_show_master_data)
-        self.buttonHistoryData.clicked.connect(self.action_show_visit_details)
+        self.buttonHistoryData.clicked.connect(self.action_show_history_data)
         self.buttonReport.clicked.connect(self.action_create_report_dialog_show)
 
     def about_qt_action(self):
@@ -174,8 +173,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
 
         if self.customers.current:
-            visit_dialog = VisitDialog(self.customers, self.employees, self.products,
-                                       self.reports, self.visits, self.txtWorkdate.text())
+            visit_dialog = CreateVisitDialog(self.customers, self.employees, self.products,
+                                             self.reports, self.visits, self.txtWorkdate.text())
             if visit_dialog.exec_():
                 pass
         else:
@@ -195,40 +194,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             current: currently selected item
             previous: previous selected item
         """
-        self.customers.lookup_by_phone_company(current.text(0), current.text(1))
-        try:
-            self.txtAccount.setText(self.customers.current["account"])
-            self.txtCompany.setText(self.customers.current["company"])
-            self.txtAddress1.setText(self.customers.current["address1"])
-            self.txtAddress2.setText(self.customers.current["address2"])
-            self.txtZipCode.setText(self.customers.current["zipcode"])
-            self.txtCityName.setText(self.customers.current["city"])
-            self.txtPhone1.setText(self.customers.current["phone1"])
-            self.txtPhone2.setText(self.customers.current["phone2"])
-            self.txtEmail.setText(self.customers.current["email"])
-            self.txtFactor.setText(str(self.customers.current["factor"]))
-            self.txtInfoText.clear()
-            self.txtInfoText.insertPlainText(self.customers.current["infotext"])
-            self.contacts.load_for_customer(self.customers.current["customerid"])
-            self.visits.load_by_customer(self.customers.current["customerid"])
+        self.customers.current = current.text(0), current.text(1)
+        print("{}".format(self.customers.current))
+        # try:
+        self.txtAccount.setText(str(self.customers.current["account"]))
+        self.txtCompany.setText(self.customers.current["company"])
+        self.txtAddress1.setText(self.customers.current["address1"])
+        self.txtAddress2.setText(self.customers.current["address2"])
+        self.txtZipCode.setText(str(self.customers.current["zipcode"]))
+        self.txtCityName.setText(self.customers.current["city"])
+        self.txtPhone1.setText(str(self.customers.current["phone1"]))
+        self.txtPhone2.setText(str(self.customers.current["phone2"]))
+        self.txtEmail.setText(self.customers.current["email"])
+        self.txtFactor.setText(str(self.customers.current["factor"]))
+        self.txtInfoText.setText(self.customers.current["infotext"])
 
-        except (KeyError, AttributeError):
-            # clear input lines
-            self.txtAccount.clear()
-            self.txtCompany.clear()
-            self.txtAddress1.clear()
-            self.txtAddress2.clear()
-            self.txtZipCode.clear()
-            self.txtCityName.clear()
-            self.txtPhone1.clear()
-            self.txtPhone2.clear()
-            self.txtEmail.clear()
-            self.txtFactor.clear()
-            self.txtInfoText.clear()
-            # clear customer related internals
-            self.visits.clear()
-            self.details.clear()
-            self.contacts.clear()
+        self.contacts.load_for_customer(self.customers.current["customer_id"])
+
+        self.visits.load_by_customer(self.customers.current["customer_id"])
+
+        # except (KeyError, AttributeError):
+        #     # clear input lines
+        #     self.txtAccount.clear()
+        #     self.txtCompany.clear()
+        #     self.txtAddress1.clear()
+        #     self.txtAddress2.clear()
+        #     self.txtZipCode.clear()
+        #     self.txtCityName.clear()
+        #     self.txtPhone1.clear()
+        #     self.txtPhone2.clear()
+        #     self.txtEmail.clear()
+        #     self.txtFactor.clear()
+        #     self.txtInfoText.clear()
+        #     # clear customer related internals
+        #     self.visits.clear()
+        #     self.details.clear()
+        #     self.contacts.clear()
 
     def action_data_export(self):
         """
@@ -251,8 +252,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                            "du importere <strong>ALLE<strong> tabeller der findes i listen!<br/><br/>"
                            "<strong>Importerer du ikke alle vil det give problemer</strong>!",
                            QMessageBox.Ok)
-        import_dialog = FileImportDialog(self.contacts, self.customers, self.details,
-                                         self.employees, self.reports, self.visits, config.CSV_TABLES)
+        import_dialog = CsvFileImportDialog(self.contacts, self.customers, self.details,
+                                            self.employees, self.reports, self.visits, config.CSV_TABLES)
 
         import_dialog.exec_()
         self.populate_customer_list()
@@ -267,9 +268,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot for getCustomers triggered signal
         """
-        import_customers = HttpCustImportDialog(customers=self.customers,
-                                                employees=self.employees,
-                                                settings=self.settings)
+        import_customers = GetCustomersHttpDialog(customers=self.customers,
+                                                  employees=self.employees,
+                                                  settings=self.settings)
         import_customers.c.finished.connect(self.action_get_customers_http_done_signal)
         import_customers.exec_()
 
@@ -287,8 +288,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         Slot for getProducts triggered signal
         """
-        import_product = HttpProdImportDialog(products=self.products,
-                                              settings=self.settings)
+        import_product = GetProductsHttpDialog(products=self.products,
+                                               settings=self.settings)
         import_product.c.finished.connect(self.action_get_product_http_done_signal)
         import_product.exec_()
 
@@ -347,6 +348,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         self.widgetCustomerInfo.setCurrentIndex(1)
 
+    def action_show_history_data(self):
+        """
+        Slot for visitData triggered signal
+        """
+        self.widgetCustomerInfo.setCurrentIndex(2)
+
     def action_show_master_data(self):
         """
         Slot for masterData triggered signal
@@ -358,12 +365,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         Slot for Report List triggered signal
         """
         pass
-
-    def action_show_visits_data(self):
-        """
-        Slot for visitData triggered signal
-        """
-        self.widgetCustomerInfo.setCurrentIndex(2)
 
     def action_zero_database(self):
         """
@@ -390,9 +391,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         pass
 
-    def exit(self):
+    def action_exit(self):
         """
-        Slot for exit triggered signal
+        Slot for action_exit triggered signal
         """
         app.quit()
 
@@ -417,7 +418,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         items = []  # temporary list
         try:
             for c in self.customers.customers:
-                # create Widget
                 item = QTreeWidgetItem([c["phone1"], c["company"]])
                 items.append(item)
         except IndexError:

@@ -8,16 +8,16 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_CreateReportDialog(object):
-    def setupUi(self, CreateReportDialog):
-        CreateReportDialog.setObjectName("CreateReportDialog")
-        CreateReportDialog.resize(383, 94)
-        self.buttonBox = QtWidgets.QDialogButtonBox(CreateReportDialog)
+class Ui_createReportDialog(object):
+    def setupUi(self, createReportDialog):
+        createReportDialog.setObjectName("createReportDialog")
+        createReportDialog.resize(383, 94)
+        self.buttonBox = QtWidgets.QDialogButtonBox(createReportDialog)
         self.buttonBox.setGeometry(QtCore.QRect(290, 20, 81, 241))
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
-        self.gridLayoutWidget = QtWidgets.QWidget(CreateReportDialog)
+        self.gridLayoutWidget = QtWidgets.QWidget(createReportDialog)
         self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 20, 271, 61))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
@@ -32,14 +32,14 @@ class Ui_CreateReportDialog(object):
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
-        self.retranslateUi(CreateReportDialog)
-        self.buttonBox.accepted.connect(CreateReportDialog.buttonbox_accepted_action)
-        self.buttonBox.rejected.connect(CreateReportDialog.buttonbox_rejected_action)
-        QtCore.QMetaObject.connectSlotsByName(CreateReportDialog)
+        self.retranslateUi(createReportDialog)
+        self.buttonBox.accepted.connect(createReportDialog.buttonbox_accepted_action)
+        self.buttonBox.rejected.connect(createReportDialog.buttonbox_rejected_action)
+        QtCore.QMetaObject.connectSlotsByName(createReportDialog)
 
-    def retranslateUi(self, CreateReportDialog):
+    def retranslateUi(self, createReportDialog):
         _translate = QtCore.QCoreApplication.translate
-        CreateReportDialog.setWindowTitle(_translate("CreateReportDialog", "Eordre"))
-        self.lineEdit.setPlaceholderText(_translate("CreateReportDialog", "2017-12-31"))
-        self.label.setText(_translate("CreateReportDialog", "Arbejdsdato (åååå-mm-dd)"))
+        createReportDialog.setWindowTitle(_translate("createReportDialog", "Eordre"))
+        self.lineEdit.setPlaceholderText(_translate("createReportDialog", "2017-12-31"))
+        self.label.setText(_translate("createReportDialog", "Arbejdsdato (åååå-mm-dd)"))
 

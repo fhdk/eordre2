@@ -9,10 +9,10 @@ import datetime
 
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
-from resources.create_report_dialog_rc import Ui_CreateReportDialog
+from resources.create_report_dialog_rc import Ui_createReportDialog
 
 
-class CreateReportDialog(QDialog, Ui_CreateReportDialog):
+class CreateReportDialog(QDialog, Ui_createReportDialog):
     """
     Create a new reportid for date
     """
