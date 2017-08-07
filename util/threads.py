@@ -26,19 +26,19 @@ class ImportCustomersThread(QThread):
     """
     Thread for importing current through http
     """
-    def __init__(self, customer, employee, settings, parent=None):
+    def __init__(self, customers, employees, settings, parent=None):
         """
         Initialize thread
         Args:
-            customer: main current object
-            employee: main employeeid object
+            customers: main current object
+            employees: main employeeid object
             settings: main current object
             parent:
         """
         super(ImportCustomersThread, self).__init__(parent)
-        self.Settings = settings  # Assign current object
-        self.Employee = employee  # Assign employeeid object
-        self.Customer = customer  # Assign current object
+        self.settings = settings  # main settings object
+        self.employees = employees  # main employees object
+        self.customers = customers  # main customers object
         self.c = Communicate()
 
     def run(self):
@@ -47,13 +47,13 @@ class ImportCustomersThread(QThread):
         """
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
-        data = httpfn.get_customers(self.Settings.current,
-                                    self.Employee.current)
+        data = httpfn.get_customers(self.settings.current,
+                                    self.employees.current)
         self.c.processing.emit("{}".format("Henter fra server ..."))
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.Customer.import_http(row)  # create row to database
+            self.customers.import_http(row)  # create row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
 
@@ -62,15 +62,15 @@ class ImportProductsThread(QThread):
     """
     Thread for importing product through http
     """
-    def __init__(self, product, settings, parent=None):
+    def __init__(self, products, settings, parent=None):
         """
         Initialize the thread
         Args:
             parent:
         """
         super(ImportProductsThread, self).__init__(parent)
-        self.Settings = settings  # assign current object
-        self.Product = product  # assign product object
+        self.settings = settings  # assign current object
+        self.products = products  # assign product object
         self.c = Communicate()
 
     def run(self):
@@ -78,13 +78,13 @@ class ImportProductsThread(QThread):
         The run process - activated by the QTread start() method
         """
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
-        self.Product.drop_table()  # drop product table
+        self.product.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
         # fetching datafile from http server
-        data = httpfn.get_products(self.Settings.current)
+        data = httpfn.get_products(self.settings)
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.Product.insert(row)  # create row to database
+            self.products.insert(row)  # create row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()

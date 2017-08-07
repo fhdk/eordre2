@@ -22,7 +22,7 @@ def printit(string):
     print("{}{}{}".format(B_COLOR, string, E_COLOR))
 
 
-class VisitDetail:
+class Detail:
     """
     Visit details class
     """
@@ -32,15 +32,15 @@ class VisitDetail:
         Initialize Saleine class
         """
         self.model = {
-            "name": "current",
-            "id": "detailid",
-            "fields": ("detailid", "visitid", "pcs", "sku", "infotext", "price", "sas", "discount",
+            "name": "detail",
+            "id": "detail_id",
+            "fields": ("detail_id", "visit_id", "pcs", "sku", "infotext", "price", "sas", "discount",
                        "linetype", "extra"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER DEFAULT 0",
                       "TEXT", "TEXT", "REAL", "INTEGER DEFAULT 0", "REAL DEFAULT 0", "TEXT", "TEXT")
         }
-        self._visitdetails = []
-        self._visitdetail = {}
+        self._details = []
+        self._detail = {}
         self.csv_field_count = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
@@ -60,35 +60,35 @@ class VisitDetail:
         Returns:
              current
         """
-        return self._visitdetail
+        return self._detail
 
     @property
-    def visitdetails(self):
+    def details(self):
         """
         Visit details list
         Returns:
             List of details for a current
         """
-        return self._visitdetails
+        return self._details
 
-    @visitdetails.setter
-    def visitdetails(self, visitid):
+    @details.setter
+    def details(self, visit_id):
         """
         Visit details setter. Load the details for at current
         Args:
-            visitid:
+            visit_id:
         """
         try:
-            _ = self._visitdetails[0]
+            _ = self._details[0]
         except IndexError:
-            self.load(visitid)
+            self.load(visit_id)
 
     def clear(self):
         """
         Clear internal variables
         """
-        self._visitdetail = {}
-        self._visitdetails = []
+        self._detail = {}
+        self._details = []
 
     def create(self, visit_id):
         """
@@ -99,20 +99,20 @@ class VisitDetail:
         # create new with empty values
         values = (None, visit_id, None, "", "", None, None, None, None, None)
 
-        detailid = self.insert(values)
+        detail_id = self.insert(values)
 
-        self._visitdetail = dict(zip(self.model["fields"], values))
-        self._visitdetail["lineid"] = detailid
-        self._visitdetails.append(self._visitdetail)
+        self._detail = dict(zip(self.model["fields"], values))
+        self._detail["detail_id"] = detail_id
+        self._details.append(self._detail)
 
-    def delete(self, detailid):
+    def delete(self, detail_id):
         """
         Delete the detail
         Args:
-            detailid:
+            detail_id:
         """
-        filters = [("detailid", "=")]
-        values = (detailid,)
+        filters = [(self.model["id"], "=")]
+        values = (detail_id,)
 
         sql = self.q.build("delete", self.model, filteron=filters)
 
@@ -195,12 +195,12 @@ class VisitDetail:
             return data
         return False
 
-    def load(self, visitid):
+    def load(self, visit_id):
         """
-        Load details for visitid
+        Load details for visit_id
         """
-        filters = [("visitid", "=")]
-        values = [visitid]
+        filters = [("visit_id", "=")]
+        values = (visit_id,)
 
         sql = self.q.build("select", self.model, filteron=filters)
 
@@ -214,7 +214,10 @@ class VisitDetail:
         success, data = self.q.execute(sql, values=values)
 
         if success and data:
-            self.visitdetails = [dict(zip(self.model["fields"], row)) for row in data]
+            self._details = [dict(zip(self.model["fields"], row)) for row in data]
+            self._detail = self._details[0]
+        else:
+            self.clear()
 
         if config.DEBUG_SALELINE:
             printit("  ->{}\n"
@@ -236,8 +239,8 @@ class VisitDetail:
         Write the current detail to database
         """
         fields = list(self.model["fields"])[1:]
-        filters = [("lineid", "=")]
-        values = self.q.values_to_arg(self._visitdetail.values())
+        filters = [(self.model["id"], "=")]
+        values = self.q.values_to_arg(self._detail.values())
 
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 

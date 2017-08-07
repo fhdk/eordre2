@@ -22,12 +22,12 @@ class Communicate(QObject):
 class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
     """
     """
-    def __init__(self, customer, employee, settings, parent=None):
+    def __init__(self, customers, employees, settings, parent=None):
         """
         Initialize Dialog
         Args:
-            customer: main current object
-            employee: main employeeid object
+            customers: main current object
+            employees: main employeeid object
             settings: main current object
         """
         super(HttpCustImportDialog, self).__init__(parent)
@@ -38,8 +38,8 @@ class HttpCustImportDialog(QDialog, Ui_HttpCustImportDialog):
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
         self.progresscount = 0
-        self.import_thread = threads.ImportCustomersThread(customer=customer,
-                                                           employee=employee,
+        self.import_thread = threads.ImportCustomersThread(customers=customers,
+                                                           employees=employees,
                                                            settings=settings)
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_action)

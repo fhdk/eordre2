@@ -17,31 +17,31 @@ class VisitDialog(QDialog, Ui_VisitDialog):
     Dialog for creating a new current
     """
 
-    def __init__(self, customer, employee, product, report, visit, workdate, parent=None):
+    def __init__(self, customers, employees, products, reports, visits, workdate, parent=None):
         """
         Initialize
         Args:
-            customer: main current object
-            employee: main current object
-            product: main product object
-            report: main current object
-            visit: main current object
+            customers: main current object
+            employees: main current object
+            products: main products object
+            reports: main current object
+            visits: main current object
             workdate: workdate
             parent:
         """
         super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.visit = visit
-        self.customerid = customer.current["customerid"]
-        self.employeeid = employee.current["employeeid"]
-        self.reportid = report.current["reportid"]
+        self.visit = visits
+        self.customerid = customers.current["customerid"]
+        self.employeeid = employees.current["employeeid"]
+        self.reportid = reports.current["reportid"]
         self.workdate = workdate
 
         # If customerid need special current on prices
-        factor = customer["factor"]
+        factor = customers["factor"]
         if factor > 0.0:
-            for item in product.product_list:
+            for item in products.product_list:
                 item["price"] = item["price"] * factor
                 if not item["d2"] == 0.0:
                     item["d2"] = item["d2"] * factor
@@ -66,7 +66,7 @@ class VisitDialog(QDialog, Ui_VisitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(customer["company"])
+        self.txtCompany.setText(customers["company"])
         # connect to signals
         self.buttonCreateOrderLine.clicked.connect(self.button_create_sale_action)
         self.buttonCreateOrderVisit.clicked.connect(self.button_create_ordervisit_action)

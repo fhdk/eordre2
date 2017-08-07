@@ -8,7 +8,7 @@
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from resources import settings_dialog_rc as settingsui
-from util import utils
+from util import utils, passwdfn
 
 
 class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
@@ -20,27 +20,31 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         """Initialize the dialog"""
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)  # setup ui from resource file
-        self.work = settings.current
+        self.settings = settings
+        self.work = self.settings.current
+        print("SettingsDialog -> __init__: {}".format(settings.current))
 
         # assign values to input fields
-        self.editUserMail.setText(self.work["usermail"])
-        self.editUserPass.setText(self.work["userpass"])
-        self.editUserCountry.setText(self.work["usercountry"])
-        self.editHttp.setText(self.work["http"])
-        self.editSmtp.setText(self.work["smtp"])
-        self.editPort.setText(str(self.work["port"]))
-        self.editMailTo.setText(self.work["mailto"])
-        self.checkServerData.setChecked(utils.int2bool(self.work["sc"]))
-        self.editMailServer.setText(self.work["mailserver"])
-        self.editMailPort.setText(str(self.work["mailport"]))
-        self.editMailUser.setText(self.work["mailuser"])
-        self.editMailPass.setText(self.work["mailpass"])
+        self.editUserMail.setText(self.settings.current["usermail"])
+        self.editUserPass.setText(self.settings.current["userpass"])
+        self.editUserCountry.setText(self.settings.current["usercountry"])
+        self.editHttp.setText(self.settings.current["http"])
+        self.editSmtp.setText(self.settings.current["smtp"])
+        self.editPort.setText(str(self.settings.current["port"]))
+        self.editMailTo.setText(self.settings.current["mailto"])
+        self.checkServerData.setChecked(utils.int2bool(self.settings.current["sc"]))
+        self.editMailServer.setText(self.settings.current["mailserver"])
+        self.editMailPort.setText(str(self.settings.current["mailport"]))
+        self.editMailUser.setText(self.settings.current["mailuser"])
+        self.editMailPass.setText(self.settings.current["mailpass"])
         # connect to signals
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
     def accept(self):
-        """User buttonbox_accepted_action current"""
+        """
+        User buttonbox_accepted_action current
+        """
         # assign input fields to current
         self.work["usermail"] = self.editUserMail.text().lower()
         self.work["userpass"] = self.editUserPass.text()
@@ -54,7 +58,7 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         self.work["mailport"] = self.editMailPort.text()
         self.work["mailuser"] = self.editMailUser.text()
         self.work["mailpass"] = self.editMailPass.text()
-        # check validity of vital current
+        # check validity of important settings
         checkok = True
         items = []
         if self.work["usermail"] == "":
@@ -78,7 +82,7 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
         if self.work["http"] == "":
             items.append("Web server (fane 2)")
             checkok = False
-        # inform user about current validity
+        # inform user about settings validity
         if not checkok:
             msgbox = QMessageBox()
             msgbox.warning(self,
@@ -86,7 +90,12 @@ class SettingsDialog(QDialog, settingsui.Ui_SettingsDialog):
                            self.tr("Der er mangler i dine indstillinger!\n{}".format("\n".join(items))),
                            QMessageBox.Ok)
             return False
-
+        # update password in settings
+        if len(self.work["userpass"]) < 97:
+            self.work["userpass"] = passwdfn.hash_password(self.work["userpass"])
+        if len(self.work["mailpass"]) < 97:
+            self.work["mailpass"] = passwdfn.hash_password(self.work["mailpass"])
+        self.settings.current = self.work
         self.done(True)
 
     def reject(self):

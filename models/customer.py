@@ -29,9 +29,9 @@ class Customer:
         Initialize Customer class
         """
         self.model = {
-            "name": "current",
-            "id": "customerid",
-            "fields": ("customerid", "account", "company",
+            "name": "customer",
+            "id": "customer_id",
+            "fields": ("customer_id", "account", "company",
                        "address1", "address2", "zipcode", "city", "country",
                        "salesrep", "phone1", "vat", "email", "deleted", "modified",
                        "created", "infotext", "att", "phone2", "factor",
@@ -99,9 +99,9 @@ class Customer:
             values = [None, "NY", company, "", "", "", "", country, salesrep,
                       phone, "", "", 0, 0, createdate, "", "", "", 0.0]
 
-            newid = self.insert(values)
+            new_id = self.insert(values)
 
-            self.lookup_by_id(newid)
+            self.lookup_by_id(new_id)
         return True
 
     def import_csv(self, filename, headers=False):
@@ -236,14 +236,14 @@ class Customer:
             return True
         return False
 
-    def lookup_by_id(self, customerid):
+    def lookup_by_id(self, customer_id):
         """
         Find current by id
         Args:
-            customerid
+            customer_id
         """
-        filters = [("customerid", "=")]
-        values = (customerid,)
+        filters = [("customer_id", "=")]
+        values = (customer_id,)
 
         sql = self.q.build("select", self.model, filteron=filters)
 

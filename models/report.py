@@ -33,9 +33,9 @@ class Report:
         Initilize Report class
         """
         self.model = {
-            "name": "reportid",
-            "id": "reportid",
-            "fields": ("reportid", "employeeid", "repno", "repdate",
+            "name": "report",
+            "id": "report_id",
+            "fields": ("report_id", "employeeid", "repno", "repdate",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
                        "sasday", "sasturnoverday", "demoday", "saleday",
@@ -55,7 +55,6 @@ class Report:
         self.q = Query()
         self.c = Calculator()
         if not self.q.exist_table(self.model["name"]):
-            # build query and execute
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
@@ -157,10 +156,11 @@ class Report:
                       "(sum(workday = 1)) AS 'workdays'",
                       "(sum(offday = 1)) AS 'offdays'"]
         # filter on
-        filteron = [("repdate", "LIKE", "and"), ("employeeid", "=", "and"), ("sent", "=")]
+        filteron = [("repdate", "LIKE", "and"), ("employee_id", "=", "and"), ("sent", "=")]
         # filter values
         ym_filter = "{}%".format(workdate[:8])
-        values = (ym_filter, employee["employeeid"], 1)
+        employee_id = employee["employee_id"]
+        values = (ym_filter, employee_id, 1)
 
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filteron)
 
@@ -183,13 +183,13 @@ class Report:
             month = list(month)
             report_count = month[0]
             next_report = report_count + 1
-            month = [workdate, "None", employee["employeeid"]] + list(month)
+            month = [workdate, "None", employee_id] + list(month)
             timestamp = datetime.today()
 
-            new_report = (None, employee["employeeid"], next_report, workdate,
-                          None, None, None, None, None, None, None, None, None, None, None, None,
-                          None, None, None, None, None, None, None, None, None, None, timestamp)
-            report_id = self.insert(new_report)
+            new_report_values = (None, employee_id, next_report, workdate,
+                                 None, None, None, None, None, None, None, None, None, None, None, None,
+                                 None, None, None, None, None, None, None, None, None, None, timestamp)
+            report_id = self.insert(new_report_values)
             month[1] = report_id
             month = tuple(month)
             if config.DEBUG_REPORT:
@@ -233,7 +233,6 @@ class Report:
         self.recreate_table()
         filename.encode("utf8")
         employeeid = employee["employeeid"]
-        # open and read the file
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
@@ -268,10 +267,10 @@ class Report:
 
     def load_report(self, workdate):
         """
-        Load reportid for supplied date arg
+        Load report for supplied date arg
 
         Args:
-            workdate: iso formatted str representing the date for the reportid to be loaded
+            workdate: iso formatted str representing the date for the report to be loaded
         """
         filters = [("repdate", "=")]
         values = (workdate,)
@@ -296,7 +295,7 @@ class Report:
 
     def load_reports(self, year=None, month=None):
         """
-        Load reportid matching args or all if no args
+        Load reports matching args or all if no args
 
         Args:
             :type year: str
@@ -348,7 +347,7 @@ class Report:
         Update reportid in database
         """
         # update_list = list(self.model["fields"])[1:]
-        # update_where = [self.model["id"], "="]
+        # update_where = [(self.model["id"], "=")]
         # self.q.values_to_arg(self._report.values())
 
         # if config.DEBUG_REPORT:

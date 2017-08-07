@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>770</height>
+    <width>853</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>800</width>
-    <height>700</height>
+    <height>600</height>
    </size>
   </property>
   <property name="font">
@@ -52,8 +52,13 @@
       <x>10</x>
       <y>10</y>
       <width>781</width>
-      <height>671</height>
+      <height>490</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -61,30 +66,56 @@
        <item>
         <layout class="QGridLayout" name="widgetCreateCustomer">
          <item row="1" column="1">
-          <widget class="QLineEdit" name="txtNewPhone1">
-           <property name="placeholderText">
-            <string>Telefon</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLineEdit" name="txtNewCompany">
-           <property name="placeholderText">
-            <string>Firma navn</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
           <widget class="QPushButton" name="buttonCreateCustomer">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Opret ny kunde</string>
+           </property>
+           <property name="statusTip">
+            <string>Tryk for at oprette kunde med disse oplysninger</string>
+           </property>
            <property name="text">
             <string>Opret</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QLabel" name="labelCreateCustomer">
-           <property name="text">
-            <string>Opret ny</string>
+          <widget class="QLineEdit" name="txtNewCompany">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Ny kunde firmanavn</string>
+           </property>
+           <property name="statusTip">
+            <string>Her indtastes firmanvn der skal oprettes</string>
+           </property>
+           <property name="placeholderText">
+            <string>ny firma kunde</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="txtNewPhone1">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Ny kunde telefon</string>
+           </property>
+           <property name="statusTip">
+            <string>Her indtastes telefon nummer for kunde der skal oprettes</string>
+           </property>
+           <property name="placeholderText">
+            <string>ny firma telefon</string>
            </property>
           </widget>
          </item>
@@ -92,6 +123,11 @@
        </item>
        <item>
         <widget class="Line" name="line_1">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -99,37 +135,48 @@
        </item>
        <item>
         <layout class="QGridLayout" name="widgetWorkdate">
-         <item row="0" column="0">
-          <widget class="QLabel" name="labelWorkdate">
-           <property name="text">
-            <string>Arbejdsdato</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <widget class="QLineEdit" name="txtWorkdate">
            <property name="enabled">
             <bool>true</bool>
            </property>
            <property name="font">
             <font>
+             <pointsize>10</pointsize>
              <weight>75</weight>
              <bold>true</bold>
             </font>
+           </property>
+           <property name="toolTip">
+            <string>Arbejdsdato</string>
+           </property>
+           <property name="statusTip">
+            <string>Dette er arbejdsdato.</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
            <property name="readOnly">
-            <bool>true</bool>
+            <bool>false</bool>
+           </property>
+           <property name="placeholderText">
+            <string>arbejdsdato</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="2" column="0">
           <widget class="QPushButton" name="buttonReport">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Opret dagsrapport</string>
+           </property>
+           <property name="statusTip">
+            <string>Her opretter du en ny dagsrapport</string>
+           </property>
            <property name="text">
             <string>Dagsrapport</string>
            </property>
@@ -139,6 +186,11 @@
        </item>
        <item>
         <widget class="Line" name="line_2">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -147,19 +199,20 @@
        <item>
         <layout class="QGridLayout" name="widgetLastUpdate">
          <item row="0" column="2">
-          <widget class="QLabel" name="lblAvailable">
-           <property name="text">
-            <string>Server dato</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QLineEdit" name="txtProdServer">
+          <widget class="QLineEdit" name="txtCustServer">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Tilgængelig kundeliste</string>
+           </property>
+           <property name="statusTip">
+            <string>Dette datoen for serverens kundeliste</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -167,46 +220,18 @@
            <property name="readOnly">
             <bool>true</bool>
            </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="txtProdLocal">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
+           <property name="placeholderText">
+            <string>dato</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="txtCustLocal">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="labelSync">
-           <property name="text">
-            <string>Synkroniseret</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
+         <item row="0" column="0">
           <widget class="QLabel" name="lblCustomer">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Kundeliste</string>
            </property>
@@ -215,26 +240,99 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <widget class="QLabel" name="lblCatalog">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
            <property name="text">
-            <string>Priskatalog</string>
+            <string>Prisliste</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
            </property>
           </widget>
          </item>
-         <item row="1" column="2">
-          <widget class="QLineEdit" name="txtCustServer">
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="txtCustLocal">
            <property name="enabled">
             <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Kundeliste synkroniseret</string>
+           </property>
+           <property name="statusTip">
+            <string>Dette er dato for sidste synkronisering af kundeliste</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
            </property>
            <property name="readOnly">
             <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string>dato</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLineEdit" name="txtProdServer">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Tilgængelig prisliste</string>
+           </property>
+           <property name="statusTip">
+            <string>Dette er datoen for serverens prisliste</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string>dato</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="txtProdLocal">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+            </font>
+           </property>
+           <property name="toolTip">
+            <string>Prisliste synkroniseret</string>
+           </property>
+           <property name="statusTip">
+            <string>Dette er dato for sidste synkronisering af prisliste</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string>dato</string>
            </property>
           </widget>
          </item>
@@ -244,6 +342,11 @@
      </item>
      <item>
       <widget class="Line" name="line_3">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -253,6 +356,20 @@
       <layout class="QHBoxLayout" name="mainGrid">
        <item>
         <widget class="QTreeWidget" name="widgetCustomers">
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="statusTip">
+          <string>Listen er søgbar ved tryk på en tast og kan sorteres ved tryk på en overskrift</string>
+         </property>
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
@@ -270,6 +387,11 @@
        </item>
        <item>
         <widget class="Line" name="line_4">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -280,21 +402,36 @@
          <item>
           <layout class="QGridLayout" name="widgetInfoButtons">
            <item row="0" column="2">
-            <widget class="QPushButton" name="buttonVisitData">
-             <property name="text">
-              <string>Besøg</string>
+            <widget class="QPushButton" name="buttonHistoryData">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
              </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QPushButton" name="buttonOrderData">
+             <property name="toolTip">
+              <string>Vis historik</string>
+             </property>
+             <property name="statusTip">
+              <string>Tryk her for at få vise historik for kunde</string>
+             </property>
              <property name="text">
-              <string>Ordrer</string>
+              <string>Historik</string>
              </property>
             </widget>
            </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="buttonMasterData">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>Vis stamdata</string>
+             </property>
+             <property name="statusTip">
+              <string>Klik her for at vise stamdata for kunde</string>
+             </property>
              <property name="text">
               <string>Stamdata</string>
              </property>
@@ -302,19 +439,23 @@
            </item>
            <item row="0" column="1">
             <widget class="QPushButton" name="buttonContactData">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>Vis kontakter</string>
+             </property>
+             <property name="statusTip">
+              <string>Tryk her for at vise kontakter for kunde</string>
+             </property>
              <property name="text">
               <string>Kontakter</string>
              </property>
             </widget>
            </item>
           </layout>
-         </item>
-         <item>
-          <widget class="QPushButton" name="buttonCreateVisit">
-           <property name="text">
-            <string>Opret besøg / ordre</string>
-           </property>
-          </widget>
          </item>
          <item>
           <widget class="QStackedWidget" name="widgetCustomerInfo">
@@ -330,230 +471,397 @@
             <widget class="QWidget" name="layoutWidget">
              <property name="geometry">
               <rect>
-               <x>13</x>
-               <y>1</y>
-               <width>350</width>
-               <height>462</height>
+               <x>0</x>
+               <y>34</y>
+               <width>460</width>
+               <height>230</height>
               </rect>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <layout class="QGridLayout" name="widgetMasterDetails">
-              <item row="12" column="1">
-               <widget class="QLineEdit" name="txtFactor">
-                <property name="placeholderText">
-                 <string>prisliste faktor</string>
-                </property>
-               </widget>
-              </item>
-              <item row="13" column="1">
-               <widget class="QTextEdit" name="txtInfoText"/>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="lblAddress1">
-                <property name="text">
-                 <string>Adresse</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="0">
-               <widget class="QLabel" name="lblPostOffice">
-                <property name="text">
-                 <string>Bynavn</string>
-                </property>
-               </widget>
-              </item>
-              <item row="6" column="1">
-               <widget class="QLineEdit" name="txtCityName">
-                <property name="placeholderText">
-                 <string>by navn</string>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="1">
-               <widget class="QLineEdit" name="txtPhone2">
-                <property name="placeholderText">
-                 <string>mobil telefon</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="lblAddress2">
-                <property name="text">
-                 <string>Adresse</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="lblAccount">
-                <property name="text">
-                 <string>Konto</string>
-                </property>
-               </widget>
-              </item>
-              <item row="9" column="0">
-               <widget class="QLabel" name="lblPhone2">
-                <property name="text">
-                 <string>Tlf2</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="txtAccount">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="11" column="1">
+              <item row="5" column="1">
                <widget class="QLineEdit" name="txtEmail">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Epost adresse</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er epost adresse for kunde</string>
+                </property>
                 <property name="placeholderText">
                  <string>epost adresse</string>
                 </property>
                </widget>
               </item>
-              <item row="12" column="0">
-               <widget class="QLabel" name="lblFactor">
-                <property name="text">
-                 <string>Faktor</string>
+              <item row="4" column="1">
+               <widget class="QLineEdit" name="txtPhone2">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
                 </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLineEdit" name="txtCompany">
+                <property name="toolTip">
+                 <string>Anden telefon</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er mobil eller anden telefon til kunde</string>
+                </property>
                 <property name="placeholderText">
-                 <string>firma navn</string>
+                 <string>mobil telefon</string>
                 </property>
                </widget>
               </item>
-              <item row="5" column="1">
-               <widget class="QLineEdit" name="txtZipCode">
-                <property name="placeholderText">
-                 <string>post nummer</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1">
+              <item row="3" column="1">
                <widget class="QLineEdit" name="txtPhone1">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Primær telefon</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er primær telefon til kunde</string>
+                </property>
                 <property name="placeholderText">
                  <string>primær telefon</string>
                 </property>
                </widget>
               </item>
-              <item row="11" column="0">
-               <widget class="QLabel" name="lblEmail">
-                <property name="text">
-                 <string>Epost</string>
-                </property>
-               </widget>
-              </item>
-              <item row="13" column="0">
-               <widget class="QLabel" name="lblInfoText">
-                <property name="text">
-                 <string>Noter</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="1">
-               <widget class="QLineEdit" name="txtAddress2">
-                <property name="placeholderText">
-                 <string>adresse</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="0">
-               <widget class="QLabel" name="lblPhone1">
-                <property name="text">
-                 <string>Tlf1</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="lblCompany">
-                <property name="text">
-                 <string>Firma</string>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QLabel" name="lblPostCode">
-                <property name="text">
-                 <string>Postnr</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLineEdit" name="txtAddress1">
-                <property name="placeholderText">
-                 <string>adresse</string>
-                </property>
-               </widget>
-              </item>
-              <item row="14" column="1">
+              <item row="8" column="1">
                <widget class="QPushButton" name="buttonArchiveChanges">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Arkiver ændringer</string>
+                </property>
+                <property name="statusTip">
+                 <string>Tryk her for at gemme rettelser i databasen</string>
+                </property>
                 <property name="text">
                  <string>Arkiver rettelser</string>
                 </property>
                </widget>
               </item>
+              <item row="6" column="1">
+               <widget class="QLineEdit" name="txtFactor">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Faktor</string>
+                </property>
+                <property name="statusTip">
+                 <string>Ved salg bliver liste priser ganget med faktor</string>
+                </property>
+                <property name="placeholderText">
+                 <string>faktor</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="txtAccount">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Kundekonto</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er konto for kunde</string>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="placeholderText">
+                 <string>konto</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLineEdit" name="txtCompany">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Firmanavn</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er kunde navn</string>
+                </property>
+                <property name="placeholderText">
+                 <string>firma navn</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLineEdit" name="txtAddress1">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Kundens adresse</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er kunde adresse</string>
+                </property>
+                <property name="placeholderText">
+                 <string>adresse</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLineEdit" name="txtAddress2">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Udvidet adresse</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er udvidet adresse</string>
+                </property>
+                <property name="placeholderText">
+                 <string>adresse</string>
+                </property>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QLineEdit" name="txtZipCode">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Postnummer</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er postnummer for kunde</string>
+                </property>
+                <property name="placeholderText">
+                 <string>post nummer</string>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLineEdit" name="txtCityName">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Bynavn</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er bynavn for kunde</string>
+                </property>
+                <property name="placeholderText">
+                 <string>by navn</string>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="0">
+               <widget class="QLineEdit" name="txtInfoText">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Note linje</string>
+                </property>
+                <property name="statusTip">
+                 <string>Dette felt er et note for kunde</string>
+                </property>
+                <property name="placeholderText">
+                 <string>note</string>
+                </property>
+               </widget>
+              </item>
              </layout>
+            </widget>
+            <widget class="QLabel" name="labelMasterData">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>460</width>
+               <height>30</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Stamdata</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
             </widget>
            </widget>
            <widget class="QWidget" name="widgetContactsPage">
-            <widget class="QLabel" name="label_6">
+            <widget class="QTableWidget" name="widgetContactsList">
              <property name="geometry">
               <rect>
-               <x>10</x>
-               <y>10</y>
-               <width>231</width>
-               <height>18</height>
+               <x>0</x>
+               <y>30</y>
+               <width>461</width>
+               <height>251</height>
+              </rect>
+             </property>
+             <column>
+              <property name="text">
+               <string>Navn</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Telefon</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Afdeling</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Note</string>
+              </property>
+             </column>
+            </widget>
+            <widget class="QLabel" name="labelContactsData">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>460</width>
+               <height>30</height>
               </rect>
              </property>
              <property name="text">
-              <string>TODO: Vis alle kontakter</string>
+              <string>Kontakter</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="buttonAddContact">
+             <property name="geometry">
+              <rect>
+               <x>290</x>
+               <y>310</y>
+               <width>150</width>
+               <height>29</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Tilføj kontakt ...</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="buttonSaveChanges">
+             <property name="geometry">
+              <rect>
+               <x>130</x>
+               <y>310</y>
+               <width>151</width>
+               <height>29</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Arkiver rettelser</string>
              </property>
             </widget>
            </widget>
            <widget class="QWidget" name="widgetVisitsPage">
-            <widget class="QLabel" name="label_5">
+            <widget class="QPushButton" name="buttonCreateVisit">
              <property name="geometry">
               <rect>
-               <x>10</x>
-               <y>10</y>
-               <width>231</width>
-               <height>18</height>
+               <x>0</x>
+               <y>320</y>
+               <width>460</width>
+               <height>32</height>
               </rect>
              </property>
              <property name="text">
-              <string>TODO: Vis alle besøg</string>
+              <string>Opret besøg</string>
              </property>
             </widget>
-           </widget>
-           <widget class="QWidget" name="widgetVisitDetailsPage">
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="labelHistoryData">
              <property name="geometry">
               <rect>
-               <x>20</x>
-               <y>30</y>
-               <width>231</width>
-               <height>18</height>
+               <x>0</x>
+               <y>0</y>
+               <width>460</width>
+               <height>30</height>
               </rect>
              </property>
              <property name="text">
-              <string>TODO: Vis tidligere ordrer</string>
+              <string>Besøg</string>
              </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+            <widget class="QTreeWidget" name="treeWidget">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>30</y>
+               <width>460</width>
+               <height>280</height>
+              </rect>
+             </property>
+             <column>
+              <property name="text">
+               <string>Dato</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Demo</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Salg</string>
+              </property>
+             </column>
             </widget>
            </widget>
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <layout class="QGridLayout" name="customerGrid"/>
        </item>
       </layout>
      </item>
@@ -565,9 +873,14 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>26</height>
+     <width>853</width>
+     <height>23</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
    <widget class="QMenu" name="menuExit">
     <property name="title">
@@ -593,7 +906,6 @@
      <addaction name="actionMasterInfo"/>
      <addaction name="actionContactsInfo"/>
      <addaction name="actionVisitsList"/>
-     <addaction name="actionVisitDetails"/>
      <addaction name="separator"/>
      <addaction name="actionArchiveChanges"/>
     </widget>
@@ -601,8 +913,8 @@
      <property name="title">
       <string>Server</string>
      </property>
-     <addaction name="actionHttpGetCatalog"/>
-     <addaction name="actionHttpGetCustomers"/>
+     <addaction name="actionGetCatalogHttp"/>
+     <addaction name="actionGetCustomersHttp"/>
     </widget>
     <widget class="QMenu" name="menuReports">
      <property name="title">
@@ -615,7 +927,7 @@
      <property name="title">
       <string>Import / Eksport</string>
      </property>
-     <addaction name="actionCsvFileImport"/>
+     <addaction name="actionImportCsvFiles"/>
      <addaction name="separator"/>
      <addaction name="actionZeroDatabase"/>
     </widget>
@@ -645,11 +957,25 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="locale">
+    <locale language="Danish" country="Denmark"/>
+   </property>
    <property name="movable">
     <bool>true</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllToolBarAreas</set>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
    </property>
    <property name="iconSize">
     <size>
@@ -664,10 +990,10 @@
     <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
+    <enum>RightToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="actionExit"/>
   </widget>
@@ -702,7 +1028,7 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionHttpGetCustomers">
+  <action name="actionGetCustomersHttp">
    <property name="text">
     <string>Hent kunder</string>
    </property>
@@ -710,7 +1036,7 @@
     <string>Her hentes kunder fra server</string>
    </property>
   </action>
-  <action name="actionHttpGetCatalog">
+  <action name="actionGetCatalogHttp">
    <property name="text">
     <string>Hent Prisliste</string>
    </property>
@@ -734,7 +1060,7 @@
     <string>Oplysning om program version</string>
    </property>
   </action>
-  <action name="actionCsvFileImport">
+  <action name="actionImportCsvFiles">
    <property name="text">
     <string>Fil import</string>
    </property>
@@ -802,21 +1128,7 @@
   <tabstop>widgetCustomers</tabstop>
   <tabstop>buttonMasterData</tabstop>
   <tabstop>buttonContactData</tabstop>
-  <tabstop>buttonVisitData</tabstop>
-  <tabstop>buttonOrderData</tabstop>
-  <tabstop>buttonCreateVisit</tabstop>
-  <tabstop>txtAccount</tabstop>
-  <tabstop>txtCompany</tabstop>
-  <tabstop>txtAddress1</tabstop>
-  <tabstop>txtAddress2</tabstop>
-  <tabstop>txtZipCode</tabstop>
-  <tabstop>txtCityName</tabstop>
-  <tabstop>txtPhone1</tabstop>
-  <tabstop>txtPhone2</tabstop>
-  <tabstop>txtEmail</tabstop>
-  <tabstop>txtFactor</tabstop>
-  <tabstop>txtInfoText</tabstop>
-  <tabstop>buttonArchiveChanges</tabstop>
+  <tabstop>buttonHistoryData</tabstop>
  </tabstops>
  <resources/>
  <connections/>

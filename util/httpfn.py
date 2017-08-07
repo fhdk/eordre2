@@ -149,4 +149,4 @@ def update_last_sync_info(settings):
     s["sac"] = get_modified_date(s["http"], s["usercountry"], f)
     f = "".join([s["pd"], s["fc"], s["sf"]])
     s["sap"] = get_modified_date(s["http"], s["usercountry"], f)
-    return [(settings["fc"], settings["sac"]), (settings["fp"], settings["sap"])]
+    return [(s["fc"], s["sac"]), (s["fp"], s["sap"])]

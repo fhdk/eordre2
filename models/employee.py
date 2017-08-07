@@ -30,11 +30,10 @@ class Employee:
         """
         Initialize current class
         """
-        # model for zipping dictionary
         self.model = {
-            "name": "employeeid",
-            "id": "employeeid",
-            "fields": ("employeeid", "salesrep", "fullname", "email", "country", "sas"),
+            "name": "employee",
+            "id": "employee_id",
+            "fields": ("employee_id", "salesrep", "fullname", "email", "country", "sas"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER DEFAULT 0")
         }
         self._employee = {}
@@ -71,7 +70,6 @@ class Employee:
         Args:
             values:
         """
-        # build query and execute
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_EMPLOYEE:

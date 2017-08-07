@@ -31,7 +31,7 @@ def refresh_sync_status(settings):
     Args:
         settings:
     Returns:
-        Two strings with date time values
+        Two tuples with target and date time value
     """
     return httpfn.update_last_sync_info(settings)
 

@@ -10,7 +10,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from configuration import config
-from models import contact, customer, visit, visit_detail, report
+from models import contact, customer, visit, detail, report
 from resources import file_import_dialog_rc
 
 

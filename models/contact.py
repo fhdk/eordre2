@@ -28,8 +28,8 @@ class Contact:
         """Initialize contact class"""
         self.model = {
             "name": "contact",
-            "id": "contactid",
-            "fields": ("contactid", "customerid", "name", "department", "email", "phone", "infotext"),
+            "id": "contact_id",
+            "fields": ("contact_id", "customerid", "name", "department", "email", "phone", "infotext"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT")
         }
         self._contact = {}
@@ -57,17 +57,17 @@ class Contact:
         return self._contact
 
     @current.setter
-    def current(self, contactid):
+    def current(self, contact_id):
         """
         Active list of contacts
         :return:
         """
         try:
-            cid = self._contact["contactid"][0]
-            if not cid == contactid:
-                self.find(contactid)
+            cid = self._contact["contact_id"][0]
+            if not cid == contact_id:
+                self.find(contact_id)
         except (KeyError, IndexError):
-            self.find(contactid)
+            self.find(contact_id)
 
     def clear(self):
         """
@@ -76,11 +76,11 @@ class Contact:
         self._contact = {}
         self._contacts = []
 
-    def create(self, customerid, name):
+    def create(self, customer_id, name):
         """
         Create a contact
         """
-        values = (None, customerid, name, "", "", "", "")
+        values = (None, customer_id, name, "", "", "", "")
 
         data = self.insert(values)
 
@@ -88,13 +88,13 @@ class Contact:
 
         return self._contact
 
-    def find(self, contactid):
+    def find(self, contact_id):
         """
         Load specific contact by id
         Args:
-            contactid:
+            contact_id:
         """
-        values = (contactid,)
+        values = (contact_id,)
 
         sql = self.q.build("select", self.model)
 
@@ -178,14 +178,14 @@ class Contact:
             return data
         return False
 
-    def load_for_customer(self, customerid):
+    def load_for_customer(self, customer_id):
         """
         Load contacts for current
         Args:
-            customerid:
+            customer_id:
         """
-        filters = [("customerid", "=")]
-        values = (customerid,)
+        filters = [("customer_id", "=")]
+        values = (customer_id,)
 
         sql = self.q.build("select", self.model, filteron=filters)
 

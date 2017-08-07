@@ -29,8 +29,8 @@ class Product:
         """
         self.model = {
             "name": "product",
-            "id": "productid",
-            "fields": ("productid", "sku", "name1", "name2", "name3", "item", "price", "d2", "d4", "d6", "d8", "d12",
+            "id": "product_id",
+            "fields": ("product_id", "sku", "name1", "name2", "name3", "item", "price", "d2", "d4", "d6", "d8", "d12",
                        "d24", "d48", "d96", "min", "net", "groupid"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
                       "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0",
@@ -40,7 +40,6 @@ class Product:
         self._product = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            # build query and execute
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_PRODUCT:
@@ -118,7 +117,6 @@ class Product:
         """
         Load product list
         """
-        # build query and execute
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_PRODUCT:

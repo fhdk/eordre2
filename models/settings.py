@@ -29,9 +29,9 @@ class Settings:
         Initialize the current class
         """
         self.model = {
-            "name": "current",
-            "id": "settingsid",
-            "fields": ("settingsid", "usermail", "userpass", "usercountry", "pd", "pf", "sf",
+            "name": "settings",
+            "id": "settings_id",
+            "fields": ("settings_id", "usermail", "userpass", "usercountry", "pd", "pf", "sf",
                        "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
                        "fc", "fp", "fe", "lsc", "lsp", "sac", "sap", "sc"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",

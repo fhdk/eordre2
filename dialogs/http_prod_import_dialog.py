@@ -23,11 +23,11 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
     """
     Dialog for importing products from server
     """
-    def __init__(self, product, settings, parent=None):
+    def __init__(self, products, settings, parent=None):
         """
         Initialize Dialog
         Args:
-            product: main product objecæt
+            products: main product object
             settings: main current object
         """
         super(HttpProdImportDialog, self).__init__(parent)
@@ -36,7 +36,7 @@ class HttpProdImportDialog(QDialog, Ui_HttpProdImportDialog):
         self.progresscount = 1  # Used when setting progress values
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
-        self.import_thread = threads.ImportProductsThread(product=product, settings=settings)
+        self.import_thread = threads.ImportProductsThread(products=products, settings=settings)
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_action)
         self.buttonClose.clicked.connect(self.button_close_action)
