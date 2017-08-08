@@ -195,7 +195,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             previous: previous selected item
         """
         self.customers.current = current.text(0), current.text(1)
-        print("{}".format(self.customers.current))
         # try:
         self.txtAccount.setText(str(self.customers.current["account"]))
         self.txtCompany.setText(self.customers.current["company"])
@@ -211,7 +210,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
         self.contacts.load_for_customer(self.customers.current["customer_id"])
 
-        self.visits.load_by_customer(self.customers.current["customer_id"])
+        self.visits.load_for_customer(self.customers.current["customer_id"])
 
         # except (KeyError, AttributeError):
         #     # clear input lines
@@ -308,7 +307,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         try:
             repdate = self.reports.current["repdate"]
-            print("main.py -> current -> repdate: " + repdate)
             if not repdate == self.txtWorkdate.text():
                 infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
                     repdate, self.txtWorkdate.text())

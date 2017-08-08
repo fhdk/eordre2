@@ -83,13 +83,14 @@ class Employee:
         """
         filters = [("email", "=")]
         values = (email,)
-
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_EMPLOYEE:
             printit("{}\n"
                     " ->load\n"
-                    "  ->sql: {}\n  ->values: {}".format(self.model["name"], sql, values))
+                    "  ->sql: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}".format(self.model["name"], sql, filters, values))
 
         success, data = self.q.execute(sql, values)
         if config.DEBUG_EMPLOYEE:

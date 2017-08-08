@@ -94,9 +94,9 @@ class Visit:
         try:
             c_id = self._customer_visits[0]["customer_id"]
             if not c_id == customer_id:
-                self.load_by_customer(customer_id)
+                self.load_for_customer(customer_id)
         except (IndexError, KeyError):
-            self.load_by_customer(customer_id)
+            self.load_for_customer(customer_id)
 
     @property
     def report_visits(self):
@@ -227,7 +227,7 @@ class Visit:
             return True
         return False
 
-    def load_by_customer(self, customer_id):
+    def load_for_customer(self, customer_id):
         """
         Load customer_visits for specified customer
         Args:
@@ -240,7 +240,7 @@ class Visit:
 
         if config.DEBUG_VISIT:
             printit("{}\n"
-                    " ->load_by_customer\n"
+                    " ->load_for_customer\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(self.model["name"], filters, values, sql))

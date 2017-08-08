@@ -142,9 +142,9 @@ class Customer:
                     printit("{}\n"
                             " ->row length {}\n"
                             "  ->row: {}".format(self.model["name"], len(row), row))
-                #
-                # if not len(row) == self._csv_field_count:
-                #     return False
+
+                if not len(row) == self._csv_field_count:
+                    return False
 
                 line += 1
                 if headers and line == 1:
@@ -237,7 +237,6 @@ class Customer:
         """
         Load customers into primary current list
         """
-        # build query and execute
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_CUSTOMER:

@@ -105,7 +105,6 @@ class Settings:
         """
         Load current
         """
-        # build query and execute
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_SETTINGS:

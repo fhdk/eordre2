@@ -53,7 +53,6 @@ def build_select_query(model_def, aggregates=None, filters=None, sort_order=None
     # where 'field' operator 'value'
     if filters:
         for idx, s_item in enumerate(filters):
-            print("{}{}".format(idx, s_item))
             field = s_item[0]
             operator = s_item[1].upper()
             andor = ""

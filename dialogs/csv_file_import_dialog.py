@@ -40,8 +40,6 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
         self.c = CsvImportComm()
         self.file_dialog = QFileDialog()
 
-        print("csv_file_import_dialog -> __init__ -> employees -> {}".format(employees))
-
         self.buttonImport.enabled = False
         # connect to signals
         self.comboImport.currentIndexChanged.connect(self.combo_current_index_changed_action)

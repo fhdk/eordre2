@@ -155,14 +155,12 @@ class Report:
                       "(sum(kmprivate)) AS 'kmprivate'",
                       "(sum(workday = 1)) AS 'workdays'",
                       "(sum(offday = 1)) AS 'offdays'"]
-        # filter on
-        filteron = [("repdate", "LIKE", "and"), ("employee_id", "=", "and"), ("sent", "=")]
-        # filter values
+        filters = [("repdate", "LIKE", "and"), ("employee_id", "=", "and"), ("sent", "=")]
         ym_filter = "{}%".format(workdate[:8])
         employee_id = employee["employee_id"]
         values = (ym_filter, employee_id, 1)
 
-        sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filteron)
+        sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filters)
 
         if config.DEBUG_REPORT:
             printit("{}\n"
