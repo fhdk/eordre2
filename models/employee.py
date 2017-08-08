@@ -5,7 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """
-current Module
+Employee Module
 """
 
 from configuration import config
@@ -23,12 +23,12 @@ def printit(string):
 
 class Employee:
     """
-    current class
+    Employee class
     """
 
     def __init__(self):
         """
-        Initialize current class
+        Initialize Employee class
         """
         self.model = {
             "name": "employee",
@@ -58,7 +58,7 @@ class Employee:
 
     def insert(self, values):
         """
-        Insert employeeid in database
+        Insert employee in database
         Args:
             values:
         """
@@ -127,7 +127,7 @@ class Employee:
 
     def update(self):
         """
-        Update employeeid in database
+        Update employee in database
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
