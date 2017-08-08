@@ -36,12 +36,9 @@ class Employee:
             "fields": ("employee_id", "salesrep", "fullname", "email", "country", "sas"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER DEFAULT 0")
         }
-        # self._defaults = (None, "", "", "", "", 0)
-        # self._employee = dict(zip(self.model["fields"], self._defaults))
         self._employee = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            # build query and execute
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_EMPLOYEE:
@@ -50,15 +47,7 @@ class Employee:
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
         self.s = Settings()
-        print("employee -> __init__ -> settings -> {}".format(self.s))
-        if rules.check_settings(self.s.current) and httpfn.inet_conn_check():
-            self.load()
-            if not self._employee:
-                data = httpfn.get_employee_data(self.s)
-                if data:
-                    data = list(data)
-                    data[0:0] = [None]
-                    self.insert(tuple(data))
+        self.load(self.s.current["usermail"])
 
     @property
     def current(self):
@@ -88,26 +77,53 @@ class Employee:
                     "  ->success: {}\n"
                     "  -->data: {}".format(self.model["name"], success, data))
 
-    def load(self):
+    def load(self, email):
         """
         Load the employee
         """
-        sql = self.q.build("select", self.model)
+        filters = [("email", "=")]
+        values = (email,)
+
+        sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_EMPLOYEE:
             printit("{}\n"
                     " ->load\n"
-                    "  ->sql: {}".format(self.model["name"], sql))
+                    "  ->sql: {}\n  ->values: {}".format(self.model["name"], sql, values))
 
-        success, data = self.q.execute(sql)
-
-        if success and data:
-            self._employee = dict(zip(self.model["fields"], data[0]))
-
+        success, data = self.q.execute(sql, values)
         if config.DEBUG_EMPLOYEE:
-            printit("  ->{}\n"
+            printit("  ->{} first check\n"
                     "  ->success: {}\n"
                     "  ->data: {}".format(self.model["name"], success, data))
+
+        try:
+            _ = data[0]
+            self._employee = dict(zip(self.model["fields"], data[0]))
+        except IndexError:
+            self.load_from_http()
+
+            success, data = self.q.execute(sql, values)
+            if config.DEBUG_EMPLOYEE:
+                printit("  ->{} second check\n"
+                        "  ->success: {}\n"
+                        "  ->data: {}".format(self.model["name"], success, data))
+            try:
+                _ = data[0]
+                self._employee = dict(zip(self.model["fields"], data[0]))
+            except IndexError:
+                pass
+
+    def load_from_http(self):
+        data = httpfn.get_employee_data(self.s)
+        if config.DEBUG_EMPLOYEE:
+            printit("  ->{}\n"
+                    "  ->load_from_http\n"
+                    "  ->data: {}".format(self.model["name"], data))
+        if data:
+            data = list(data)
+            data[0:0] = [None]
+            self.insert(tuple(data))
 
     def update(self):
         """

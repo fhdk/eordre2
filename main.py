@@ -62,14 +62,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         configfn.check_config_folder()  # Check app folder in users home
 
         self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
-        self.contacts = Contact()  # Initialize contact object
+        self.contacts = Contact()  # Initialize Contact object
         self.customers = Customer()  # Initialize Customer object
-        self.details = Detail()  # Initialize Visit details object
-        self.employees = Employee()  # Initialize current object
+        self.details = Detail()  # Initialize Detail object
+        self.employees = Employee()  # Initialize Employee object
         self.products = Product()  # Initialize Product object
         self.reports = Report()  # Initialize Report object
         self.visits = Visit()  # Initialize Visit object
-        self.settings = Settings()  # Initialize current object
+        self.settings = Settings()  # Initialize Settings object
 
         # connect menu trigger signals
         self.actionAboutQt.triggered.connect(self.about_qt_action)
@@ -242,15 +242,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slot for fileImport triggered signal
         """
-        if self.customers.customers or self.reports.current:
+        if self.customers.customers:
             msgbox = QMessageBox()
             msgbox.warning(self,
                            __appname__,
                            "<strong>Ved import slettes alle eksisterende data</strong>!<br/><br/>"
-                           "Det er alt eller intet. <br/>"
-                           "Af hensyn til sammenkædning af data <strong>SKAL</strong>,<br/>"
-                           "du importere <strong>ALLE<strong> tabeller der findes i listen!<br/><br/>"
-                           "<strong>Importerer du ikke alle vil det give problemer</strong>!",
+                           "Det er alt eller intet af hensyn til datas sammenhæng.<br/>"
+                           "Du  <strong>SKAL</strong> importere <strong>ALLE<strong> tabeller fra i listen!<br/><br/>"
+                           "<strong>Gør du ikke det giver det uløselige problemer</strong>!",
                            QMessageBox.Ok)
         import_dialog = CsvFileImportDialog(self.contacts, self.customers, self.details,
                                             self.employees, self.reports, self.visits, config.CSV_TABLES)

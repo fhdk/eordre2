@@ -40,7 +40,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
         self.c = CsvImportComm()
         self.file_dialog = QFileDialog()
 
-        self.employee_id = self.employees.current["employee_id"]
+        print("csv_file_import_dialog -> __init__ -> employees -> {}".format(employees))
 
         self.buttonImport.enabled = False
         # connect to signals
@@ -106,7 +106,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
             # import selected file to reportid table
             if self.selectedTable == "report":
                 success = self.reports.import_csv(self.selectedFile,
-                                                  self.employee_id,
+                                                  self.employees.current["employee_id"],
                                                   self.checkHeaders.isChecked())
 
             if success:

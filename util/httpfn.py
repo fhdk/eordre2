@@ -62,6 +62,7 @@ def get_employee_data(settings, maxwait=2):
         with urlopen(uri, timeout=maxwait, context=context) as response:
             data = response.read()
             data = sanitizedatafn.sanitize_employee_data(data, s["usermail"], s["userpass"])
+
     except (HTTPException, timeout, URLError) as e:
         print("HTTP ERROR: {}".format(e))
     return data
