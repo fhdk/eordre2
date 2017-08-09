@@ -34,7 +34,7 @@ class Query:
         Builds a sql query from definition
 
         Args:
-            query_type: create(table), drop(table), insert(row), load(row), update(row), delete(row))
+            query_type: create(table), drop(table), insert(row), all(row), update(row), delete(row))
 
             model_def: table model definition
             {"name": ("name" ...), "fields": ("field" ...), "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
@@ -44,7 +44,7 @@ class Query:
 
             aggregates: valid ["sum(column) AS 'expression'", "sum(column) AS 'expression'" ....]
 
-            filteron:  valid for load-, required for update- and delete query
+            filteron:  valid for all-, required for update- and delete query
             [("field", "operator", "value", "and/or"), (("field", "operator", "value"))]]
 
             sort_order: asc or desc
@@ -87,7 +87,7 @@ class Query:
         if querytype == "INSERT":
             return build_insert_query(model_def)
 
-        # build load row query
+        # build all row query
         if querytype == "SELECT":
             return build_select_query(model_def, aggregates, filteron, sort_order)
 
@@ -109,7 +109,7 @@ class Query:
             printit(" ->execute\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql_query, values))
-        # query types: create, delete, insert, load, update
+        # query types: create, delete, insert, all, update
         select = sql_query.startswith("SELECT")
         insert = sql_query.startswith("INSERT")
         db = sqlite3.connect(config.DBPATH)

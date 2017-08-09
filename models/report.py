@@ -6,6 +6,8 @@
 
 """Report class"""
 
+__module__ = "report"
+
 import csv
 from datetime import datetime
 
@@ -19,7 +21,7 @@ E_COLOR = "\033[0;m"
 
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 # noinspection PyMethodMayBeStatic
@@ -59,10 +61,9 @@ class Report:
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
-                printit("{}\n"
-                        " ->create table\n"
+                printit(" ->create table\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
+                        "  ->data: {}".format(success, data))
 
     @property
     def current(self):
@@ -137,7 +138,7 @@ class Report:
 
         # parameters for initial feed of ReportCalc
         # aggregates
-        aggregates = ["count(reportid) AS 'report_count'",
+        aggregates = ["count(report_id) AS 'report_count'",
                       "sum(newvisitday) AS 'new_visit'",
                       "sum(newdemoday) AS 'new_demo'",
                       "sum(newsaleday) AS 'new_sale'",
@@ -164,18 +165,16 @@ class Report:
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filters)
 
         if config.DEBUG_REPORT:
-            printit("{}\n"
-                    " ->create\n"
+            printit(" ->create\n"
                     "  ->aggregates: {}\n"
                     "  ->sql: {}\n"
-                    "  ->values: {}".format(self.model["name"], aggregates, sql, values))
+                    "  ->values: {}".format(aggregates, sql, values))
 
         success, data = self.q.execute(sql, values)
 
         if config.DEBUG_REPORT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             # assign expected result from list item
@@ -203,7 +202,7 @@ class Report:
             # revert to tuple
             current_month_totals = tuple(current_month_totals)
             if config.DEBUG_REPORT:
-                printit("  ->{}\n  ->month: {}".format(self.model["name"], current_month_totals))
+                printit("  ->month: {}".format(current_month_totals))
             # insert the values in the calculation table
             self.c.insert(current_month_totals)
             return True
@@ -217,17 +216,15 @@ class Report:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_REPORT:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->sql: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, values))
+                    "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
@@ -249,9 +246,8 @@ class Report:
             for row in reader:
 
                 if config.DEBUG_REPORT:
-                    printit("{}\n"
-                            " ->import_csv\n"
-                            "  ->row: {}".format(self.model["name"], row))
+                    printit(" ->import_csv\n"
+                            "  ->row: {}".format(row))
 
                 if not len(row) == self._csv_field_count:
                     return False
@@ -269,8 +265,7 @@ class Report:
                           row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24])
 
                 if config.DEBUG_REPORT:
-                    printit("  ->{}\n"
-                            "  ->values: {}".format(self.model["name"], values))
+                    printit("  ->values: {}".format(values))
                 self.insert(values)
             return True
 
@@ -287,19 +282,22 @@ class Report:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_REPORT:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->sql: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, values))
+                    "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            printit("  ->{}\n  ->success: {}\n  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n  ->data: {}".format(success, data))
 
-        if success and data:
-            self._report = dict(zip(self.model["fields"], data))
-            return True
+        if success:
+            try:
+                self._report = dict(zip(self.model["fields"], data[0]))
+                return True
+            except IndexError:
+                self._report = {}
+
         return False
 
     def load_reports(self, year=None, month=None):
@@ -317,27 +315,26 @@ class Report:
         if year and month:
             value = "{}-{}-{}".format(year, month, "%")
         values = (value,)
-
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_REPORT:
-            printit("{}\n"
-                    " ->load_reports\n"
+            printit(" ->load_reports\n"
                     "  ->sql: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, values))
+                    "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_REPORT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
-        if success and data:
-            self._reports = [dict(zip(self.model["fields"], row)) for row in data]
-            return True
-
-        self._reports = []
+        if success:
+            try:
+                _ = data[0]
+                self._reports = [dict(zip(self.model["fields"], row)) for row in data]
+                return True
+            except IndexError:
+                self._reports = []
         return False
 
     def recreate_table(self):
@@ -362,11 +359,11 @@ class Report:
         # if config.DEBUG_REPORT:
         #     printit(
         #         "{}\n ->update\n  ->sql: {}\n  ->values: {}".format(
-        #             self.model["name"], sql, values))
+        #             sql, values))
 
         # if config.DEBUG_REPORT:
         #     printit(
         #         "{}\n ->update\n  ->success: {}\n  ->data: {}".format(
-        #             self.model["name"], success, data))
+        #             success, data))
 
         pass

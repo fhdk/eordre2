@@ -140,7 +140,9 @@ class Visit:
         """
         values = (None, report_id, employee_id, customer_id, workdate,
                   0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
-        self.load(self.insert(values))
+        visit_id = self.insert(values)
+        self.load(visit_id=visit_id)
+        self._customer_visits.append(self._visit)
 
     def import_csv(self, filename, headers=False):
         """

@@ -191,7 +191,7 @@ class Contact:
 
         if config.DEBUG_CONTACT:
             printit("{}\n"
-                    " ->load for current\n"
+                    " ->all for current\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(self.model["name"], filters, values, sql))

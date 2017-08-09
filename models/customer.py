@@ -241,7 +241,7 @@ class Customer:
 
         if config.DEBUG_CUSTOMER:
             printit("{}\n"
-                    " ->load\n"
+                    " ->all\n"
                     "  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql)

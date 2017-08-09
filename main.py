@@ -38,12 +38,12 @@ from util.rules import check_settings
 __appname__ = "Eordre NG"
 __module__ = "main"
 
-B_COLOR = "\033[0;34m"
-E_COLOR = "\033[0;1m"
+BC = "\033[1;36m"
+EC = "\033[0;1m"
 
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, BC, string, EC))
 
 
 # noinspection PyMethodMayBeStatic
@@ -56,9 +56,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Initialize MainWindow class
         """
+
         super(MainWindow, self).__init__()
         self.setupUi(self)
-
         configfn.check_config_folder()  # Check app folder in users home
 
         self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
@@ -137,7 +137,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.customers.current["phone2"] = self.txtPhone2.text()
         self.customers.current["email"] = self.txtEmail.text()
         self.customers.current["factor"] = self.txtFactor.text()
-        self.customers.current["infotext"] = self.txtInfoText.toPlainText()
+        self.customers.current["infotext"] = self.txtInfoText.text()
         self.customers.current["modified"] = 1
         self.customers.update()
 
@@ -165,26 +165,44 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Slot for Report triggered signal
         """
         try:
+            # check the report date
+            # no report triggers KeyError
             repdate = self.reports.current["repdate"]
             if not repdate == self.txtWorkdate.text():
-                infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
-                    repdate, self.txtWorkdate.text())
-                msgbox = QMessageBox()
-                msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
+                # attempt to all report for workdate
+                self.reports.load_report(self.txtWorkdate.text())
+                # trigger a KeyError if no report is current
+                repdate = self.reports.current["repdate"]
+                if self.reports.current["sent"] == 1:
+                    self.buttonCreateVisit.setEnabled(False)
+                else:
+                    self.buttonCreateVisit.setEnabled(True)
+            infotext = "Rapport aktiv for: {}".format(repdate)
+            msgbox = QMessageBox()
+            msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
 
         except KeyError:
             create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
             if create_report_dialog.exec_():
                 # set workdate to user choice
                 self.txtWorkdate.setText(create_report_dialog.workdate)
-                self.reports.create(self.employee.current, self.txtWorkdate.text())
+                self.reports.load_report(self.txtWorkdate.text())
+                try:
+                    _ = self.reports.current["repdate"]
+                    infotext = "Eksisterende rapport hentet: {}".format(self.txtWorkdate.text())
+                except KeyError:
+                    self.reports.create(self.employees.current, self.txtWorkdate.text())
+                    infotext = "Rapport oprettet for: {}".format(self.txtWorkdate.text())
+
+                msgbox = QMessageBox()
+                msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
 
                 return True
             else:
                 msgbox = QMessageBox()
                 msgbox.information(self,
                                    __appname__,
-                                   "Der er <strong>IKKE</strong> oprettet dagsrapport!",
+                                   "Den aktive rapport er <strong>IKKE</strong> ændret!",
                                    QMessageBox.Ok)
                 return False
 
@@ -192,26 +210,28 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slot for createOrder triggered signal
         """
-        if not self.reports.load_report(self.txtWorkdate.text()):
-            msgbox = QMessageBox()
-            msgbox.information(self,
-                               __appname__,
-                               "Der er ingen dagsrapport for idag!",
-                               QMessageBox.Ok)
-            return self.action_create_report_dialog_show()
+        active_report = False
+        try:
+            _ = self.reports.current["repdate"]
+            active_report = True
+        except KeyError:
+            self.action_create_report_dialog_show()
 
-        if self.customers.current:
-            visit_dialog = CreateVisitDialog(self.customers, self.employees, self.products,
-                                             self.reports, self.visits, self.txtWorkdate.text())
-            if visit_dialog.exec_():
-                pass
+        if active_report:
+            try:
+                _ = self.customers.current["company"]
+            except KeyError:
+                msgbox = QMessageBox()
+                msgbox.information(self,
+                                   __appname__,
+                                   "Ingen valgt kunde! Besøg kan ikke oprettes.",
+                                   QMessageBox.Ok)
+                return
 
-        else:
-            msgbox = QMessageBox()
-            msgbox.information(self,
-                               __appname__,
-                               "Ingen valgt kunde! Besøg kan ikke oprettes.",
-                               QMessageBox.Ok)
+        visit_dialog = CreateVisitDialog(self.customers, self.employees, self.products,
+                                         self.reports, self.visits)
+        if visit_dialog.exec_():
+            pass
 
     def action_customer_changed_signal(self, current, previous):
         """
@@ -323,7 +343,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slot for getProducts finished signal
         """
-        self.products.load()
+        self.products.all()
         lsp = datetime.date.today().isoformat()
         self.txtProdLocal.setText(lsp)
         self.settings.current["lsp"] = lsp
@@ -453,10 +473,13 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                          __appname__,
                          "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
             self.action_settings_dialog_show()
-
+        # all report for workdate
+        self.reports.load_report(self.txtWorkdate.text())
+        # all customerlist
         self.populate_customer_list()
         if utils.int2bool(self.settings.current["sc"]):
-            self.statusbar.setToolTip("Checker server for opdateringer ...")
+            # check server data
+            self.statusbar.setStatusTip("Checker server for opdateringer ...")
             status = utils.refresh_sync_status(self.settings)
             self.settings.current["sac"] = status[0][1].split()[0]
             self.settings.current["sap"] = status[1][1].split()[0]

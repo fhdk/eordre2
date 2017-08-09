@@ -109,7 +109,7 @@ class Settings:
 
         if config.DEBUG_SETTINGS:
             printit("{}\n"
-                    " ->load\n"
+                    " ->all\n"
                     "  ->sql: {}".format(self.model["name"], sql))
 
         success, data = self.q.execute(sql)

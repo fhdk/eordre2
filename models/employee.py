@@ -87,7 +87,7 @@ class Employee:
 
         if config.DEBUG_EMPLOYEE:
             printit("{}\n"
-                    " ->load\n"
+                    " ->all\n"
                     "  ->sql: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}".format(self.model["name"], sql, filters, values))

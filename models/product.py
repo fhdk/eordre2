@@ -55,6 +55,15 @@ class Product:
         """
         return self._product
 
+    @current.setter
+    def current(self, product_id):
+        """
+        Set current product
+        Args:
+            product_id:
+        """
+        self.by_id(product_id)
+
     @property
     def product_list(self):
         """
@@ -65,8 +74,45 @@ class Product:
         try:
             _ = self._products[0]
         except IndexError:
-            self.load()
+            self.all()
         return self._products
+
+    def all(self):
+        """
+        Load product list
+        """
+        sql = self.q.build("select", self.model)
+
+        if config.DEBUG_PRODUCT:
+            printit("{}\n"
+                    " ->all\n"
+                    "  ->sql: {}".format(self.model["name"], sql))
+
+        success, data = self.q.execute(sql)
+
+        if config.DEBUG_PRODUCT:
+            printit("  ->{}\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(self.model["name"], success, data))
+
+        if success and data:
+            self._products = [dict(zip(self.model["fields"], row)) for row in data]
+        else:
+            self._products = []
+
+    def by_id(self, product_id):
+        """
+        Set current product
+        :param product_id:
+        """
+        filters = [("product_id", "=")]
+        values = (product_id,)
+        sql = self.q.build("select", self.model, filteron=filters)
+        success, data = self.q.execute(sql, values)
+        if success:
+            self._product = dict(zip(self.model["fields"], data[0]))
+        else:
+            self._product = {}
 
     def clear(self):
         """
@@ -112,29 +158,6 @@ class Product:
         if success and data:
             return data
         return False
-
-    def load(self):
-        """
-        Load product list
-        """
-        sql = self.q.build("select", self.model)
-
-        if config.DEBUG_PRODUCT:
-            printit("{}\n"
-                    " ->load\n"
-                    "  ->sql: {}".format(self.model["name"], sql))
-
-        success, data = self.q.execute(sql)
-
-        if config.DEBUG_PRODUCT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
-
-        if success and data:
-            self._products = [dict(zip(self.model["fields"], row)) for row in data]
-        else:
-            self._products = []
 
     def recreate_table(self):
         """

@@ -17,7 +17,7 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
     Dialog for creating a new current
     """
 
-    def __init__(self, customers, employees, products, reports, visits, workdate, parent=None):
+    def __init__(self, customers, employees, products, reports, visits, parent=None):
         """
         Initialize
         Args:
@@ -26,7 +26,6 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
             products: main products object
             reports: main current object
             visits: main current object
-            workdate: workdate
             parent:
         """
         super(CreateVisitDialog, self).__init__(parent)
@@ -36,12 +35,13 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         self.customerid = customers.current["customer_id"]
         self.employeeid = employees.current["employee_id"]
         self.reportid = reports.current["report_id"]
-        self.workdate = workdate
+        self.workdate = reports.current["repdate"]
+        self.products = products.product_list
 
         # If customerid need special current on prices
-        factor = customers["factor"]
+        factor = self.customers.current["factor"]
         if factor > 0.0:
-            for item in products.product_list:
+            for item in self.products:
                 item["price"] = item["price"] * factor
                 if not item["d2"] == 0.0:
                     item["d2"] = item["d2"] * factor
@@ -66,7 +66,7 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(customers["company"])
+        self.txtCompany.setText(self.customers.current["company"])
         # connect to signals
         self.buttonCreateOrderLine.clicked.connect(self.button_create_sale_action)
         self.buttonCreateOrderVisit.clicked.connect(self.button_create_ordervisit_action)
