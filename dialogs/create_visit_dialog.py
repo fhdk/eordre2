@@ -33,9 +33,9 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         self.setupUi(self)
 
         self.visit = visits
-        self.customerid = customers.current["customerid"]
-        self.employeeid = employees.current["employeeid"]
-        self.reportid = reports.current["reportid"]
+        self.customerid = customers.current["customer_id"]
+        self.employeeid = employees.current["employee_id"]
+        self.reportid = reports.current["report_id"]
         self.workdate = workdate
 
         # If customerid need special current on prices

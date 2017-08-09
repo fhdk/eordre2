@@ -77,7 +77,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.actionArchiveChanges.triggered.connect(self.action_archive_customer_changes)
         self.actionContactsInfo.triggered.connect(self.action_show_contact_data)
         self.actionCreateCustomer.triggered.connect(self.action_create_customer)
-        self.actionCreateVisit.triggered.connect(self.action_visit_dialog_show)
+        self.actionCreateVisit.triggered.connect(self.action_create_visit_dialog_show)
         self.actionImportCsvFiles.triggered.connect(self.action_file_import_dialog_show)
         self.actionExit.triggered.connect(self.action_exit)
         self.actionGetCatalogHttp.triggered.connect(self.action_get_product_http_dialog_show)
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.buttonArchiveChanges.clicked.connect(self.action_archive_customer_changes)
         self.buttonContactData.clicked.connect(self.action_show_contact_data)
         self.buttonCreateCustomer.clicked.connect(self.action_create_customer)
-        self.buttonCreateVisit.clicked.connect(self.action_visit_dialog_show)
+        self.buttonCreateVisit.clicked.connect(self.action_create_visit_dialog_show)
         self.buttonMasterData.clicked.connect(self.action_show_master_data)
         self.buttonHistoryData.clicked.connect(self.action_show_history_data)
         self.buttonReport.clicked.connect(self.action_create_report_dialog_show)
@@ -160,7 +160,35 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                self.txtNewPhone1.text(),
                                QMessageBox.Ok)
 
-    def action_visit_dialog_show(self):
+    def action_create_report_dialog_show(self):
+        """
+        Slot for Report triggered signal
+        """
+        try:
+            repdate = self.reports.current["repdate"]
+            if not repdate == self.txtWorkdate.text():
+                infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
+                    repdate, self.txtWorkdate.text())
+                msgbox = QMessageBox()
+                msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
+
+        except KeyError:
+            create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
+            if create_report_dialog.exec_():
+                # set workdate to user choice
+                self.txtWorkdate.setText(create_report_dialog.workdate)
+                self.reports.create(self.employee.current, self.txtWorkdate.text())
+
+                return True
+            else:
+                msgbox = QMessageBox()
+                msgbox.information(self,
+                                   __appname__,
+                                   "Der er <strong>IKKE</strong> oprettet dagsrapport!",
+                                   QMessageBox.Ok)
+                return False
+
+    def action_create_visit_dialog_show(self):
         """
         Slot for createOrder triggered signal
         """
@@ -170,13 +198,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                __appname__,
                                "Der er ingen dagsrapport for idag!",
                                QMessageBox.Ok)
-            return False
+            return self.action_create_report_dialog_show()
 
         if self.customers.current:
             visit_dialog = CreateVisitDialog(self.customers, self.employees, self.products,
                                              self.reports, self.visits, self.txtWorkdate.text())
             if visit_dialog.exec_():
                 pass
+
         else:
             msgbox = QMessageBox()
             msgbox.information(self,
@@ -196,14 +225,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         self.customers.current = current.text(0), current.text(1)
         # try:
-        self.txtAccount.setText(str(self.customers.current["account"]))
+        self.txtAccount.setText(self.customers.current["account"])
         self.txtCompany.setText(self.customers.current["company"])
         self.txtAddress1.setText(self.customers.current["address1"])
         self.txtAddress2.setText(self.customers.current["address2"])
-        self.txtZipCode.setText(str(self.customers.current["zipcode"]))
+        self.txtZipCode.setText(self.customers.current["zipcode"])
         self.txtCityName.setText(self.customers.current["city"])
-        self.txtPhone1.setText(str(self.customers.current["phone1"]))
-        self.txtPhone2.setText(str(self.customers.current["phone2"]))
+        self.txtPhone1.setText(self.customers.current["phone1"])
+        self.txtPhone2.setText(self.customers.current["phone2"])
         self.txtEmail.setText(self.customers.current["email"])
         self.txtFactor.setText(str(self.customers.current["factor"]))
         self.txtInfoText.setText(self.customers.current["infotext"])
@@ -252,7 +281,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                            QMessageBox.Ok)
         import_dialog = CsvFileImportDialog(self.contacts, self.customers, self.details,
                                             self.employees, self.reports, self.visits, config.CSV_TABLES)
-
         import_dialog.exec_()
         self.populate_customer_list()
 
@@ -300,37 +328,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.txtProdLocal.setText(lsp)
         self.settings.current["lsp"] = lsp
         self.settings.update()
-
-    def action_create_report_dialog_show(self):
-        """
-        Slot for Report triggered signal
-        """
-        try:
-            repdate = self.reports.current["repdate"]
-            if not repdate == self.txtWorkdate.text():
-                infotext = "Den aktive rapportdato er\ndato: {}\narbejdsdato: {}".format(
-                    repdate, self.txtWorkdate.text())
-                msgbox = QMessageBox()
-                msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
-
-        except KeyError:
-            create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
-            if create_report_dialog.exec_():  # Execute dialog - show it
-                self.txtWorkdate.setText(create_report_dialog.workdate)
-                msgbox = QMessageBox()
-                msgbox.information(self,
-                                   __appname__,
-                                   "Der er oprettet dagsrapport for <strong>{}</strong>!".format(
-                                       self.txtWorkdate.text()),
-                                   QMessageBox.Ok)
-                self.reports.create(self.employee.current, self.txtWorkdate.text())
-
-            else:
-                msgbox = QMessageBox()
-                msgbox.information(self,
-                                   __appname__,
-                                   "Der er <strong>IKKE</strong> oprettet dagsrapport!",
-                                   QMessageBox.Ok)
 
     def action_settings_dialog_show(self):
         """

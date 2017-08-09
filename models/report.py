@@ -35,19 +35,20 @@ class Report:
         self.model = {
             "name": "report",
             "id": "report_id",
-            "fields": ("report_id", "employee_id", "repno", "repdate",
+            "fields": ("report_id", "employee_id", "repno", "repdate", "timestamp",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
                        "sasday", "sasturnoverday", "demoday", "saleday",
                        "kmmorning", "kmevening", "supervisor", "territory",
-                       "workday", "infotext", "sent", "offday", "offtext", "kmprivate", "timestamp"),
-            "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "TEXT NOT NULL",
+                       "workday", "infotext", "sent", "offday", "offtext", "kmprivate"),
+            "types": ("INTEGER PRIMARY KEY NOT NULL",
+                      "INTEGER NOT NULL", "INTEGER NOT NULL", "TEXT NOT NULL", "TEXT NOT NULL",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "REAL DEFAULT 0",
                       "INTEGER DEFAULT 0", "REAL DEFAULT 0", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0",
                       "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "TEXT", "TEXT",
                       "INTEGER DEFAULT 0", "TEXT", "INTEGER DEFAULT 0", "INTEGER DEFAULT 0", "TEXT",
-                      "INTEGER DEFAULT 0", "TEXT")
+                      "INTEGER DEFAULT 0")
         }
         self._reports = []
         self._report = {}
@@ -177,23 +178,35 @@ class Report:
                     "  ->data: {}".format(self.model["name"], success, data))
 
         if success and data:
-            month = data[0]
-            month = list(month)
-            report_count = month[0]
+            # assign expected result from list item
+            try:
+                _ = data[0]
+            except IndexError:
+                return False
+            # temporary convert tuple to list
+            current_month_totals = list(data[0])
+            # extract report count from first column
+            report_count = int(current_month_totals[0])
+            # increment report count
             next_report = report_count + 1
-            month = [workdate, "None", employee_id] + list(month)
+            # create a combined list with the identifiers and the totals
+            current_month_totals = [workdate, "None", employee_id] + current_month_totals
             timestamp = datetime.today()
-
-            new_report_values = (None, employee_id, next_report, workdate,
+            # create tuple with values to initialze the new report
+            new_report_values = (None, employee_id, next_report, workdate, timestamp,
                                  None, None, None, None, None, None, None, None, None, None, None, None,
-                                 None, None, None, None, None, None, None, None, None, None, timestamp)
+                                 None, None, None, None, None, None, None, None, None, None)
+            # assign return value as new report_id
             report_id = self.insert(new_report_values)
-            month[1] = report_id
-            month = tuple(month)
+            # insert report_id to identify for which report the totals was calculated
+            current_month_totals[1] = report_id
+            # revert to tuple
+            current_month_totals = tuple(current_month_totals)
             if config.DEBUG_REPORT:
-                printit("  ->{}\n  ->month: {}".format(self.model["name"], month))
-            self.c.insert(month)
-
+                printit("  ->{}\n  ->month: {}".format(self.model["name"], current_month_totals))
+            # insert the values in the calculation table
+            self.c.insert(current_month_totals)
+            return True
         else:
             return False
 
@@ -248,13 +261,12 @@ class Report:
                 # translate bool text to integer for col 19, 21
                 row[19] = utils.bool2int(utils.str2bool(row[19]))
                 row[21] = utils.bool2int(utils.str2bool(row[21]))
+                # create a timestamp
                 local_timestamp = datetime.today()
-                values = (row[0], employee_id, row[1], row[2].strip(),
-                          row[3], row[4], row[5], row[6],
-                          row[7], row[8], row[9], row[10],
-                          row[11], row[12], row[13], row[14],
-                          row[15], row[16], row[17].strip(), row[18].strip(),
-                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24], local_timestamp)
+                values = (row[0], employee_id, row[1], row[2].strip(), row[3], local_timestamp,
+                          row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
+                          row[13], row[14], row[15], row[16], row[17].strip(), row[18].strip(),
+                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24])
 
                 if config.DEBUG_REPORT:
                     printit("  ->{}\n"
