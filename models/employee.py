@@ -39,11 +39,11 @@ class Employee:
         self._employee = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("init_new_detail", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_EMPLOYEE:
                 printit("{}\n"
-                        " ->create table\n"
+                        " ->init_new_detail table\n"
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
         self.s = Settings()

@@ -34,7 +34,7 @@ class Query:
         Builds a sql query from definition
 
         Args:
-            query_type: create(table), drop(table), insert(row), all(row), update(row), delete(row))
+            query_type: init_new_detail(table), drop(table), insert(row), all(row), update(row), delete(row))
 
             model_def: table model definition
             {"name": ("name" ...), "fields": ("field" ...), "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
@@ -71,7 +71,7 @@ class Query:
             if not sort_order == "ASC" or not sort_order == "DESC":
                 sort_order = None
 
-        # build create table query
+        # build init_new_detail table query
         if querytype == "CREATE":
             return build_create_query(model_def)
 
@@ -109,7 +109,7 @@ class Query:
             printit(" ->execute\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql_query, values))
-        # query types: create, delete, insert, all, update
+        # query types: init_new_detail, delete, insert, all, update
         select = sql_query.startswith("SELECT")
         insert = sql_query.startswith("INSERT")
         db = sqlite3.connect(config.DBPATH)

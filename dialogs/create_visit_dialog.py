@@ -7,7 +7,9 @@
 """
 Visit Dialog Module
 """
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QTableWidgetItem
+
+from models.detail import Detail
 
 from resources.create_visit_dialog_rc import Ui_createVisitDialog
 
@@ -75,6 +77,10 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
 
     def button_add_demo_action(self):
         """Slot for Create Order Button clicked signal"""
+        detail = Detail()
+
+        row = QTableWidgetItem()
+
         pass
 
     def button_add_sale_action(self):
@@ -83,4 +89,4 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
 
     def button_save_visit_action(self):
         """Slot for Create Order Button clicked signal"""
-        self.visit.create(self.reportid, self.employeeid, self.customerid, self.workdate)
+        self.visit.init_new_detail(self.reportid, self.employeeid, self.customerid, self.workdate)

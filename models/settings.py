@@ -41,7 +41,7 @@ class Settings:
         self._settings = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("init_new_detail", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_SETTINGS:
                 printit("{}\n"

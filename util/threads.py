@@ -53,7 +53,7 @@ class ImportCustomersThread(QThread):
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.customers.import_http(row)  # create row to database
+            self.customers.import_http(row)  # init_new_detail row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
 
@@ -85,6 +85,6 @@ class ImportProductsThread(QThread):
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.products.insert(row)  # create row to database
+            self.products.insert(row)  # init_new_detail row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()

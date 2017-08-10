@@ -38,7 +38,7 @@ class Contact:
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
 
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("init_new_detail", self.model)
 
             success, data = self.q.execute(sql)
 
@@ -210,11 +210,11 @@ class Contact:
 
     def recreate_table(self):
         """
-        Drop and create table
+        Drop and init_new_detail table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("create", self.model)
+        sql = self.q.build("init_new_detail", self.model)
         self.q.execute(sql)
         self.clear()
 

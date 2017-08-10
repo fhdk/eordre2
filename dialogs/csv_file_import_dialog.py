@@ -77,7 +77,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
         self.buttonClose.enabled = False
 
         if self.selectedFile:
-            # notice to create to list box
+            # notice to init_new_detail to list box
             notice = self.comboImport.currentText() + " er importeret."
             success = False
             # import selected file to contact table

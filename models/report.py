@@ -58,10 +58,10 @@ class Report:
         self.q = Query()
         self.c = Calculator()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("init_new_detail", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_REPORT:
-                printit(" ->create table\n"
+                printit(" ->init_new_detail table\n"
                         "  ->success: {}\n"
                         "  ->data: {}".format(success, data))
 
@@ -122,7 +122,7 @@ class Report:
             workdate: iso formatted str representing the reportid date
         """
         # we need to find the number of reports for the month of the supplied date
-        # then create 1 to that number
+        # then init_new_detail 1 to that number
         # we need to calculate the sums for the previous reportid for month
         # those sums will be stored in seperate table
         # creating a new table with
@@ -165,7 +165,7 @@ class Report:
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filters)
 
         if config.DEBUG_REPORT:
-            printit(" ->create\n"
+            printit(" ->init_new_detail\n"
                     "  ->aggregates: {}\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(aggregates, sql, values))
@@ -188,10 +188,10 @@ class Report:
             report_count = int(current_month_totals[0])
             # increment report count
             next_report = report_count + 1
-            # create a combined list with the identifiers and the totals
+            # init_new_detail a combined list with the identifiers and the totals
             current_month_totals = [workdate, "None", employee_id] + current_month_totals
             timestamp = datetime.today()
-            # create tuple with values to initialze the new report
+            # init_new_detail tuple with values to initialze the new report
             new_report_values = (None, employee_id, next_report, workdate, timestamp,
                                  None, None, None, None, None, None, None, None, None, None, None, None,
                                  None, None, None, None, None, None, None, None, None, None)
@@ -257,7 +257,7 @@ class Report:
                 # translate bool text to integer for col 19, 21
                 row[19] = utils.bool2int(utils.str2bool(row[19]))
                 row[21] = utils.bool2int(utils.str2bool(row[21]))
-                # create a timestamp
+                # init_new_detail a timestamp
                 local_timestamp = datetime.today()
                 values = (row[0], employee_id, row[1], row[2].strip(), row[3], local_timestamp,
                           row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
@@ -339,12 +339,12 @@ class Report:
 
     def recreate_table(self):
         """
-        Drop and create table
+        Drop and init_new_detail table
         """
         self.c.recreate_table()
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("create", self.model)
+        sql = self.q.build("init_new_detail", self.model)
         self.q.execute(sql)
         self.clear()
 

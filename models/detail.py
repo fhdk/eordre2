@@ -45,7 +45,7 @@ class Detail:
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             # build query and execute
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("init_new_detail", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_SALELINE:
                 printit("{}\n"
@@ -90,19 +90,17 @@ class Detail:
         self._detail = {}
         self._details = []
 
-    def create(self, visit_id):
+    def init_new_detail(self, visit_id):
         """
         Create a new detail on visitid
         Args:
             visit_id:
         """
-        # create new with empty values
+        # init_new_detail new with empty values
         values = (None, visit_id, None, "", "", None, None, None, None, None)
 
-        detail_id = self.insert(values)
-
         self._detail = dict(zip(self.model["fields"], values))
-        self._detail["detail_id"] = detail_id
+
         self._details.append(self._detail)
 
     def delete(self, detail_id):
@@ -226,13 +224,28 @@ class Detail:
 
     def recreate_table(self):
         """
-        Drop and create table
+        Drop and init_new_detail table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("create", self.model)
+        sql = self.q.build("init_new_detail", self.model)
         self.q.execute(sql)
         self.clear()
+
+    def save_all(self):
+        """
+        Write current details to database
+        """
+        fields = list(self.model["fields"])[1:]
+        filters = [(self.model["id"], "=")]
+        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+
+        for detail in self._details:
+            if detail["detail_id"] is None:
+                values = detail.values()
+            else:
+                values = self.q.values_to_arg(detail.values())
+            self.q.execute(sql, values=values)
 
     def update(self):
         """

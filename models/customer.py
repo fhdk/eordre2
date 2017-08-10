@@ -47,11 +47,11 @@ class Customer:
         self._csv_field_count = 20
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("create", self.model)
+            sql = self.q.build("init_new_detail", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_CUSTOMER:
                 printit("{}\n"
-                        " ->create table\n"
+                        " ->init_new_detail table\n"
                         "  ->success: {}\n"
                         "  ->data: {}".format(self.model["name"], success, data))
 
@@ -335,11 +335,11 @@ class Customer:
 
     def recreate_table(self):
         """
-        Drop and create table
+        Drop and init_new_detail table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("create", self.model)
+        sql = self.q.build("init_new_detail", self.model)
         self.q.execute(sql)
         self.clear()
 
