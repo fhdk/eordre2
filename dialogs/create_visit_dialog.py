@@ -37,9 +37,10 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         self.reportid = reports.current["report_id"]
         self.workdate = reports.current["repdate"]
         self.products = products.product_list
+        self.txtVisitDate.setText(self.workdate)
 
         # If customerid need special current on prices
-        factor = self.customers.current["factor"]
+        factor = customers.current["factor"]
         if factor > 0.0:
             for item in self.products:
                 item["price"] = item["price"] * factor
@@ -66,15 +67,20 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(self.customers.current["company"])
+        self.txtCompany.setText(customers.current["company"])
         # connect to signals
-        self.buttonCreateOrderLine.clicked.connect(self.button_create_sale_action)
-        self.buttonCreateOrderVisit.clicked.connect(self.button_create_ordervisit_action)
+        self.buttonAddDemo.clicked.connect(self.button_add_demo_action)
+        self.buttonAddSale.clicked.connect(self.button_add_sale_action)
+        self.buttonArchive.clicked.connect(self.button_save_visit_action)
 
-    def button_create_sale_action(self):
+    def button_add_demo_action(self):
         """Slot for Create Order Button clicked signal"""
         pass
 
-    def button_create_ordervisit_action(self):
+    def button_add_sale_action(self):
+        """Slot for Create Order Button clicked signal"""
+        pass
+
+    def button_save_visit_action(self):
         """Slot for Create Order Button clicked signal"""
         self.visit.create(self.reportid, self.employeeid, self.customerid, self.workdate)

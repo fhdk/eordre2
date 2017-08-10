@@ -24,9 +24,12 @@
    </property>
    <layout class="QFormLayout" name="formVisit">
     <item row="0" column="1">
-     <widget class="QLineEdit" name="txtOrderVisitDate">
+     <widget class="QLineEdit" name="txtVisitDate">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
       <property name="placeholderText">
        <string>Ordre dato</string>
@@ -228,14 +231,20 @@
     <item row="1" column="1">
      <widget class="QLineEdit" name="txtOrderSale">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
     <item row="1" column="3">
      <widget class="QLineEdit" name="txtOrderSas">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -249,7 +258,10 @@
     <item row="1" column="5">
      <widget class="QLineEdit" name="txtOrderTotal">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -301,6 +313,9 @@
         <bold>true</bold>
        </font>
       </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -326,14 +341,14 @@
      </widget>
     </item>
     <item row="0" column="2">
-     <widget class="QPushButton" name="buttonSaveVisit">
+     <widget class="QPushButton" name="buttonArchive">
       <property name="text">
        <string>Arkiver</string>
       </property>
      </widget>
     </item>
     <item row="0" column="0">
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="buttonAddDemo">
       <property name="text">
        <string>Opret demo</string>
       </property>
@@ -343,7 +358,7 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>txtOrderVisitDate</tabstop>
+  <tabstop>txtVisitDate</tabstop>
   <tabstop>txtBuyer</tabstop>
   <tabstop>txtPurchaseOrder</tabstop>
   <tabstop>txtProductDemo</tabstop>
