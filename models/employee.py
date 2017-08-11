@@ -16,9 +16,11 @@ from util import httpfn, rules
 B_COLOR = "\033[0;34m"
 E_COLOR = "\033[0;m"
 
+__module__ = "employee"
+
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Employee:
@@ -39,13 +41,12 @@ class Employee:
         self._employee = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("init_new_detail", self.model)
+            sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_EMPLOYEE:
-                printit("{}\n"
-                        " ->init_new_detail table\n"
+                printit(" ->init_detail table\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
+                        "  ->data: {}".format(success, data))
         self.s = Settings()
         self.load(self.s.current["usermail"])
 
@@ -65,17 +66,15 @@ class Employee:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_EMPLOYEE:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->sql: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, values))
+                    "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_EMPLOYEE:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  -->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  -->data: {}".format(success, data))
 
     def load(self, email):
         """
@@ -86,17 +85,16 @@ class Employee:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_EMPLOYEE:
-            printit("{}\n"
-                    " ->all\n"
+            printit(" ->all\n"
                     "  ->sql: {}\n"
                     "  ->filters: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, filters, values))
+                    "  ->values: {}".format(sql, filters, values))
 
         success, data = self.q.execute(sql, values)
         if config.DEBUG_EMPLOYEE:
-            printit("  ->{} first check\n"
+            printit("  ->first check\n"
                     "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+                    "  ->data: {}".format(success, data))
 
         try:
             _ = data[0]
@@ -106,9 +104,9 @@ class Employee:
 
             success, data = self.q.execute(sql, values)
             if config.DEBUG_EMPLOYEE:
-                printit("  ->{} second check\n"
+                printit("  ->second check\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
+                        "  ->data: {}".format(success, data))
             try:
                 _ = data[0]
                 self._employee = dict(zip(self.model["fields"], data[0]))
@@ -118,9 +116,8 @@ class Employee:
     def load_from_http(self):
         data = httpfn.get_employee_data(self.s)
         if config.DEBUG_EMPLOYEE:
-            printit("  ->{}\n"
-                    "  ->load_from_http\n"
-                    "  ->data: {}".format(self.model["name"], data))
+            printit("  ->load_from_http\n"
+                    "  ->data: {}".format(data))
         if data:
             data = list(data)
             data[0:0] = [None]
@@ -137,16 +134,14 @@ class Employee:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_EMPLOYEE:
-            printit("{}\n"
-                    " ->update\n"
+            printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], sql, fields, filters, values))
+                    "  ->sql: {}".format(sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_EMPLOYEE:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))

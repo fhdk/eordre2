@@ -47,13 +47,13 @@ class ImportCustomersThread(QThread):
         """
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
-        data = httpfn.get_customers(self.settings.current,
-                                    self.employees.current)
+        data = httpfn.get_customers(self.settings,
+                                    self.employees)
         self.c.processing.emit("{}".format("Henter fra server ..."))
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.customers.import_http(row)  # init_new_detail row to database
+            self.customers.import_http(row)  # init_detail row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()
 
@@ -78,13 +78,13 @@ class ImportProductsThread(QThread):
         The run process - activated by the QTread start() method
         """
         self.c.processing.emit("{}".format("Forbereder hentning ..."))
-        self.product.drop_table()  # drop product table
+        self.products.drop_table()  # drop product table
         self.c.processing.emit("{}".format("Henter fra server ..."))
         # fetching datafile from http server
         data = httpfn.get_products(self.settings)
         self.c.rowcount.emit(len(data))
         for row in data:  # data processing
             self.c.processing.emit("{}: {} - {}".format("Behandler", row[0], row[1]))
-            self.products.insert(row)  # init_new_detail row to database
+            self.products.insert(row)  # init_detail row to database
         self.c.processing.emit("{}".format("   Færdig!"))
         self.c.finished.emit()

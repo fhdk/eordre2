@@ -4,7 +4,7 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""CustomerNg class"""
+"""Customer module"""
 import csv
 
 from configuration import config
@@ -14,14 +14,16 @@ from util import utils
 B_COLOR = "\033[0;33m"
 E_COLOR = "\033[0;m"
 
+__module__ = "customer"
+
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Customer:
     """
-    Customer
+    Customer class
     """
 
     def __init__(self):
@@ -47,18 +49,17 @@ class Customer:
         self._csv_field_count = 20
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("init_new_detail", self.model)
+            sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_CUSTOMER:
-                printit("{}\n"
-                        " ->init_new_detail table\n"
+                printit(" ->init_detail table\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
-
+                        "  ->data: {}".format(success, data))
+                
     @property
     def current(self):
         """
-        Return current current
+        Return customer
         """
         return self._customer
 
@@ -67,24 +68,24 @@ class Customer:
         """
         Set customer based on look_for
         Args:
-            look_for: str
+            look_for: customer_id or (phone, company)
         """
         try:
-            cp = look_for[1]
-            ph = look_for[0]
+            company = look_for[1]
+            phone = look_for[0]
             try:
                 name = self._customer["company"]
-                if not name == cp:
-                    self.lookup_by_phone_company(ph, cp)
+                if not name == company:
+                    self.lookup_by_phone_company(phone=phone, company=company)
             except KeyError:
-                self.lookup_by_phone_company(ph, cp)
+                self.lookup_by_phone_company(phone=phone, company=company)
         except IndexError:
-            self.lookup_by_id(look_for)
+            self.lookup_by_id(customer_id=look_for)
 
     @property
     def customers(self):
         """
-        Load current into primary current list
+        Load customers into primary list
         """
         try:
             _ = self._customers[0]
@@ -99,27 +100,26 @@ class Customer:
         self._customer = {}
         self._customers = []
 
-    def create(self, phone, company, createdate, country, salesrep):
+    def add(self, phone, company, createdate, country, salesrep):
         """
-        Create a new current
+        Create a new customer
         Args:
             phone:
             company:
             createdate:
             country:
             salesrep:
+        Returns:
+            bool
         """
         found = self.lookup_by_phone_company(phone, company)
-
         if found:
             self._customer = found
             return False
         else:
             values = [None, "NY", company, "", "", "", "", country, salesrep,
                       phone, "", "", 0, 0, createdate, "", "", "", 0.0]
-
             new_id = self.insert(values)
-
             self.lookup_by_id(new_id)
         return True
 
@@ -127,11 +127,13 @@ class Customer:
         """
         Import customers from csv file
         Args:
-            filename: 
+            filename:
+                The expected file format contains data in the following sequence
+                id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
             headers:
-
-        The expected file format contains data in the following sequence
-        in : id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
+                flag indicating if first row is column names
+        Returns:
+            bool
         """
         self.recreate_table()
         with open(filename) as csvfile:
@@ -139,13 +141,10 @@ class Customer:
             line = 0
             for row in reader:
                 if config.DEBUG_CUSTOMER:
-                    printit("{}\n"
-                            " ->row length {}\n"
-                            "  ->row: {}".format(self.model["name"], len(row), row))
-
+                    printit(" ->row length {}\n"
+                            "  ->row: {}".format(len(row), row))
                 if not len(row) == self._csv_field_count:
-                    return False
-
+                    return False  # wrong format
                 line += 1
                 if headers and line == 1:
                     continue
@@ -163,11 +162,10 @@ class Customer:
 
     def import_http(self, values):
         """
-        Insert a new current
+        Import customers from http
         Args:
             values: List with values from http request
-
-        expected incoming fields: acc comp add1 add2 zipcity country s_rep phone1 vat email att phon2
+            expected incoming fields: acc comp add1 add2 zipcity country s_rep phone1 vat email att phon2
         """
         # import file has 'zip  city'
         # app use 'zip' 'city' in different columns
@@ -210,50 +208,42 @@ class Customer:
         Insert a new current
         Args:
             values:
-
-        db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
+        Returns:
+            rowid
         """
-
         sql = self.q.build("insert", self.model)
-
         if config.DEBUG_CUSTOMER:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], str(values), sql))
-
+                    "  ->sql: {}".format(str(values), sql))
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_CUSTOMER:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
-
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
         if success and data:
             return data
         return False
 
     def load(self):
         """
-        Load customers into primary current list
+        Load customers
+        Returns:
+            bool
         """
         sql = self.q.build("select", self.model)
-
         if config.DEBUG_CUSTOMER:
-            printit("{}\n"
-                    " ->all\n"
-                    "  ->sql: {}".format(self.model["name"], sql))
-
+            printit(" ->all\n"
+                    "  ->sql: {}".format(sql))
         success, data = self.q.execute(sql)
-
-        if success and data:
-            self._customers = [dict(zip(self.model["fields"], row)) for row in data]
-
         if config.DEBUG_CUSTOMER:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
-            return True
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
+        if success:
+            try:
+                self._customers = [dict(zip(self.model["fields"], row)) for row in data]
+                return True
+            except IndexError:
+                self._customers = []
         return False
 
     def lookup_by_id(self, customer_id):
@@ -261,111 +251,104 @@ class Customer:
         Find current by id
         Args:
             customer_id
+        Returns:
+            bool
         """
         filters = [("customer_id", "=")]
         values = (customer_id,)
-
         sql = self.q.build("select", self.model, filteron=filters)
-
         if config.DEBUG_CUSTOMER:
-            printit("{}\n"
-                    " ->lookup_by_id\n"
+            printit(" ->lookup_by_id\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, str(values), sql))
-
+                    "  ->sql: {}".format(filters, str(values), sql))
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_CUSTOMER:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data[0]))
-
-        if success and data:
-            self._customer = dict(zip(self.model["fields"], data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data[0]))
+        if success:
+            try:
+                self._customer = dict(zip(self.model["fields"], data[0]))
+                return True
+            except IndexError:
+                self._customer = {}
         return False
 
-    def lookup_by_phone_company(self, phone, company):
+    def lookup_by_phone_company(self, phone, company, account=None):
         """
         Look up current
         Args:
+            account:
             phone:
             company:
+        Returns:
+            bool
         """
-        filters = [("phone1", "=", "or"), ("company", "=")]
-        values = (phone, company)
-
-        sql = self.q.build("select", self.model, filteron=filters)
-
-        if config.DEBUG_CUSTOMER:
-            printit("{}\n"
-                    " ->lookup_by_phone_company\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, str(values), sql))
-
-        success, data = self.q.execute(sql, values=values)
-
-        if config.DEBUG_CUSTOMER:
-            printit("  ->{}\n  ->success: {}\n  ->data: {}".format(self.model["name"], success, data))
-
-        if not success:
-
-            filters = [("account", "=", "and"), ("company", "=", "or"), ("phone1", "=")]
-            values = ("NY", company, phone)
-
+        data = []
+        success = False
+        if account:
+            filters = [("account", "=", "and"), ("company", "=")]
+            values = (account, company)
             sql = self.q.build("select", self.model, filteron=filters)
-
             if config.DEBUG_CUSTOMER:
-                printit("   ->{}\n"
-                        "   ->filters: {}\n"
-                        "   ->values: {}\n"
-                        "   ->sql: {}".format(self.model["name"], filters, str(values), sql))
-
+                printit(" ->lookup_by_phone_company\n"
+                        "  ->filters: {}\n"
+                        "  ->values: {}\n"
+                        "  ->sql: {}".format(filters, str(values), sql))
             success, data = self.q.execute(sql, values=values)
-
             if config.DEBUG_CUSTOMER:
-                printit("   ->{}\n"
-                        "   ->success: {}\n"
-                        "   ->data: {}".format(self.model["name"], success, data))
-
-        if success and data:
-            self._customer = dict(zip(self.model["fields"], data[0]))
+                printit("  ->success: {}\n"
+                        "  ->data: {}".format(success, data))
+        if not success:
+            filters = [("account", "=", "and"), ("company", "=", "and"), ("phone1", "=")]
+            values = ("NY", company, phone)
+            sql = self.q.build("select", self.model, filteron=filters)
+            if config.DEBUG_CUSTOMER:
+                printit("   ->filters: {}\n"
+                        "   ->values: {}\n"
+                        "   ->sql: {}".format(filters, str(values), sql))
+            success, data = self.q.execute(sql, values=values)
+            if config.DEBUG_CUSTOMER:
+                printit("   ->success: {}\n"
+                        "   ->data: {}".format(success, data))
+        if success:
+            try:
+                self._customer = dict(zip(self.model["fields"], data[0]))
+                return True
+            except IndexError:
+                self._customer = {}
         return False
 
     def recreate_table(self):
         """
-        Drop and init_new_detail table
+        Drop and create table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("init_new_detail", self.model)
+        sql = self.q.build("create", self.model)
         self.q.execute(sql)
         self.clear()
 
     def update(self):
         """
-        Update current in database
-
-        db : id acc comp add1 add2 zip city country s_rep phon1 vat email del mod cre info att phon2 factor
+        Update customer
+        Returns:
+            bool
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._customer.values())
-
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
-
         if config.DEBUG_CUSTOMER:
-            printit("{}\n"
-                    " ->update\n"
+            printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], fields, filters, str(values), sql))
-
+                    "  ->sql: {}".format(fields, filters, str(values), sql))
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_CUSTOMER:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
+        if success and data:
+            return True
+        return False

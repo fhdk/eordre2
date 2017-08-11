@@ -33,15 +33,21 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         super(CreateVisitDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.visit = visits
         self.customerid = customers.current["customer_id"]
         self.employeeid = employees.current["employee_id"]
         self.reportid = reports.current["report_id"]
         self.workdate = reports.current["repdate"]
         self.products = products.product_list
         self.txtVisitDate.setText(self.workdate)
+        if self.customers.current["account"] == "NY":
+            self.visitType = "N"
+        else:
+            self.visitType = "R"
+        self.visits = visits
+        self.visits.init(self.reportid, self.employeeid, self.customerid, self.workdate)
+        self.visits.current["visit_type"] = self.visitType
 
-        # If customerid need special current on prices
+        # If customer    need special settings on prices
         factor = customers.current["factor"]
         if factor > 0.0:
             for item in self.products:
@@ -71,13 +77,14 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         # Set info banner
         self.txtCompany.setText(customers.current["company"])
         # connect to signals
-        self.buttonAddDemo.clicked.connect(self.button_add_demo_action)
-        self.buttonAddSale.clicked.connect(self.button_add_sale_action)
-        self.buttonArchive.clicked.connect(self.button_save_visit_action)
+        self.btnAddDemo.clicked.connect(self.button_add_demo_action)
+        self.btnAddSale.clicked.connect(self.button_add_sale_action)
+        self.btnArchiveVisit.clicked.connect(self.button_save_visit_action)
 
     def button_add_demo_action(self):
         """Slot for Create Order Button clicked signal"""
         detail = Detail()
+        detail.init_detail()
 
         row = QTableWidgetItem()
 
@@ -88,5 +95,22 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         pass
 
     def button_save_visit_action(self):
-        """Slot for Create Order Button clicked signal"""
-        self.visit.init_new_detail(self.reportid, self.employeeid, self.customerid, self.workdate)
+        """
+        Slot for saving the visit
+        """
+        self.visits.current["po_buyer"] = self.txtPoBuyer.text()
+        self.visits.current["po_number"] = self.txtPoNumber.text()
+        self.visits.current["po_company"] = self.txtPoCompany.text()
+        self.visits.current["po_address1"] = self.txtPoAddress1.text()
+        self.visits.current["po_address2"] = self.txtPoAddress2.text()
+        self.visits.current["po_postcode"] = self.txtPoPostcode.text()
+        self.visits.current["po_postofffice"] = self.txtPoPostoffice.text()
+        self.visits.current["po_country"] = self.txtPoCountry.text()
+        self.visits.current["info_text"] = self.txtInfoText.toPlainText()
+        self.visits.current["prod_demo"] = self.txtProductDemo.text()
+        self.visits.current["prod_sale"] = self.txtProductSale.text()
+        self.visits.current["sas"] = self.txtVisitSas.text()
+        self.visits.current["sale"] = self.txtVisitSale.text()
+        self.visits.current["total"] = self.txtVisitTotal.text()
+
+

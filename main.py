@@ -62,14 +62,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         configfn.check_config_folder()  # Check app folder in users home
 
         self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
-        self.contacts = Contact()  # Initialize Contact object
+        self.contacts = Contact()    # Initialize Contact object
         self.customers = Customer()  # Initialize Customer object
-        self.details = Detail()  # Initialize Detail object
+        self.details = Detail()      # Initialize Detail object
         self.employees = Employee()  # Initialize Employee object
-        self.products = Product()  # Initialize Product object
-        self.reports = Report()  # Initialize Report object
-        self.visits = Visit()  # Initialize Visit object
-        self.settings = Settings()  # Initialize Settings object
+        self.products = Product()    # Initialize Product object
+        self.reports = Report()      # Initialize Report object
+        self.visits = Visit()        # Initialize Visit object
+        self.settings = Settings()   # Initialize Settings object
 
         # connect menu trigger signals
         self.actionAboutQt.triggered.connect(self.about_qt_action)
@@ -166,31 +166,38 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         try:
             # check the report date
-            # no report triggers KeyError
+            # no report triggers KeyError which in turn launches the CreateReportDialog
             repdate = self.reports.current["repdate"]
+
             if not repdate == self.txtWorkdate.text():
-                # attempt to all report for workdate
+                # attempt to load report for workdate
                 self.reports.load_report(self.txtWorkdate.text())
-                # trigger a KeyError if no report is current
+                # trigger a KeyError if no report is current which launches the CreateReportDialog
                 repdate = self.reports.current["repdate"]
+                # check if the report is sent
                 if self.reports.current["sent"] == 1:
+                    # we do not allow visits to be created on a report which is closed
                     self.buttonCreateVisit.setEnabled(False)
                 else:
                     self.buttonCreateVisit.setEnabled(True)
             infotext = "Rapport aktiv for: {}".format(repdate)
             msgbox = QMessageBox()
             msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
+            return True
 
         except KeyError:
             create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
             if create_report_dialog.exec_():
-                # set workdate to user choice
+                # user chosed to create a report
                 self.txtWorkdate.setText(create_report_dialog.workdate)
+                # check if the report exist
                 self.reports.load_report(self.txtWorkdate.text())
                 try:
+                    # did the user choose and existing report
                     _ = self.reports.current["repdate"]
                     infotext = "Eksisterende rapport hentet: {}".format(self.txtWorkdate.text())
                 except KeyError:
+                    # create the report
                     self.reports.create(self.employees.current, self.txtWorkdate.text())
                     infotext = "Rapport oprettet for: {}".format(self.txtWorkdate.text())
 
@@ -208,10 +215,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
     def action_create_visit_dialog_show(self):
         """
-        Slot for createOrder triggered signal
+        Slot for creating a new visit
         """
-        active_report = False
+        active_report = {}
         try:
+            # do we have a report
             _ = self.reports.current["repdate"]
             active_report = True
         except KeyError:
@@ -219,6 +227,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
         if active_report:
             try:
+                # do we have a customer
                 _ = self.customers.current["company"]
             except KeyError:
                 msgbox = QMessageBox()
@@ -227,11 +236,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                    "Ingen valgt kunde! Besøg kan ikke oprettes.",
                                    QMessageBox.Ok)
                 return
-
-        visit_dialog = CreateVisitDialog(self.customers, self.employees, self.products,
-                                         self.reports, self.visits)
-        if visit_dialog.exec_():
-            pass
+            # Launch the visit dialog
+            visit_dialog = CreateVisitDialog(self.customers, self.employees, self.products,
+                                             self.reports, self.visits)
+            if visit_dialog.exec_():
+                pass
 
     def action_customer_changed_signal(self, current, previous):
         """

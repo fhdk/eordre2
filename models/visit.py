@@ -17,9 +17,11 @@ from util import utils
 B_COLOR = "\033[1;36m"
 E_COLOR = "\033[0;1m"
 
+__module__ = "visit"
+
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 # noinspection PyMethodMayBeStatic
@@ -35,9 +37,11 @@ class Visit:
         self.model = {
             "name": "visit",
             "id": "visit_id",
-            "fields": ("visit_id", "report_id", "employee_id", "customer_id", "podate", "posent", "pocontact", "ponum",
-                       "pocompany", "poaddress1", "poaddress2", "popostcode", "popostoffice", "pocountry", "infotext",
-                       "proddemo", "prodsale", "ordertype", "turnsas", "turnsale", "turntotal", "approved"),
+            "fields": ("visit_id", "report_id", "employee_id", "customer_id", "po_date", "po_sent",
+                       "po_buyer", "po_number", "po_company", "po_address1", "po_address2",
+                       "po_postcode", "po_postoffice", "po_country",
+                       "info_text", "prod_demo", "prod_sale", "visit_type",
+                       "sas", "sale", "total", "approved"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL",
                       "TEXT NOT NULL", "INTEGER DEFAULT 0",
                       "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
@@ -49,13 +53,12 @@ class Visit:
         self._csv_field_count = 22
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("init_new_detail", self.model)
+            sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_VISIT:
-                printit("{}\n"
-                        " ->table\n"
+                printit(" ->table\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
+                        "  ->data: {}".format(success, data))
 
     @property
     def current(self):
@@ -129,20 +132,21 @@ class Visit:
         self._report_visits = []
         self._customer_visits = []
 
-    def create(self, report_id, employee_id, customer_id, workdate):
+    def init(self, report_id, employee_id, customer_id, workdate):
         """
-        Create a new current
+        Create a new visit
         Args:
             report_id:
             employee_id:
             customer_id:
             workdate:
         """
-        values = (None, report_id, employee_id, customer_id, workdate,
-                  0, "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
-        visit_id = self.insert(values)
-        self.load(visit_id=visit_id)
-        self._customer_visits.append(self._visit)
+        values = (None, report_id, employee_id, customer_id, workdate, 0,
+                  "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
+        self._visit = dict(zip(self.model["fields"], values))
+        # visit_id = self.insert(values)
+        # self.load(visit_id=visit_id)
+        # self._customer_visits.append(self._visit)
 
     def import_csv(self, filename, headers=False):
         """
@@ -182,17 +186,15 @@ class Visit:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_VISIT:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], values, sql))
+                    "  ->sql: {}".format(values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n "
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n "
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
@@ -210,19 +212,17 @@ class Visit:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_VISIT:
-            printit("{}\n"
-                    " ->find\n"
+            printit(" ->find\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
+                    "  ->sql: {}".format(filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            printit("  ->{}\n"
-                    "  ->filters: {}\n"
+            printit("  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
+                    "  ->sql: {}".format(filters, values, sql))
 
         if success and data:
             self._visit = dict(zip(self.model["fields"], data))
@@ -241,18 +241,16 @@ class Visit:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_VISIT:
-            printit("{}\n"
-                    " ->load_for_customer\n"
+            printit(" ->load_for_customer\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
+                    "  ->sql: {}".format(filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
@@ -269,29 +267,27 @@ class Visit:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_VISIT:
-            printit("{}\n"
-                    " ->load_by_report\n"
+            printit(" ->load_by_report\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
+                    "  ->sql: {}".format(filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
         """
-        Drop and init_new_detail table
+        Drop and init_detail table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("init_new_detail", self.model)
+        sql = self.q.build("create", self.model)
         self.q.execute(sql)
         self.clear()
 
@@ -306,19 +302,17 @@ class Visit:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_VISIT:
-            printit("{}\n"
-                    " ->update\n"
+            printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], fields, filters, values, sql))
+                    "  ->sql: {}".format(fields, filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_VISIT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data

@@ -5,7 +5,7 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """
-current module
+settings module
 """
 
 from configuration import config
@@ -14,19 +14,21 @@ from models.query import Query
 B_COLOR = "\033[1;34m"
 E_COLOR = "\033[0;1m"
 
+__module__ = "settings"
+
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Settings:
     """
-    current class
+    settings class
     """
 
     def __init__(self):
         """
-        Initialize the current class
+        Initialize the settings class
         """
         self.model = {
             "name": "settings",
@@ -41,13 +43,12 @@ class Settings:
         self._settings = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            sql = self.q.build("init_new_detail", self.model)
+            sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_SETTINGS:
-                printit("{}\n"
-                        " ->table\n"
+                printit(" ->table\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
+                        "  ->data: {}".format(success, data))
 
     @property
     def current(self):
@@ -86,17 +87,15 @@ class Settings:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_SETTINGS:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->sql: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, values))
+                    "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SETTINGS:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             self._settings = dict(zip(self.model["fields"], values))
@@ -108,9 +107,8 @@ class Settings:
         sql = self.q.build("select", self.model)
 
         if config.DEBUG_SETTINGS:
-            printit("{}\n"
-                    " ->all\n"
-                    "  ->sql: {}".format(self.model["name"], sql))
+            printit(" ->all\n"
+                    "  ->sql: {}".format(sql))
 
         success, data = self.q.execute(sql)
 
@@ -126,9 +124,8 @@ class Settings:
             self._settings = dict(zip(self.model["fields"], data[0]))
 
         if config.DEBUG_SETTINGS:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
@@ -146,19 +143,17 @@ class Settings:
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
 
         if config.DEBUG_SETTINGS:
-            printit("{}\n"
-                    " ->update\n"
+            printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], fields, filters, values, sql))
+                    "  ->sql: {}".format(fields, filters, values, sql))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SETTINGS:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data

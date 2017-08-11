@@ -19,9 +19,11 @@ from models.builders.build_drop_query import build_drop_query
 B_COLOR = "\033[0;36m"
 E_COLOR = "\033[0;m"
 
+__module__ = "query"
+
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Query:
@@ -34,7 +36,7 @@ class Query:
         Builds a sql query from definition
 
         Args:
-            query_type: init_new_detail(table), drop(table), insert(row), all(row), update(row), delete(row))
+            query_type: init_detail(table), drop(table), insert(row), all(row), update(row), delete(row))
 
             model_def: table model definition
             {"name": ("name" ...), "fields": ("field" ...), "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
@@ -71,7 +73,7 @@ class Query:
             if not sort_order == "ASC" or not sort_order == "DESC":
                 sort_order = None
 
-        # build init_new_detail table query
+        # build init_detail table query
         if querytype == "CREATE":
             return build_create_query(model_def)
 
@@ -105,11 +107,10 @@ class Query:
             result of the query - may be an empty result
         """
         if config.DEBUG_QUERY:
-            printit("QUERY")
             printit(" ->execute\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql_query, values))
-        # query types: init_new_detail, delete, insert, all, update
+        # query types: init_detail, delete, insert, all, update
         select = sql_query.startswith("SELECT")
         insert = sql_query.startswith("INSERT")
         db = sqlite3.connect(config.DBPATH)

@@ -4,26 +4,27 @@
 # Copyright: Frede Hundewadt <fh@uex.dk>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-"""contact class"""
+"""Contact module"""
 
 from configuration import config
 import csv
 
 from models.query import Query
 
+__module__ = "contact"
+
 B_COLOR = "\033[0;32m"
 E_COLOR = "\033[0;m"
 
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Contact:
     """
-    Customer contacts
+    Contact class
     """
-
     def __init__(self):
         """Initialize contact class"""
         self.model = {
@@ -37,16 +38,12 @@ class Contact:
         self._csv_field_count = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-
-            sql = self.q.build("init_new_detail", self.model)
-
+            sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
-
             if config.DEBUG_CONTACT:
-                printit("{}\n"
-                        " ->table\n"
+                printit(" ->table\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
+                        "  ->data: {}".format(success, data))
 
     @property
     def current(self):
@@ -59,7 +56,7 @@ class Contact:
     @current.setter
     def current(self, contact_id):
         """
-        Active list of contacts
+        Set contact
         :return:
         """
         try:
@@ -69,6 +66,19 @@ class Contact:
         except (KeyError, IndexError):
             self.find(contact_id)
 
+    @property
+    def contact_list(self):
+        return self._contacts
+
+    @contact_list.setter
+    def contact_list(self, customer_id):
+        try:
+            cust_id = self.contact_list[0]["customer_id"]
+            if not cust_id == customer_id:
+                self.load_for_customer(customer_id=customer_id)
+        except (IndexError, KeyError):
+            self.load_for_customer(customer_id=customer_id)
+
     def clear(self):
         """
         Clear internal variables
@@ -76,53 +86,75 @@ class Contact:
         self._contact = {}
         self._contacts = []
 
-    def create(self, customer_id, name):
+    def add(self, customer_id, name, dep=None, phone=None, email=None, info=None):
         """
         Create a contact
         """
-        values = (None, customer_id, name, "", "", "", "")
-
+        values = (None, customer_id, name, dep, email, phone, info)
         data = self.insert(values)
+        return self.find(data)
 
-        self.find(data)
-
-        return self._contact
+    def delete(self, contact_id):
+        """
+        Delete contact
+        Args:
+            contact_id:
+        Returns:
+            bool
+        """
+        filters = [("contact_id", "=")]
+        values = (contact_id,)
+        sql = self.q.build("delete", self.model, filteron=filters)
+        if config.DEBUG_CONTACT:
+            printit(" ->delete\n"
+                    "  ->filters: {}"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(filters, values, sql))
+        success, data = self.q.execute(sql, values=values)
+        if config.DEBUG_CONTACT:
+            printit("  ->{]\n"
+                    "  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
+        if success and data:
+            return True
+        return False
 
     def find(self, contact_id):
         """
         Load specific contact by id
         Args:
             contact_id:
+        Returns:
+            bool
         """
         values = (contact_id,)
-
         sql = self.q.build("select", self.model)
-
         if config.DEBUG_CONTACT:
-            printit("{}\n"
-                    " ->find\n"
+            printit(" ->find\n"
                     "  ->values: {}\n"
-                    "  ->values: {}".format(self.model["name"], values, sql))
-
+                    "  ->sql: {}".format(values, sql))
         success, data = self.q.execute(sql, values=values)
-
-        if success and data:
-            self._contact = dict(zip(self.model["fields"], data))
-
+        if success:
+            try:
+                self._contact = dict(zip(self.model["fields"], data[0]))
+            except IndexError:
+                pass
         if config.DEBUG_CONTACT:
             printit("  ->{]\n"
                     "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
-
+                    "  ->data: {}".format(success, data))
         if success and data:
-            return self._contact
+            return True
+        return False
 
     def import_csv(self, filename, headers=False):
         """
         Import contact from file
         Args:
             filename: 
-            headers: 
+            headers:
+        Returns:
+            bool
         """
         self.recreate_table()
         filename.encode("utf8")
@@ -130,26 +162,19 @@ class Contact:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-
                 if config.DEBUG_CONTACT:
-                    printit("{}\n"
-                            " ->import_csv\n"
-                            "  ->row: {}".format(self.model["name"], row))
-
+                    printit(" ->import_csv\n"
+                            "  ->row: {}".format(row))
                 if not len(row) == self._csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
-
                 values = (row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[7].strip())
-
                 if config.DEBUG_CONTACT:
                     printit("  ->values: {}".format(values))
-
                 self.insert(values)
-
             return True
 
     def insert(self, values):
@@ -157,23 +182,18 @@ class Contact:
         Insert items
         Args:
             values: contact data to insert in contact table
+        Returns:
+            the new rowid
         """
-
         sql = self.q.build("insert", self.model)
-
         if config.DEBUG_CONTACT:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], values, sql))
-
+                    "  ->sql: {}".format(values, sql))
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_CONTACT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
-
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
         if success and data:
             return data
         return False
@@ -183,66 +203,59 @@ class Contact:
         Load contacts for current
         Args:
             customer_id:
+        Returns:
+            bool
         """
         filters = [("customer_id", "=")]
         values = (customer_id,)
-
         sql = self.q.build("select", self.model, filteron=filters)
-
         if config.DEBUG_CONTACT:
-            printit("{}\n"
-                    " ->all for current\n"
+            printit(" ->all for current\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
-
+                    "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_CONTACT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
-
-        if success and data:
-            self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
-        else:
-            self._contacts = []
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
+        if success:
+            try:
+                self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
+                return True
+            except IndexError:
+                self._contacts = []
+        return False
 
     def recreate_table(self):
         """
-        Drop and init_new_detail table
+        Drop and create table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("init_new_detail", self.model)
+        sql = self.q.build("create", self.model)
         self.q.execute(sql)
         self.clear()
 
     def update(self):
         """
         Update item
+        Returns:
+            bool
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._contact.values())
-
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
-
         if config.DEBUG_CONTACT:
-            printit("{}\n"
-                    " ->update\n"
+            printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], fields, filters, values, sql))
-
+                    "  ->sql: {}".format(fields, filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_CONTACT:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
-
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
         if success and data:
             return True
         return False

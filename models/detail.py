@@ -14,12 +14,14 @@ import csv
 from models.query import Query
 from util import utils
 
+__module__ = "detail"
+
 B_COLOR = "\033[1;30m"
 E_COLOR = "\033[0;m"
 
 
 def printit(string):
-    print("{}{}{}".format(B_COLOR, string, E_COLOR))
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Detail:
@@ -44,14 +46,12 @@ class Detail:
         self._csv_field_count = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
-            # build query and execute
-            sql = self.q.build("init_new_detail", self.model)
+            sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
             if config.DEBUG_SALELINE:
-                printit("{}\n"
-                        " ->table\n"
+                printit(" ->table\n"
                         "  ->success: {}\n"
-                        "  ->data: {}".format(self.model["name"], success, data))
+                        "  ->data: {}".format(success, data))
 
     @property
     def current(self):
@@ -90,17 +90,14 @@ class Detail:
         self._detail = {}
         self._details = []
 
-    def init_new_detail(self, visit_id):
+    def init_detail(self, visit_id):
         """
-        Create a new detail on visitid
+        Initialize a new detail with visitid
         Args:
             visit_id:
         """
-        # init_new_detail new with empty values
         values = (None, visit_id, None, "", "", None, None, None, None, None)
-
         self._detail = dict(zip(self.model["fields"], values))
-
         self._details.append(self._detail)
 
     def delete(self, detail_id):
@@ -115,18 +112,16 @@ class Detail:
         sql = self.q.build("delete", self.model, filteron=filters)
 
         if config.DEBUG_SALELINE:
-            printit("{}\n"
-                    " ->delete\n"
+            printit(" ->delete\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
-                    "  ->sql: {}".format(self.model["name"], filters, values, sql))
+                    "  ->sql: {}".format(filters, values, sql))
 
         success, data = self.q.execute(sql, values)
 
         if config.DEBUG_SALELINE:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return True
@@ -147,9 +142,8 @@ class Detail:
             for row in reader:
 
                 if config.DEBUG_SALELINE:
-                    printit("{}\n"
-                            " ->import_csv\n"
-                            "  ->row: {}".format(self.model["name"], row))
+                    printit(" ->import_csv\n"
+                            "  ->row: {}".format(row))
 
                 if not len(row) == self._csv_field_count:
                     return False
@@ -162,8 +156,7 @@ class Detail:
                 values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7], "s", None)
 
                 if config.DEBUG_SALELINE:
-                    printit("  ->{}\n"
-                            "  ->values: {}".format(self.model["name"], values))
+                    printit("  ->values: {}".format(values))
 
                 self.insert(values)
             return True
@@ -177,17 +170,15 @@ class Detail:
         sql = self.q.build("insert", self.model)
 
         if config.DEBUG_SALELINE:
-            printit("{}\n"
-                    " ->insert\n"
+            printit(" ->insert\n"
                     "  ->sql: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, values))
+                    "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SALELINE:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
@@ -203,11 +194,10 @@ class Detail:
         sql = self.q.build("select", self.model, filteron=filters)
 
         if config.DEBUG_SALELINE:
-            printit("{}\n"
-                    " ->all\n"
+            printit(" ->all\n"
                     "  ->sql: {}\n"
                     "  ->filters: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, filters, values))
+                    "  ->values: {}".format(sql, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
@@ -218,17 +208,16 @@ class Detail:
             self.clear()
 
         if config.DEBUG_SALELINE:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
     def recreate_table(self):
         """
-        Drop and init_new_detail table
+        Drop and creete table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
-        sql = self.q.build("init_new_detail", self.model)
+        sql = self.q.build("create", self.model)
         self.q.execute(sql)
         self.clear()
 
@@ -262,19 +251,17 @@ class Detail:
             return False
 
         if config.DEBUG_SALELINE:
-            printit("{}\n"
-                    " ->all\n"
+            printit(" ->all\n"
                     "  ->sql: {}\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
-                    "  ->values: {}".format(self.model["name"], sql, fields, filters, values))
+                    "  ->values: {}".format(sql, fields, filters, values))
 
         success, data = self.q.execute(sql, values=values)
 
         if config.DEBUG_SALELINE:
-            printit("  ->{}\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(self.model["name"], success, data))
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
