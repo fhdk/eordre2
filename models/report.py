@@ -87,7 +87,7 @@ class Report:
             self.load_report(workdate=workdate)
 
     @property
-    def reportlist(self):
+    def report_list(self):
         """
         Report List
         Returns:
@@ -95,8 +95,8 @@ class Report:
         """
         return self._reports
 
-    @reportlist.setter
-    def reportlist(self, year=None, month=None):
+    @report_list.setter
+    def report_list(self, year=None, month=None):
         """
         Set the current list of reports to specified filter
         Args:

@@ -79,18 +79,18 @@ class Visit:
         self.find(visit_id)
 
     @property
-    def customer_visits(self):
+    def visit_list_customer(self):
         """
-        Customer Vist List
+        The list of visits for a customer
         Returns:
-            The active list of customer_visits for a customer
+            The list of visits for a customer
         """
         return self._customer_visits
 
-    @customer_visits.setter
-    def customer_visits(self, customer_id):
+    @visit_list_customer.setter
+    def visit_list_customer(self, customer_id):
         """
-        Load customer_visits for a customer_id
+        Load the list of visits for a customer_id
         Args:
             customer_id:
         """
@@ -102,18 +102,18 @@ class Visit:
             self.load_for_customer(customer_id)
 
     @property
-    def report_visits(self):
+    def visit_list_report(self):
         """
         Report Visit List
         Returns:
-            The active list of report_visits for a report_id
+            The list of visits for a report_id
         """
         return self._report_visits
 
-    @report_visits.setter
-    def report_visits(self, report_id):
+    @visit_list_report.setter
+    def visit_list_report(self, report_id):
         """
-        Load report_visits for the requested report_id
+        Load visits for the requested report_id
         Args:
             report_id:
         """
@@ -235,7 +235,7 @@ class Visit:
 
     def load_for_customer(self, customer_id):
         """
-        Load customer_visits for specified customer
+        Load visit_list_customer for specified customer
         Args:
             customer_id:
         """
@@ -256,7 +256,7 @@ class Visit:
 
     def load_by_report(self, report_id):
         """
-        Load customer_visits for specified report
+        Load visit_list_customer for specified report
         Args:
             report_id:
         """

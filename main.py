@@ -244,8 +244,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             current: currently selected item
             previous: previous selected item
         """
+        # move current customer
         self.customers.lookup_by_phone_company(current.text(0), current.text(1))
-        # try:
+        # populate fields
         self.txtAccount.setText(self.customers.current["account"])
         self.txtCompany.setText(self.customers.current["company"])
         self.txtAddress1.setText(self.customers.current["address1"])
@@ -258,28 +259,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.txtFactor.setText(str(self.customers.current["factor"]))
         self.txtInfoText.setText(self.customers.current["infotext"])
 
-        self.contacts.load_for_customer(self.customers.current["customer_id"])
-
-        self.visits.load_for_customer(self.customers.current["customer_id"])
-
-        # except (KeyError, AttributeError):
-        #     pass
-        #     # clear input lines
-        #     self.txtAccount.clear()
-        #     self.txtCompany.clear()
-        #     self.txtAddress1.clear()
-        #     self.txtAddress2.clear()
-        #     self.txtZipCode.clear()
-        #     self.txtCityName.clear()
-        #     self.txtPhone1.clear()
-        #     self.txtPhone2.clear()
-        #     self.txtEmail.clear()
-        #     self.txtFactor.clear()
-        #     self.txtInfoText.clear()
-        #     # clear customer related internals
-        #     self.visits.clear()
-        #     self.details.clear()
-        #     self.contacts.clear()
+        self.populate_contact_list()
+        self.populate_visit_list()
 
     def action_data_export(self):
         """
@@ -292,7 +273,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slot for fileImport triggered signal
         """
-        if self.customers.customers:
+        if self.customers.customer_list:
             msgbox = QMessageBox()
             msgbox.warning(self,
                            __appname__,
@@ -426,6 +407,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Populate current tree
         """
+        self.tblCustomerList.clear()
+        self.tblCustomerList.setRowCount(len(self.customers.customer_list))
         self.widgetCustomers.clear()  # shake the tree for leaves
         self.widgetCustomers.setColumnCount(2)  # set columns
         # self.widgetCustomers.setColumnWidth(0, 230)  # set width of name col
@@ -433,7 +416,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.widgetCustomers.setSortingEnabled(True)  # enable sorting
         items = []  # temporary list
         try:
-            for c in self.customers.customers:
+            for c in self.customers.customer_list:
                 item = QTreeWidgetItem([c["phone1"], c["company"]])
                 items.append(item)
         except IndexError:
@@ -441,6 +424,26 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         # assign Widgets to Tree
         self.widgetCustomers.addTopLevelItems(items)
         self.widgetCustomers.scrollToTop()
+
+    def populate_contact_list(self):
+        """
+        Populate the contactlist based on currently selected customer
+        """
+        # load contacts
+        self.contacts.load_for_customer(self.customers.current["customer_id"])
+        # populate contacts table
+        self.widgetContactList.setColumnCount(len(self.contacts.model["fields"]))
+        self.widgetContactList.setRowCount(len(self.contacts.contact_list))
+
+    def populate_visit_list(self):
+        """
+        Populate the visitlist based on currently selected customer
+        """
+        # load visits
+        self.visits.load_for_customer(self.customers.current["customer_id"])
+        # populate visits table
+        self.widgetVisitList.setColumnCount(len(self.visits.model["fields"]))
+        self.widgetVisitList.setRowCount(len(self.visits.visit_list_customer))
 
     def resizeEvent(self, event):
         """

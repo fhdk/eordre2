@@ -38,7 +38,7 @@ class ImportCustomersThread(QThread):
         super(ImportCustomersThread, self).__init__(parent)
         self.settings = settings  # main settings object
         self.employees = employees  # main employees object
-        self.customers = customers  # main customers object
+        self.customers = customers  # main customer_list object
         self.c = Communicate()
 
     def run(self):

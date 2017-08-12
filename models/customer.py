@@ -83,7 +83,7 @@ class Customer:
             self.lookup_by_id(customer_id=look_for)
 
     @property
-    def customers(self):
+    def customer_list(self):
         """
         Load customers into primary list
         """

@@ -355,32 +355,42 @@
      <item>
       <layout class="QHBoxLayout" name="mainGrid">
        <item>
-        <widget class="QTreeWidget" name="widgetCustomers">
+        <widget class="QTableWidget" name="tblCustomerList">
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>300</width>
            <height>16777215</height>
           </size>
          </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
          <property name="statusTip">
-          <string>Listen er søgbar ved tryk på en tast og kan sorteres ved tryk på en overskrift</string>
+          <string>Dette er kundelisten</string>
          </property>
-         <property name="alternatingRowColors">
+         <property name="sizeAdjustPolicy">
+          <enum>QAbstractScrollArea::AdjustToContents</enum>
+         </property>
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="cornerButtonEnabled">
           <bool>true</bool>
          </property>
          <column>
           <property name="text">
-           <string notr="true">Telefon</string>
+           <string>Telefon</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Firma</string>
+           <string>Firmanavn</string>
           </property>
          </column>
         </widget>
@@ -402,7 +412,7 @@
          <item>
           <layout class="QGridLayout" name="widgetInfoButtons">
            <item row="0" column="2">
-            <widget class="QPushButton" name="buttonHistoryData">
+            <widget class="QPushButton" name="btnVisitData">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -420,7 +430,7 @@
             </widget>
            </item>
            <item row="0" column="0">
-            <widget class="QPushButton" name="buttonMasterData">
+            <widget class="QPushButton" name="btnMasterData">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -438,7 +448,7 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QPushButton" name="buttonContactData">
+            <widget class="QPushButton" name="btnContactData">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -465,7 +475,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="widgetMasterPage">
             <widget class="QWidget" name="layoutWidget">
@@ -538,7 +548,7 @@
                </widget>
               </item>
               <item row="8" column="1">
-               <widget class="QPushButton" name="buttonArchiveChanges">
+               <widget class="QPushButton" name="btnArchiveMasterData">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
@@ -732,13 +742,13 @@
             </widget>
            </widget>
            <widget class="QWidget" name="widgetContactsPage">
-            <widget class="QTableWidget" name="widgetContactsList">
+            <widget class="QTableWidget" name="widgetContactList">
              <property name="geometry">
               <rect>
                <x>0</x>
                <y>30</y>
                <width>410</width>
-               <height>91</height>
+               <height>341</height>
               </rect>
              </property>
              <property name="statusTip">
@@ -781,7 +791,7 @@
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
-            <widget class="QPushButton" name="buttonAddContact">
+            <widget class="QPushButton" name="btnAddContact">
              <property name="geometry">
               <rect>
                <x>240</x>
@@ -794,7 +804,7 @@
               <string>Tilføj kontakt ...</string>
              </property>
             </widget>
-            <widget class="QPushButton" name="buttonSaveChanges">
+            <widget class="QPushButton" name="btnArchiveContactData">
              <property name="geometry">
               <rect>
                <x>10</x>
@@ -838,7 +848,7 @@
               <set>Qt::AlignCenter</set>
              </property>
             </widget>
-            <widget class="QTreeWidget" name="treeWidget">
+            <widget class="QTreeView" name="treeView">
              <property name="geometry">
               <rect>
                <x>0</x>
@@ -848,23 +858,8 @@
               </rect>
              </property>
              <property name="statusTip">
-              <string>Kunde historik</string>
+              <string>Dette er den historiske kontakt med kunden</string>
              </property>
-             <column>
-              <property name="text">
-               <string>Dato</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Demo</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Salg</string>
-              </property>
-             </column>
             </widget>
            </widget>
           </widget>
@@ -1137,10 +1132,9 @@
   <tabstop>txtCustServer</tabstop>
   <tabstop>txtProdLocal</tabstop>
   <tabstop>txtProdServer</tabstop>
-  <tabstop>widgetCustomers</tabstop>
-  <tabstop>buttonMasterData</tabstop>
-  <tabstop>buttonContactData</tabstop>
-  <tabstop>buttonHistoryData</tabstop>
+  <tabstop>btnMasterData</tabstop>
+  <tabstop>btnContactData</tabstop>
+  <tabstop>btnVisitData</tabstop>
  </tabstops>
  <resources>
   <include location="../icons/system.qrc"/>

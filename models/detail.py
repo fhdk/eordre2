@@ -77,7 +77,7 @@ class Detail:
             self.find(detail_id=detail_id)
 
     @property
-    def details(self):
+    def details_list(self):
         """
         Visit details list
         Returns:
@@ -85,8 +85,8 @@ class Detail:
         """
         return self._details
 
-    @details.setter
-    def details(self, visit_id):
+    @details_list.setter
+    def details_list(self, visit_id):
         """
         Visit details setter. Load details for visit_id
         Args:

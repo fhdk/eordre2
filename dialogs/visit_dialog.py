@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QDialog, QTableWidgetItem
 
 from models.detail import Detail
 
-from resources.create_visit_dialog_rc import Ui_visitDialog
+from resources.visit_dialog_rc import Ui_visitDialog
 
 
 class VisitDialog(QDialog, Ui_visitDialog):
@@ -50,10 +50,12 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.details = Detail()
         self.details.load(self.visits.current["visit_id"])
         # for idx, detail in enumerate(self.details.details):
+        self.widgetVisit.setRowCount(10)
+        self.widgetVisit.setColumnCount(len(self.details.model["fields"]))
         for i in range(10):
-            item = QTableWidgetItem("item {}".format(i))
+            item = QTableWidgetItem("item {}".format(i + 1))
             self.widgetVisit.setSortingEnabled(False)
-            self.widgetVisit.setItem(i + 1, 1, item)
+            self.widgetVisit.setItem(i, 1, item)
 
         # If customer needs special settings on prices
         factor = customers.current["factor"]
