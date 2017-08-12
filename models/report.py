@@ -66,16 +66,16 @@ class Report:
                         "  ->data: {}".format(success, data))
 
     @property
-    def current(self):
+    def active(self):
         """
         Report
         Returns:
-            Current reportid
+            Active report
         """
         return self._report
 
-    @current.setter
-    def current(self, workdate):
+    @active.setter
+    def active(self, workdate):
         """
         Set reportid to workdate
         Args:
@@ -103,7 +103,6 @@ class Report:
             year:
             month:
         """
-        self._reports = []
         self.load_reports(year=year, month=month)
 
     def clear(self):
@@ -163,7 +162,7 @@ class Report:
         territory = employee["salesrep"]
         values = (ym_filter, employee_id, 1)
 
-        sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filters)
+        sql = self.q.build("select", self.model, aggregates=aggregates, filters=filters)
 
         if config.DEBUG_REPORT:
             printit(" ->init_detail\n"
@@ -256,8 +255,8 @@ class Report:
                 if headers and line == 1:
                     continue
                 # translate bool text to integer for col 19, 21
-                row[19] = utils.bool2int(utils.str2bool(row[19]))
-                row[21] = utils.bool2int(utils.str2bool(row[21]))
+                row[19] = utils.bool2int(utils.arg2bool(row[19]))
+                row[21] = utils.bool2int(utils.arg2bool(row[21]))
                 # init_detail a timestamp
                 local_timestamp = datetime.today()
                 values = (row[0], employee_id, row[1], row[2].strip(), local_timestamp, row[3],
@@ -280,7 +279,7 @@ class Report:
         filters = [("repdate", "=")]
         values = (workdate,)
 
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
 
         if config.DEBUG_REPORT:
             printit(" ->load_report\n"
@@ -316,7 +315,7 @@ class Report:
         if year and month:
             value = "{}-{}-{}".format(year, month, "%")
         values = (value,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
 
         if config.DEBUG_REPORT:
             printit(" ->load_reports\n"
@@ -333,8 +332,10 @@ class Report:
             try:
                 _ = data[0]
                 self._reports = [dict(zip(self.model["fields"], row)) for row in data]
+                self._report = self._reports[0]
                 return True
             except IndexError:
+                self._report = {}
                 self._reports = []
         return False
 

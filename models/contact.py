@@ -46,25 +46,20 @@ class Contact:
                         "  ->data: {}".format(success, data))
 
     @property
-    def current(self):
+    def active(self):
         """
-        Current contact
+        Active contact
         :return:
         """
         return self._contact
 
-    @current.setter
-    def current(self, contact_id):
+    @active.setter
+    def active(self, contact_id):
         """
         Set contact
         :return:
         """
-        try:
-            cid = self._contact["contact_id"][0]
-            if not cid == contact_id:
-                self.find(contact_id)
-        except (KeyError, IndexError):
-            self.find(contact_id)
+        self.find(contact_id)
 
     @property
     def contact_list(self):
@@ -72,12 +67,7 @@ class Contact:
 
     @contact_list.setter
     def contact_list(self, customer_id):
-        try:
-            cust_id = self.contact_list[0]["customer_id"]
-            if not cust_id == customer_id:
-                self.load_for_customer(customer_id=customer_id)
-        except (IndexError, KeyError):
-            self.load_for_customer(customer_id=customer_id)
+        self.load_for_customer(customer_id=customer_id)
 
     def clear(self):
         """
@@ -110,7 +100,7 @@ class Contact:
         """
         filters = [("contact_id", "=")]
         values = (contact_id,)
-        sql = self.q.build("delete", self.model, filteron=filters)
+        sql = self.q.build("delete", self.model, filters=filters)
         if config.DEBUG_CONTACT:
             printit(" ->delete\n"
                     "  ->filters: {}"
@@ -214,7 +204,7 @@ class Contact:
         """
         filters = [("customer_id", "=")]
         values = (customer_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_CONTACT:
             printit(" ->all for current\n"
                     "  ->filters: {}\n"
@@ -227,8 +217,10 @@ class Contact:
         if success:
             try:
                 self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
+                self._contact = self._contacts[0]
                 return True
             except IndexError:
+                self._contact = {}
                 self._contacts = []
         return False
 
@@ -251,7 +243,7 @@ class Contact:
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._contact.values())
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+        sql = self.q.build("update", self.model, update=fields, filters=filters)
         if config.DEBUG_CONTACT:
             printit(" ->update\n"
                     "  ->fields: {}\n"

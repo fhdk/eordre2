@@ -48,10 +48,10 @@ class Employee:
                         "  ->success: {}\n"
                         "  ->data: {}".format(success, data))
         self.s = Settings()
-        self.load(self.s.current["usermail"])
+        self.load(self.s.active["usermail"])
 
     @property
-    def current(self):
+    def active(self):
         """
         Return current and only employeeid
         """
@@ -82,7 +82,7 @@ class Employee:
         """
         filters = [("email", "=")]
         values = (email,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
 
         if config.DEBUG_EMPLOYEE:
             printit(" ->all\n"
@@ -131,7 +131,7 @@ class Employee:
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._employee.values())
 
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+        sql = self.q.build("update", self.model, update=fields, filters=filters)
 
         if config.DEBUG_EMPLOYEE:
             printit(" ->update\n"

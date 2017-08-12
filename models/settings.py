@@ -51,7 +51,7 @@ class Settings:
                         "  ->data: {}".format(success, data))
 
     @property
-    def current(self):
+    def active(self):
         """
         current
         Returns:
@@ -64,8 +64,8 @@ class Settings:
 
         return self._settings
 
-    @current.setter
-    def current(self, settings):
+    @active.setter
+    def active(self, settings):
         """
         Pushing new current settings
         Args:
@@ -140,7 +140,7 @@ class Settings:
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._settings.values())
 
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+        sql = self.q.build("update", self.model, update=fields, filters=filters)
 
         if config.DEBUG_SETTINGS:
             printit(" ->update\n"

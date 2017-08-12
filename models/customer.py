@@ -57,30 +57,20 @@ class Customer:
                         "  ->data: {}".format(success, data))
                 
     @property
-    def current(self):
+    def active(self):
         """
-        Return customer
+        Return active customer
         """
         return self._customer
 
-    @current.setter
-    def current(self, look_for):
+    @active.setter
+    def active(self, customer_id):
         """
-        Set customer based on look_for
+        Set active customer
         Args:
-            look_for: customer_id or [phone, company]
+            customer_id
         """
-        try:
-            company = look_for[1]
-            phone = look_for[0]
-            try:
-                name = self._customer["company"]
-                if not name == company:
-                    self.lookup_by_phone_company(phone=phone, company=company)
-            except KeyError:
-                self.lookup_by_phone_company(phone=phone, company=company)
-        except IndexError:
-            self.lookup_by_id(customer_id=look_for)
+        self.lookup_by_id(customer_id=customer_id)
 
     @property
     def customer_list(self):
@@ -149,7 +139,7 @@ class Customer:
                 if headers and line == 1:
                     continue
                 # translate bool text in col 15
-                row[15] = utils.bool2int(utils.str2bool(row[15]))
+                row[15] = utils.bool2int(utils.arg2bool(row[15]))
                 values = (row[0],
                           row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                           row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
@@ -241,8 +231,10 @@ class Customer:
         if success:
             try:
                 self._customers = [dict(zip(self.model["fields"], row)) for row in data]
+                self._customer = self._customers[0]
                 return True
             except IndexError:
+                self._customer = {}
                 self._customers = []
         return False
 
@@ -256,7 +248,7 @@ class Customer:
         """
         filters = [("customer_id", "=")]
         values = (customer_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_CUSTOMER:
             printit(" ->lookup_by_id\n"
                     "  ->filters: {}\n"
@@ -291,7 +283,7 @@ class Customer:
             filters = [("phone1", "=", "and"), ("company", "=")]
             values = (phone, company)
 
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_CUSTOMER:
             printit(" ->lookup_by_phone_company\n"
                     "  ->filters: {}\n"
@@ -305,7 +297,7 @@ class Customer:
         if not success:
             filters = [("account", "=", "and"), ("phone1", "="), ("company", "=", "and")]
             values = ("NY", phone, company)
-            sql = self.q.build("select", self.model, filteron=filters)
+            sql = self.q.build("select", self.model, filters=filters)
             if config.DEBUG_CUSTOMER:
                 printit("   ->filters: {}\n"
                         "   ->values: {}\n"
@@ -341,7 +333,7 @@ class Customer:
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._customer.values())
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+        sql = self.q.build("update", self.model, update=fields, filters=filters)
         if config.DEBUG_CUSTOMER:
             printit(" ->update\n"
                     "  ->fields: {}\n"

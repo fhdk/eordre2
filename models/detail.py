@@ -54,7 +54,7 @@ class Detail:
                         "  ->data: {}".format(success, data))
 
     @property
-    def current(self):
+    def active(self):
         """
         Single current detail
         Returns:
@@ -62,8 +62,8 @@ class Detail:
         """
         return self._detail
 
-    @current.setter
-    def current(self, detail_id):
+    @active.setter
+    def active(self, detail_id):
         """
         Set the current detail
         Args:
@@ -128,7 +128,7 @@ class Detail:
         """
         filters = [(self.model["id"], "=")]
         values = (detail_id,)
-        sql = self.q.build("delete", self.model, filteron=filters)
+        sql = self.q.build("delete", self.model, filters=filters)
         if config.DEBUG_SALELINE:
             printit(" ->delete\n"
                     "  ->filters: {}\n"
@@ -150,9 +150,9 @@ class Detail:
         Returns:
             bool
         """
-        filters = [(self.model["id"]), "="]
+        filters = [(self.model["id"], "=")]
         values = (detail_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_SALELINE:
             printit(" ->all\n"
                     "  ->sql: {}\n"
@@ -194,7 +194,7 @@ class Detail:
                 if headers and line == 1:
                     continue
                 # translate bool text to integer col 6
-                row[6] = utils.bool2int(utils.str2bool(row[6]))
+                row[6] = utils.bool2int(utils.arg2bool(row[6]))
                 values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7], "S", None)
                 if config.DEBUG_SALELINE:
                     printit("  ->values: {}".format(values))
@@ -232,7 +232,7 @@ class Detail:
         """
         filters = [("visit_id", "=")]
         values = (visit_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_SALELINE:
             printit(" ->all\n"
                     "  ->sql: {}\n"
@@ -245,8 +245,10 @@ class Detail:
         if success:
             try:
                 self._details = [dict(zip(self.model["fields"], row)) for row in data]
+                self._detail = self._details[0]
                 return True
             except (IndexError, KeyError):
+                self._detail = {}
                 self._details = []
         return False
 
@@ -280,7 +282,7 @@ class Detail:
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._detail.values())
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+        sql = self.q.build("update", self.model, update=fields, filters=filters)
         if sql.startswith("ERROR"):
             printit("{}".format(sql))
             return False

@@ -36,7 +36,7 @@ def refresh_sync_status(settings):
     return httpfn.update_last_sync_info(settings)
 
 
-def str2bool(arg):
+def arg2bool(arg):
     """
     Convert a string to bool
     Args:
@@ -44,6 +44,8 @@ def str2bool(arg):
     Returns:
         bool representation of the string
     """
+    if type(arg) == int:
+        arg = str(arg)
     return str(arg.lower() in ["sand", "true", "1", "ok"])
 
 
@@ -72,9 +74,35 @@ def bool2int(arg):
     return 0
 
 
+def int2str_dk(arg):
+    """
+    Convert bool to string
+    Args:
+        arg:
+    Returns:
+        String representation of the bool value
+    """
+    if arg is not 0:
+        return "JA"
+    return "NEJ"
+
+
+def bool2dk(arg):
+    """
+    Convert bool to string
+    Args:
+        arg:
+    Returns:
+        String representation of the bool value
+    """
+    if arg:
+        return "JA"
+    return "NEJ"
+
+
 def bool2str(arg):
     """
-    Convert boot to string
+    Convert bool to string
     Args:
         arg:
     Returns:

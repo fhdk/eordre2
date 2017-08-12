@@ -50,14 +50,14 @@ class Product:
                         "  ->data: {}".format(success, data))
 
     @property
-    def current(self):
+    def active(self):
         """
         Return active product
         """
         return self._product
 
-    @current.setter
-    def current(self, product_id):
+    @active.setter
+    def active(self, product_id):
         """
         Set current product
         Args:
@@ -96,7 +96,9 @@ class Product:
 
         if success and data:
             self._products = [dict(zip(self.model["fields"], row)) for row in data]
+            self._product = self._products[0]
         else:
+            self._product = {}
             self._products = []
 
     def by_id(self, product_id):
@@ -106,7 +108,7 @@ class Product:
         """
         filters = [("product_id", "=")]
         values = (product_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         success, data = self.q.execute(sql, values)
         if success:
             self._product = dict(zip(self.model["fields"], data[0]))

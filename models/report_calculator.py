@@ -56,7 +56,7 @@ class Calculator:
                         "  ->data   : {}".format(success, data))
 
     @property
-    def current(self):
+    def active(self):
         """
         Totals
         Returns:
@@ -64,8 +64,8 @@ class Calculator:
         """
         return self._totals
 
-    @current.setter
-    def current(self, wd_eid):
+    @active.setter
+    def active(self, wd_eid):
         """
         Sets the current totals
         :param wd_eid: string with two 'words' the first is workdate and the second is employee_id
@@ -126,7 +126,7 @@ class Calculator:
         filters = [(self.model["id"], "=")]
         values = (calc_id,)
 
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
 
         if config.DEBUG_CALCULATOR:
             printit(" ->select_by_id\n"
@@ -157,7 +157,7 @@ class Calculator:
         filters = [("workdate", "=", "and"), ("employee_id", "=")]
         values = (workdate, employee_id)
 
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
 
         if config.DEBUG_CALCULATOR:
             printit(" ->select_by_id\n"
@@ -186,7 +186,7 @@ class Calculator:
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._totals.values())
 
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+        sql = self.q.build("update", self.model, update=fields, filters=filters)
 
         if config.DEBUG_CALCULATOR:
             printit(" ->select_by_id\n"

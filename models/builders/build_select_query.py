@@ -5,23 +5,24 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
-def build_select_query(model_def, aggregates=None, filters=None, sort_order=None):
+def build_select_query(model, aggregates=None, filters=None, orderby=None):
     """
     Builds a query for supplied model
     Args:
-        model_def:
+        model:
         aggregates: optional list of one or more valid aggregates
         filters: optional list of one or more fields to filter query
-        sort_order: optional sort_order
+        orderby: optional sort_order
 
     Returns:
         valid sql statement for model
     """
-    name = model_def["name"]
-    fld_count = len(model_def["fields"])
+    name = model["name"]
+    fld_count = len(model["fields"])
     aggr_count = 0
     whr_count = 0
     s_orderby = ""
+    s_order = ""
     str_sa = ""
     str_sw = ""
     str_sf = ""
@@ -30,8 +31,9 @@ def build_select_query(model_def, aggregates=None, filters=None, sort_order=None
         aggr_count = len(aggregates)
     if filters:
         whr_count = len(filters)
-    if sort_order:
-        s_orderby = sort_order
+    if orderby:
+        s_orderby = orderby[0]
+        s_order = orderby[1]
 
     # aggregate list values
     if aggregates:
@@ -42,11 +44,11 @@ def build_select_query(model_def, aggregates=None, filters=None, sort_order=None
                 str_sa = str_sa + "{}, ".format(aggregate)
     # table selection
     # the field order cannot be guaranteed with * alias
-    # add a all field list with all fields
+    # add all fields
     else:
-        for idx, field in enumerate(model_def["fields"]):
+        for idx, field in enumerate(model["fields"]):
             if (idx + 1) == fld_count:
-                str_sf = str_sf + "{}".format(field)
+                str_sf = str_sf + "{} ".format(field)
             else:
                 str_sf = str_sf + "{}, ".format(field)
 
@@ -69,24 +71,25 @@ def build_select_query(model_def, aggregates=None, filters=None, sort_order=None
     # all aggregated values where
     if str_sa and str_sw:
         if s_orderby:
-            return "SELECT {} FROM {} WHERE {} ORDER BY {}".format(str_sa, name, str_sw, s_orderby)
+            result = "SELECT {} FROM {} WHERE {} ORDER BY {} {}}".format(str_sa, name, str_sw, s_orderby, s_order)
         else:
-            return "SELECT {} FROM {} WHERE {};".format(str_sa, name, str_sw)
+            result = "SELECT {} FROM {} WHERE {};".format(str_sa, name, str_sw)
     # all aggregated values
     elif str_sa and not str_sw:
         if s_orderby:
-            return "SELECT {} FROM {} ORDER BY {}".format(str_sa, name, s_orderby)
+            result = "SELECT {} FROM {} ORDER BY {} {}".format(str_sa, name, s_orderby, s_order)
         else:
-            return "SELECT {} FROM {};".format(str_sa, name)
+            result = "SELECT {} FROM {};".format(str_sa, name)
     # all everything where
     elif str_sw and not str_sa:
         if s_orderby:
-            return "SELECT {} FROM {} WHERE {} ORDER BY {}".format(str_sf, name, str_sw, s_orderby)
+            result = "SELECT {} FROM {} WHERE {} ORDER BY {} {}".format(str_sf, name, str_sw, s_orderby, s_order)
         else:
-            return "SELECT {} FROM {} WHERE {};".format(str_sf, name, str_sw)
+            result = "SELECT {} FROM {} WHERE {};".format(str_sf, name, str_sw)
     # all everything
     else:
         if s_orderby:
-            return "SELECT {} FROM {} ORDER BY {}".format(str_sf, name, s_orderby)
+            result = "SELECT {} FROM {} ORDER BY {} {}".format(str_sf, name, s_orderby, s_order)
         else:
-            return "SELECT {} FROM {};".format(str_sf, name)
+            result = "SELECT {} FROM {};".format(str_sf, name)
+    return result.replace("  ", " ")

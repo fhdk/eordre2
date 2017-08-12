@@ -21,21 +21,21 @@ class SettingsDialog(QDialog, Ui_settingsDialog):
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)  # setup ui from resource file
         self.settings = settings
-        self.work = self.settings.current
+        self.work = self.settings.active
 
         # assign values to input fields
-        self.editUserMail.setText(self.settings.current["usermail"])
-        self.editUserPass.setText(self.settings.current["userpass"])
-        self.editUserCountry.setText(self.settings.current["usercountry"])
-        self.editHttp.setText(self.settings.current["http"])
-        self.editSmtp.setText(self.settings.current["smtp"])
-        self.editPort.setText(str(self.settings.current["port"]))
-        self.editMailTo.setText(self.settings.current["mailto"])
-        self.checkServerData.setChecked(utils.int2bool(self.settings.current["sc"]))
-        self.editMailServer.setText(self.settings.current["mailserver"])
-        self.editMailPort.setText(str(self.settings.current["mailport"]))
-        self.editMailUser.setText(self.settings.current["mailuser"])
-        self.editMailPass.setText(self.settings.current["mailpass"])
+        self.editUserMail.setText(self.settings.active["usermail"])
+        self.editUserPass.setText(self.settings.active["userpass"])
+        self.editUserCountry.setText(self.settings.active["usercountry"])
+        self.editHttp.setText(self.settings.active["http"])
+        self.editSmtp.setText(self.settings.active["smtp"])
+        self.editPort.setText(str(self.settings.active["port"]))
+        self.editMailTo.setText(self.settings.active["mailto"])
+        self.checkServerData.setChecked(utils.int2bool(self.settings.active["sc"]))
+        self.editMailServer.setText(self.settings.active["mailserver"])
+        self.editMailPort.setText(str(self.settings.active["mailport"]))
+        self.editMailUser.setText(self.settings.active["mailuser"])
+        self.editMailPass.setText(self.settings.active["mailpass"])
         # connect to signals
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -94,7 +94,7 @@ class SettingsDialog(QDialog, Ui_settingsDialog):
             self.work["userpass"] = passwdfn.hash_password(self.work["userpass"])
         if len(self.work["mailpass"]) < 97:
             self.work["mailpass"] = passwdfn.hash_password(self.work["mailpass"])
-        self.settings.current = self.work
+        self.settings.active = self.work
         self.done(True)
 
     def reject(self):

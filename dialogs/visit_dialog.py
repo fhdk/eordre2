@@ -32,23 +32,23 @@ class VisitDialog(QDialog, Ui_visitDialog):
         """
         super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
-        self.customerid = customers.current["customer_id"]
-        self.employeeid = employees.current["employee_id"]
-        self.reportid = reports.current["report_id"]
-        self.workdate = reports.current["repdate"]
+        self.customerid = customers.active["customer_id"]
+        self.employeeid = employees.active["employee_id"]
+        self.reportid = reports.active["report_id"]
+        self.workdate = reports.active["repdate"]
         self.products = products.product_list
         self.txtVisitDate.setText(self.workdate)
-        if customers.current["account"] == "NY":
+        if customers.active["account"] == "NY":
             self.visitType = "N"
         else:
             self.visitType = "R"
 
         self.visits = visits
         self.visits.add(self.reportid, self.employeeid, self.customerid, self.workdate)
-        self.visits.current["visit_type"] = self.visitType
+        self.visits.active["visit_type"] = self.visitType
 
         self.details = Detail()
-        self.details.load(self.visits.current["visit_id"])
+        self.details.load(self.visits.active["visit_id"])
         # for idx, detail in enumerate(self.details.details):
         self.widgetVisit.setRowCount(10)
         self.widgetVisit.setColumnCount(len(self.details.model["fields"]))
@@ -58,7 +58,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
             self.widgetVisit.setItem(i, 1, item)
 
         # If customer needs special settings on prices
-        factor = customers.current["factor"]
+        factor = customers.active["factor"]
         if factor > 0.0:
             for item in self.products:
                 item["price"] = item["price"] * factor
@@ -85,7 +85,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(customers.current["company"])
+        self.txtCompany.setText(customers.active["company"])
         # connect to signals
         self.btnInsertDemo.clicked.connect(self.button_add_demo_action)
         self.btnInsertSale.clicked.connect(self.button_add_sale_action)
@@ -104,17 +104,17 @@ class VisitDialog(QDialog, Ui_visitDialog):
         """
         Slot for saving the visit
         """
-        self.visits.current["po_buyer"] = self.txtPoBuyer.text()
-        self.visits.current["po_number"] = self.txtPoNumber.text()
-        self.visits.current["po_company"] = self.txtPoCompany.text()
-        self.visits.current["po_address1"] = self.txtPoAddress1.text()
-        self.visits.current["po_address2"] = self.txtPoAddress2.text()
-        self.visits.current["po_postcode"] = self.txtPoPostcode.text()
-        self.visits.current["po_postofffice"] = self.txtPoPostoffice.text()
-        self.visits.current["po_country"] = self.txtPoCountry.text()
-        self.visits.current["info_text"] = self.txtInfoText.toPlainText()
-        self.visits.current["prod_demo"] = self.txtProductDemo.text()
-        self.visits.current["prod_sale"] = self.txtProductSale.text()
-        self.visits.current["sas"] = self.txtVisitSas.text()
-        self.visits.current["sale"] = self.txtVisitSale.text()
-        self.visits.current["total"] = self.txtVisitTotal.text()
+        self.visits.active["po_buyer"] = self.txtPoBuyer.text()
+        self.visits.active["po_number"] = self.txtPoNumber.text()
+        self.visits.active["po_company"] = self.txtPoCompany.text()
+        self.visits.active["po_address1"] = self.txtPoAddress1.text()
+        self.visits.active["po_address2"] = self.txtPoAddress2.text()
+        self.visits.active["po_postcode"] = self.txtPoPostcode.text()
+        self.visits.active["po_postofffice"] = self.txtPoPostoffice.text()
+        self.visits.active["po_country"] = self.txtPoCountry.text()
+        self.visits.active["info_text"] = self.txtInfoText.toPlainText()
+        self.visits.active["prod_demo"] = self.txtProductDemo.text()
+        self.visits.active["prod_sale"] = self.txtProductSale.text()
+        self.visits.active["sas"] = self.txtVisitSas.text()
+        self.visits.active["sale"] = self.txtVisitSale.text()
+        self.visits.active["total"] = self.txtVisitTotal.text()

@@ -16,6 +16,12 @@
     <height>600</height>
    </size>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>800</width>
+    <height>16777215</height>
+   </size>
+  </property>
   <property name="font">
    <font>
     <pointsize>11</pointsize>
@@ -51,8 +57,8 @@
      <rect>
       <x>2</x>
       <y>3</y>
-      <width>730</width>
-      <height>547</height>
+      <width>790</width>
+      <height>500</height>
      </rect>
     </property>
     <property name="font">
@@ -66,7 +72,7 @@
        <item>
         <layout class="QGridLayout" name="widgetCreateCustomer">
          <item row="1" column="1">
-          <widget class="QPushButton" name="buttonCreateCustomer">
+          <widget class="QPushButton" name="btnAddCustomer">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -165,7 +171,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QPushButton" name="buttonReport">
+          <widget class="QPushButton" name="btnCreateReportDialog">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -178,7 +184,7 @@
             <string>Her opretter du en ny dagsrapport</string>
            </property>
            <property name="text">
-            <string>Dagsrapport</string>
+            <string>Opret dagsrapport</string>
            </property>
           </widget>
          </item>
@@ -355,21 +361,12 @@
      <item>
       <layout class="QHBoxLayout" name="mainGrid">
        <item>
-        <widget class="QTableWidget" name="tblCustomerList">
-         <property name="minimumSize">
-          <size>
-           <width>300</width>
-           <height>0</height>
-          </size>
-         </property>
+        <widget class="QTreeWidget" name="widgetCustomerList">
          <property name="maximumSize">
           <size>
            <width>300</width>
            <height>16777215</height>
           </size>
-         </property>
-         <property name="statusTip">
-          <string>Dette er kundelisten</string>
          </property>
          <property name="sizeAdjustPolicy">
           <enum>QAbstractScrollArea::AdjustToContents</enum>
@@ -377,11 +374,20 @@
          <property name="editTriggers">
           <set>QAbstractItemView::NoEditTriggers</set>
          </property>
-         <property name="sortingEnabled">
-          <bool>true</bool>
+         <property name="indentation">
+          <number>0</number>
          </property>
-         <property name="cornerButtonEnabled">
-          <bool>true</bool>
+         <property name="rootIsDecorated">
+          <bool>false</bool>
+         </property>
+         <property name="itemsExpandable">
+          <bool>false</bool>
+         </property>
+         <property name="expandsOnDoubleClick">
+          <bool>false</bool>
+         </property>
+         <property name="columnCount">
+          <number>2</number>
          </property>
          <column>
           <property name="text">
@@ -412,7 +418,7 @@
          <item>
           <layout class="QGridLayout" name="widgetInfoButtons">
            <item row="0" column="2">
-            <widget class="QPushButton" name="btnVisitData">
+            <widget class="QPushButton" name="btnShowVisits">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -425,30 +431,12 @@
               <string>Tryk her for at vise historik for kunde</string>
              </property>
              <property name="text">
-              <string>Historik</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="btnMasterData">
-             <property name="font">
-              <font>
-               <pointsize>10</pointsize>
-              </font>
-             </property>
-             <property name="toolTip">
-              <string>Vis stamdata</string>
-             </property>
-             <property name="statusTip">
-              <string>Klik her for at vise stamdata for kunde</string>
-             </property>
-             <property name="text">
-              <string>Stamdata</string>
+              <string>Besøg</string>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QPushButton" name="btnContactData">
+            <widget class="QPushButton" name="btnShowContacts">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
@@ -462,6 +450,24 @@
              </property>
              <property name="text">
               <string>Kontakter</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btnShowMasterdata">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="toolTip">
+              <string>Vis stamdata</string>
+             </property>
+             <property name="statusTip">
+              <string>Klik her for at vise stamdata for kunde</string>
+             </property>
+             <property name="text">
+              <string>Stamdata</string>
              </property>
             </widget>
            </item>
@@ -482,9 +488,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>34</y>
-               <width>410</width>
-               <height>230</height>
+               <y>40</y>
+               <width>470</width>
+               <height>260</height>
               </rect>
              </property>
              <property name="font">
@@ -493,24 +499,6 @@
               </font>
              </property>
              <layout class="QGridLayout" name="widgetMasterDetails">
-              <item row="5" column="1">
-               <widget class="QLineEdit" name="txtEmail">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Epost adresse</string>
-                </property>
-                <property name="statusTip">
-                 <string>Dette felt er epost adresse for kunde</string>
-                </property>
-                <property name="placeholderText">
-                 <string>epost adresse</string>
-                </property>
-               </widget>
-              </item>
               <item row="4" column="1">
                <widget class="QLineEdit" name="txtPhone2">
                 <property name="font">
@@ -544,24 +532,6 @@
                 </property>
                 <property name="placeholderText">
                  <string>primær telefon</string>
-                </property>
-               </widget>
-              </item>
-              <item row="8" column="1">
-               <widget class="QPushButton" name="btnArchiveMasterData">
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                 </font>
-                </property>
-                <property name="toolTip">
-                 <string>Arkiver ændringer</string>
-                </property>
-                <property name="statusTip">
-                 <string>Tryk her for at gemme rettelser i databasen</string>
-                </property>
-                <property name="text">
-                 <string>Arkiver rettelser</string>
                 </property>
                </widget>
               </item>
@@ -699,60 +669,159 @@
                 </property>
                </widget>
               </item>
-              <item row="8" column="0">
-               <widget class="QLineEdit" name="txtInfoText">
+              <item row="5" column="1">
+               <widget class="QLineEdit" name="txtEmail">
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
                  </font>
                 </property>
                 <property name="toolTip">
-                 <string>Note linje</string>
+                 <string>Epost adresse</string>
                 </property>
                 <property name="statusTip">
-                 <string>Dette felt er et note for kunde</string>
+                 <string>Dette felt er epost adresse for kunde</string>
                 </property>
                 <property name="placeholderText">
-                 <string>note</string>
+                 <string>epost adresse</string>
                 </property>
                </widget>
               </item>
              </layout>
             </widget>
-            <widget class="QLabel" name="labelMasterData">
+            <widget class="QWidget" name="gridLayoutWidget_2">
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>400</width>
+               <y>1</y>
+               <width>470</width>
                <height>30</height>
               </rect>
              </property>
-             <property name="font">
-              <font>
-               <pointsize>10</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Stamdata</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
+             <layout class="QGridLayout" name="gridLayout_2">
+              <item row="1" column="0">
+               <widget class="QLabel" name="labelMasterData">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                  <underline>false</underline>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Stamdata</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="btnArchiveMasterdata">
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Arkiver ændringer</string>
+                </property>
+                <property name="statusTip">
+                 <string>Tryk her for at gemme rettelser i databasen</string>
+                </property>
+                <property name="text">
+                 <string>Arkiver rettelser</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QTextEdit" name="txtCustomerInfoText">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>300</y>
+               <width>470</width>
+               <height>70</height>
+              </rect>
              </property>
             </widget>
            </widget>
            <widget class="QWidget" name="widgetContactsPage">
-            <widget class="QTableWidget" name="widgetContactList">
+            <widget class="QWidget" name="gridLayoutWidget_3">
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>30</y>
-               <width>410</width>
-               <height>341</height>
+               <y>0</y>
+               <width>467</width>
+               <height>31</height>
               </rect>
              </property>
-             <property name="statusTip">
-              <string>Liste med kontakter</string>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="2">
+               <widget class="QPushButton" name="btnAddContact">
+                <property name="text">
+                 <string>Tilføj kontakt ...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="btnArchiveContacts">
+                <property name="text">
+                 <string>Arkiver rettelser</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelContactsData">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Kontakter</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QTreeWidget" name="widgetContactList">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>40</y>
+               <width>470</width>
+               <height>320</height>
+              </rect>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustToContents</enum>
+             </property>
+             <property name="indentation">
+              <number>0</number>
+             </property>
+             <property name="rootIsDecorated">
+              <bool>false</bool>
+             </property>
+             <property name="itemsExpandable">
+              <bool>false</bool>
+             </property>
+             <property name="expandsOnDoubleClick">
+              <bool>false</bool>
              </property>
              <column>
               <property name="text">
@@ -771,96 +840,414 @@
              </column>
              <column>
               <property name="text">
-               <string>Note</string>
+               <string>Email</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Info</string>
               </property>
              </column>
             </widget>
-            <widget class="QLabel" name="labelContactsData">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>410</width>
-               <height>30</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Kontakter</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-            <widget class="QPushButton" name="btnAddContact">
-             <property name="geometry">
-              <rect>
-               <x>240</x>
-               <y>380</y>
-               <width>150</width>
-               <height>29</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Tilføj kontakt ...</string>
-             </property>
-            </widget>
-            <widget class="QPushButton" name="btnArchiveContactData">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>380</y>
-               <width>151</width>
-               <height>29</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Arkiver rettelser</string>
-             </property>
-            </widget>
            </widget>
            <widget class="QWidget" name="widgetVisitsPage">
-            <widget class="QPushButton" name="buttonCreateVisit">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>380</y>
-               <width>410</width>
-               <height>32</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Opret besøg</string>
-             </property>
-            </widget>
-            <widget class="QLabel" name="labelHistoryData">
+            <widget class="QWidget" name="gridLayoutWidget">
              <property name="geometry">
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>410</width>
-               <height>30</height>
+               <width>470</width>
+               <height>31</height>
               </rect>
              </property>
-             <property name="text">
-              <string>Besøg</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
+             <layout class="QGridLayout" name="gridLayout">
+              <item row="0" column="1">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="labelHistoryData">
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Besøg</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="btnVisitDialog">
+                <property name="text">
+                 <string>Tilføj besøg ...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
-            <widget class="QTreeView" name="treeView">
+            <widget class="QWidget" name="gridLayoutWidget_4">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>140</y>
+               <width>470</width>
+               <height>74</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Salg</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Rekv.</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QLineEdit" name="txtSale">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="txtPoNumber">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLabel" name="lblSent">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Afsluttet</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLabel" name="lblApproved">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="label_6">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>SAS</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
+               <widget class="QLineEdit" name="txtSas">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QLabel" name="label_5">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Total</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="3">
+               <widget class="QLineEdit" name="txtTotal">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_8">
+                <property name="text">
+                 <string>Godkent</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QTreeWidget" name="widgetVisitList">
              <property name="geometry">
               <rect>
                <x>0</x>
                <y>30</y>
-               <width>410</width>
-               <height>340</height>
+               <width>470</width>
+               <height>110</height>
               </rect>
              </property>
-             <property name="statusTip">
-              <string>Dette er den historiske kontakt med kunden</string>
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustToContents</enum>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="indentation">
+              <number>0</number>
+             </property>
+             <property name="rootIsDecorated">
+              <bool>false</bool>
+             </property>
+             <property name="itemsExpandable">
+              <bool>false</bool>
+             </property>
+             <property name="expandsOnDoubleClick">
+              <bool>false</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string>Id</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Dato</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Navn</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Demo</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Salg</string>
+              </property>
+             </column>
+            </widget>
+            <widget class="QTreeWidget" name="widgetVisitDetails">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>260</y>
+               <width>470</width>
+               <height>110</height>
+              </rect>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustToContents</enum>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::NoSelection</enum>
+             </property>
+             <property name="indentation">
+              <number>0</number>
+             </property>
+             <property name="rootIsDecorated">
+              <bool>false</bool>
+             </property>
+             <property name="itemsExpandable">
+              <bool>false</bool>
+             </property>
+             <column>
+              <property name="text">
+               <string>*</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ant</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>SKU</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Vare</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Pris</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>%</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Ekstra</string>
+              </property>
+             </column>
+            </widget>
+            <widget class="QTextEdit" name="txtVisitInfoText">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>217</y>
+               <width>470</width>
+               <height>40</height>
+              </rect>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
+            <zorder>txtVisitInfoText</zorder>
+            <zorder>gridLayoutWidget</zorder>
+            <zorder>gridLayoutWidget_4</zorder>
+            <zorder>widgetVisitList</zorder>
+            <zorder>widgetVisitDetails</zorder>
+            <zorder>widgetCustomerList</zorder>
            </widget>
           </widget>
          </item>
@@ -978,22 +1365,22 @@
     <set>Qt::AllToolBarAreas</set>
    </property>
    <property name="orientation">
-    <enum>Qt::Vertical</enum>
+    <enum>Qt::Horizontal</enum>
    </property>
    <property name="iconSize">
     <size>
-     <width>48</width>
-     <height>48</height>
+     <width>32</width>
+     <height>32</height>
     </size>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonIconOnly</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
-    <enum>RightToolBarArea</enum>
+    <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
@@ -1126,15 +1513,15 @@
  <tabstops>
   <tabstop>txtNewCompany</tabstop>
   <tabstop>txtNewPhone1</tabstop>
-  <tabstop>buttonCreateCustomer</tabstop>
+  <tabstop>btnAddCustomer</tabstop>
   <tabstop>txtWorkdate</tabstop>
   <tabstop>txtCustLocal</tabstop>
   <tabstop>txtCustServer</tabstop>
   <tabstop>txtProdLocal</tabstop>
   <tabstop>txtProdServer</tabstop>
-  <tabstop>btnMasterData</tabstop>
-  <tabstop>btnContactData</tabstop>
-  <tabstop>btnVisitData</tabstop>
+  <tabstop>btnShowMasterdata</tabstop>
+  <tabstop>btnShowContacts</tabstop>
+  <tabstop>btnShowVisits</tabstop>
  </tabstops>
  <resources>
   <include location="../icons/system.qrc"/>

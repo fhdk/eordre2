@@ -37,11 +37,11 @@ class Visit:
         self.model = {
             "name": "visit",
             "id": "visit_id",
-            "fields": ("visit_id", "report_id", "employee_id", "customer_id", "po_date", "po_sent",
+            "fields": ("visit_id", "report_id", "employee_id", "customer_id", "visit_date", "po_sent",
                        "po_buyer", "po_number", "po_company", "po_address1", "po_address2",
                        "po_postcode", "po_postoffice", "po_country",
                        "info_text", "prod_demo", "prod_sale", "visit_type",
-                       "sas", "sale", "total", "approved"),
+                       "po_sas", "po_sale", "po_total", "po_approved"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL",
                       "TEXT NOT NULL", "INTEGER DEFAULT 0",
                       "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
@@ -61,7 +61,7 @@ class Visit:
                         "  ->data: {}".format(success, data))
 
     @property
-    def current(self):
+    def active(self):
         """
         Visit
         Returns:
@@ -69,8 +69,8 @@ class Visit:
         """
         return self._visit
 
-    @current.setter
-    def current(self, visit_id):
+    @active.setter
+    def active(self, visit_id):
         """
         Set a visit
         :param visit_id:
@@ -94,12 +94,7 @@ class Visit:
         Args:
             customer_id:
         """
-        try:
-            c_id = self._customer_visits[0]["customer_id"]
-            if not c_id == customer_id:
-                self.load_for_customer(customer_id)
-        except (IndexError, KeyError):
-            self.load_for_customer(customer_id)
+        self.load_for_customer(customer_id)
 
     @property
     def visit_list_report(self):
@@ -117,12 +112,7 @@ class Visit:
         Args:
             report_id:
         """
-        try:
-            r_id = self._report_visits[0]["report_id"]
-            if not r_id == report_id:
-                self.load_by_report(report_id)
-        except (IndexError, KeyError):
-            self.load_by_report(report_id)
+        self.load_for_report(report_id)
 
     def clear(self):
         """
@@ -167,7 +157,7 @@ class Visit:
         """
         filters = [(self.model["id"], "=")]
         values = (visit_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_VISIT:
             printit(" ->find\n"
                     "  ->filters: {}\n"
@@ -183,7 +173,7 @@ class Visit:
                 self._visit = dict(zip(self.model["fields"], data[0]))
                 return True
             except IndexError:
-                self._visit ={}
+                self._visit = {}
         return False
 
     def import_csv(self, filename, headers=False):
@@ -205,7 +195,7 @@ class Visit:
                 if headers and line == 1:
                     continue
                 # translate bool text to integer col 5
-                row[5] = utils.bool2int(utils.str2bool(row[5]))
+                row[5] = utils.bool2int(utils.arg2bool(row[5]))
                 values = (row[0], row[1], row[2], row[3], row[4].strip(),
                           row[5], row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
                           row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
@@ -241,7 +231,7 @@ class Visit:
         """
         filters = [("customer_id", "=")]
         values = (customer_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_VISIT:
             printit(" ->load_for_customer\n"
                     "  ->filters: {}\n"
@@ -251,10 +241,15 @@ class Visit:
         if config.DEBUG_VISIT:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-        if success and data:
-            self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
+        if success:
+            try:
+                self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
+                self._visit = self._customer_visits[0]
+            except (IndexError, KeyError):
+                self._visit = {}
+                self._customer_visits = []
 
-    def load_by_report(self, report_id):
+    def load_for_report(self, report_id):
         """
         Load visit_list_customer for specified report
         Args:
@@ -262,9 +257,9 @@ class Visit:
         """
         filters = [("report_id", "=")]
         values = (report_id,)
-        sql = self.q.build("select", self.model, filteron=filters)
+        sql = self.q.build("select", self.model, filters=filters)
         if config.DEBUG_VISIT:
-            printit(" ->load_by_report\n"
+            printit(" ->load_for_report\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
@@ -272,8 +267,13 @@ class Visit:
         if config.DEBUG_VISIT:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-        if success and data:
-            self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
+        if success:
+            try:
+                self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
+                self._visit = self._report_visits[0]
+            except (IndexError, KeyError):
+                self._visit = {}
+                self._report_visits = []
 
     def recreate_table(self):
         """
@@ -292,7 +292,7 @@ class Visit:
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._visit.values())
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
+        sql = self.q.build("update", self.model, update=fields, filters=filters)
         if config.DEBUG_VISIT:
             printit(" ->update\n"
                     "  ->fields: {}\n"

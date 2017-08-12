@@ -104,7 +104,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
             # import selected file to reportid table
             if self.selectedTable == "report":
                 success = self.reports.import_csv(self.selectedFile,
-                                                  self.employees.current["employee_id"],
+                                                  self.employees.active["employee_id"],
                                                   self.checkHeaders.isChecked())
 
             if success:

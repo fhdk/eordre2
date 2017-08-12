@@ -31,7 +31,7 @@ class Query:
     Query Build and Execute
     """
 
-    def build(self, query_type, model_def, update=None, aggregates=None, filteron=None, sort_order=None):
+    def build(self, query_type, model_def, update=None, aggregates=None, filters=None, orderby=None):
         """
         Builds a sql query from definition
 
@@ -46,10 +46,10 @@ class Query:
 
             aggregates: valid ["sum(column) AS 'expression'", "sum(column) AS 'expression'" ....]
 
-            filteron:  valid for all-, required for update- and delete query
+            filters:  valid for all-, required for update- and delete query
             [("field", "operator", "value", "and/or"), (("field", "operator", "value"))]]
 
-            sort_order: asc or desc
+            orderby: asc or desc
 
         Returns:
             string with sql query
@@ -61,17 +61,17 @@ class Query:
             return "ERROR! Unsupported type: {}, {}".format(querytype, model_def["name"])
 
         if querytype == ["DELETE"]:
-            if not filteron:
-                return "ERROR! Missing 'filteron' for: {}, {}".format(querytype, model_def["name"])
+            if not filters:
+                return "ERROR! Missing 'filters' for: {}, {}".format(querytype, model_def["name"])
 
         if querytype == ["UPDATE"]:
-            if not filteron or not update:
-                return "ERROR! Missing 'update' or 'filteron' for: {}, {}".format(querytype, model_def["name"])
+            if not filters or not update:
+                return "ERROR! Missing 'update' or 'filters' for: {}, {}".format(querytype, model_def["name"])
 
-        if sort_order:
-            sort_order = sort_order.upper()
-            if not sort_order == "ASC" or not sort_order == "DESC":
-                sort_order = None
+        if orderby:
+            orderby = orderby[1].upper()
+            if not orderby == "ASC" or not orderby == "DESC":
+                orderby = None
 
         # build init_detail table query
         if querytype == "CREATE":
@@ -79,7 +79,7 @@ class Query:
 
         # build delete row query
         if querytype == "DELETE":
-            return build_delete_query(model_def, filteron)
+            return build_delete_query(model_def, filters)
 
         # builds drop table query
         if querytype == "DROP":
@@ -91,11 +91,11 @@ class Query:
 
         # build all row query
         if querytype == "SELECT":
-            return build_select_query(model_def, aggregates, filteron, sort_order)
+            return build_select_query(model_def, aggregates, filters, orderby)
 
         # build update row query
         if querytype == "UPDATE":
-            return build_update_query(model_def, update, filteron)
+            return build_update_query(model_def, update, filters)
 
     def execute(self, sql_query, values=None):
         """
