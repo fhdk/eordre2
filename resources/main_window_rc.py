@@ -714,7 +714,7 @@ class Ui_mainWindow(object):
         self.label_7.setText(_translate("mainWindow", "Afsluttet"))
         self.label_6.setText(_translate("mainWindow", "SAS"))
         self.label_5.setText(_translate("mainWindow", "Total"))
-        self.label_8.setText(_translate("mainWindow", "Godkent"))
+        self.label_8.setText(_translate("mainWindow", "Godkendt"))
         self.widgetVisitList.headerItem().setText(0, _translate("mainWindow", "Id"))
         self.widgetVisitList.headerItem().setText(1, _translate("mainWindow", "Dato"))
         self.widgetVisitList.headerItem().setText(2, _translate("mainWindow", "Navn"))
