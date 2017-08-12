@@ -17,8 +17,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScree
 
 # import resources.splash_rc
 from configuration import configfn, config
-from dialogs.create_visit_dialog import CreateVisitDialog
-from dialogs.create_report_dialog import CreateReportDialog
+from dialogs.visit_dialog import VisitDialog
+from dialogs.report_dialog_create import ReportDialogCreate
 from dialogs.csv_file_import_dialog import CsvFileImportDialog
 from dialogs.get_customers_http_dialog import GetCustomersHttpDialog
 from dialogs.get_products_http_dialog import GetProductsHttpDialog
@@ -62,14 +62,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         configfn.check_config_folder()  # Check app folder in users home
 
         self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
-        self.contacts = Contact()    # Initialize Contact object
+        self.contacts = Contact()  # Initialize Contact object
         self.customers = Customer()  # Initialize Customer object
-        self.details = Detail()      # Initialize Detail object
+        self.details = Detail()  # Initialize Detail object
         self.employees = Employee()  # Initialize Employee object
-        self.products = Product()    # Initialize Product object
-        self.reports = Report()      # Initialize Report object
-        self.visits = Visit()        # Initialize Visit object
-        self.settings = Settings()   # Initialize Settings object
+        self.products = Product()  # Initialize Product object
+        self.reports = Report()  # Initialize Report object
+        self.visits = Visit()  # Initialize Visit object
+        self.settings = Settings()  # Initialize Settings object
 
         # connect menu trigger signals
         self.actionAboutQt.triggered.connect(self.about_qt_action)
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.actionArchiveChanges.triggered.connect(self.action_archive_customer_changes)
         self.actionContactsInfo.triggered.connect(self.action_show_contact_data)
         self.actionCreateCustomer.triggered.connect(self.action_create_customer)
-        self.actionCreateVisit.triggered.connect(self.action_create_visit_dialog_show)
+        self.actionCreateVisit.triggered.connect(self.action_visit_dialog_show)
         self.actionImportCsvFiles.triggered.connect(self.action_file_import_dialog_show)
         self.actionExit.triggered.connect(self.action_exit)
         self.actionGetCatalogHttp.triggered.connect(self.action_get_product_http_dialog_show)
@@ -94,7 +94,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.buttonArchiveChanges.clicked.connect(self.action_archive_customer_changes)
         self.buttonContactData.clicked.connect(self.action_show_contact_data)
         self.buttonCreateCustomer.clicked.connect(self.action_create_customer)
-        self.buttonCreateVisit.clicked.connect(self.action_create_visit_dialog_show)
+        self.buttonCreateVisit.clicked.connect(self.action_visit_dialog_show)
         self.buttonMasterData.clicked.connect(self.action_show_master_data)
         self.buttonHistoryData.clicked.connect(self.action_show_history_data)
         self.buttonReport.clicked.connect(self.action_create_report_dialog_show)
@@ -168,9 +168,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             # check the report date
             # no report triggers KeyError which in turn launches the CreateReportDialog
             repdate = self.reports.current["repdate"]
-
             if not repdate == self.txtWorkdate.text():
-                # attempt to load report for workdate
+                # if active report is not the same replace it with workdate
                 self.reports.load_report(self.txtWorkdate.text())
                 # trigger a KeyError if no report is current which launches the CreateReportDialog
                 repdate = self.reports.current["repdate"]
@@ -186,24 +185,23 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             return True
 
         except KeyError:
-            create_report_dialog = CreateReportDialog(self.txtWorkdate.text())  # Create dialog
+            # Show report dialog
+            create_report_dialog = ReportDialogCreate(self.txtWorkdate.text())
             if create_report_dialog.exec_():
                 # user chosed to create a report
                 self.txtWorkdate.setText(create_report_dialog.workdate)
-                # check if the report exist
+                # try load a report for that date
                 self.reports.load_report(self.txtWorkdate.text())
                 try:
-                    # did the user choose and existing report
+                    # did the user choose an existing report
                     _ = self.reports.current["repdate"]
                     infotext = "Eksisterende rapport hentet: {}".format(self.txtWorkdate.text())
                 except KeyError:
                     # create the report
                     self.reports.create(self.employees.current, self.txtWorkdate.text())
                     infotext = "Rapport oprettet for: {}".format(self.txtWorkdate.text())
-
                 msgbox = QMessageBox()
                 msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
-
                 return True
             else:
                 msgbox = QMessageBox()
@@ -213,32 +211,26 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                    QMessageBox.Ok)
                 return False
 
-    def action_create_visit_dialog_show(self):
+    def action_visit_dialog_show(self):
         """
-        Slot for creating a new visit
+        Slot for launching the visit dialog
         """
-        active_report = {}
         try:
             # do we have a report
             _ = self.reports.current["repdate"]
             active_report = True
         except KeyError:
-            self.action_create_report_dialog_show()
-
+            active_report = self.action_create_report_dialog_show()
         if active_report:
             try:
                 # do we have a customer
                 _ = self.customers.current["company"]
             except KeyError:
                 msgbox = QMessageBox()
-                msgbox.information(self,
-                                   __appname__,
-                                   "Ingen valgt kunde! Besøg kan ikke oprettes.",
-                                   QMessageBox.Ok)
+                msgbox.information(self, __appname__, "Ingen valgt kunde! Besøg kan ikke oprettes.", QMessageBox.Ok)
                 return
             # Launch the visit dialog
-            visit_dialog = CreateVisitDialog(self.customers, self.employees, self.products,
-                                             self.reports, self.visits)
+            visit_dialog = VisitDialog(self.customers, self.employees, self.products, self.reports, self.visits)
             if visit_dialog.exec_():
                 pass
 
@@ -252,7 +244,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             current: currently selected item
             previous: previous selected item
         """
-        self.customers.current = current.text(0), current.text(1)
+        self.customers.lookup_by_phone_company(current.text(0), current.text(1))
         # try:
         self.txtAccount.setText(self.customers.current["account"])
         self.txtCompany.setText(self.customers.current["company"])
@@ -271,6 +263,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.visits.load_for_customer(self.customers.current["customer_id"])
 
         # except (KeyError, AttributeError):
+        #     pass
         #     # clear input lines
         #     self.txtAccount.clear()
         #     self.txtCompany.clear()
@@ -293,7 +286,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Slot for dataExport triggered signal
         """
         msgbox = QMessageBox()
-        msgbox.information(self, __appname__, "Opret CSV data backup", QMessageBox.Ok)
+        msgbox.information(self, __appname__, "TODO: Opret CSV data backup", QMessageBox.Ok)
 
     def action_file_import_dialog_show(self):
         """
@@ -472,17 +465,12 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                     pass
                 else:
                     msgbox = QMessageBox()
-                    msgbox.about(self,
-                                 __appname__,
-                                 "Check din netværksforbindelse! Tak")
-
+                    msgbox.about(self, __appname__, "Check din netværksforbindelse! Tak")
         else:
             msgbox = QMessageBox()
-            msgbox.about(self,
-                         __appname__,
-                         "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
+            msgbox.about(self, __appname__, "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
             self.action_settings_dialog_show()
-        # all report for workdate
+        # load report for workdate if exist
         self.reports.load_report(self.txtWorkdate.text())
         # all customerlist
         self.populate_customer_list()

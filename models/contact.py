@@ -86,13 +86,19 @@ class Contact:
         self._contact = {}
         self._contacts = []
 
-    def add(self, customer_id, name, dep=None, phone=None, email=None, info=None):
+    def add(self, name, department="", phone="", email="", info=""):
         """
         Create a contact
+        Args:
+            name:
+            department:
+            phone:
+            email:
+            info:
         """
-        values = (None, customer_id, name, dep, email, phone, info)
-        data = self.insert(values)
-        return self.find(data)
+        values = (None, name, department, email, phone, info)
+        new_id = self.insert(values)
+        return self.find(new_id)
 
     def delete(self, contact_id):
         """

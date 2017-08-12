@@ -11,10 +11,10 @@ from PyQt5.QtWidgets import QDialog, QTableWidgetItem
 
 from models.detail import Detail
 
-from resources.create_visit_dialog_rc import Ui_createVisitDialog
+from resources.create_visit_dialog_rc import Ui_visitDialog
 
 
-class CreateVisitDialog(QDialog, Ui_createVisitDialog):
+class VisitDialog(QDialog, Ui_visitDialog):
     """
     Dialog for creating a new current
     """
@@ -30,24 +30,32 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
             visits: main current object
             parent:
         """
-        super(CreateVisitDialog, self).__init__(parent)
+        super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
-
         self.customerid = customers.current["customer_id"]
         self.employeeid = employees.current["employee_id"]
         self.reportid = reports.current["report_id"]
         self.workdate = reports.current["repdate"]
         self.products = products.product_list
         self.txtVisitDate.setText(self.workdate)
-        if self.customers.current["account"] == "NY":
+        if customers.current["account"] == "NY":
             self.visitType = "N"
         else:
             self.visitType = "R"
+
         self.visits = visits
-        self.visits.init(self.reportid, self.employeeid, self.customerid, self.workdate)
+        self.visits.add(self.reportid, self.employeeid, self.customerid, self.workdate)
         self.visits.current["visit_type"] = self.visitType
 
-        # If customer    need special settings on prices
+        self.details = Detail()
+        self.details.load(self.visits.current["visit_id"])
+        # for idx, detail in enumerate(self.details.details):
+        for i in range(10):
+            item = QTableWidgetItem("item {}".format(i))
+            self.widgetVisit.setSortingEnabled(False)
+            self.widgetVisit.setItem(i + 1, 1, item)
+
+        # If customer needs special settings on prices
         factor = customers.current["factor"]
         if factor > 0.0:
             for item in self.products:
@@ -77,21 +85,17 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         # Set info banner
         self.txtCompany.setText(customers.current["company"])
         # connect to signals
-        self.btnAddDemo.clicked.connect(self.button_add_demo_action)
-        self.btnAddSale.clicked.connect(self.button_add_sale_action)
+        self.btnInsertDemo.clicked.connect(self.button_add_demo_action)
+        self.btnInsertSale.clicked.connect(self.button_add_sale_action)
         self.btnArchiveVisit.clicked.connect(self.button_save_visit_action)
 
     def button_add_demo_action(self):
-        """Slot for Create Order Button clicked signal"""
-        detail = Detail()
-        detail.init_detail()
-
-        row = QTableWidgetItem()
+        """Slot for Add Demo button clicked"""
 
         pass
 
     def button_add_sale_action(self):
-        """Slot for Create Order Button clicked signal"""
+        """Slot for Add Sale button clicked"""
         pass
 
     def button_save_visit_action(self):
@@ -112,5 +116,3 @@ class CreateVisitDialog(QDialog, Ui_createVisitDialog):
         self.visits.current["sas"] = self.txtVisitSas.text()
         self.visits.current["sale"] = self.txtVisitSale.text()
         self.visits.current["total"] = self.txtVisitTotal.text()
-
-

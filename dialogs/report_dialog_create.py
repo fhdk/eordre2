@@ -12,13 +12,13 @@ from PyQt5.QtWidgets import QDialog, QMessageBox
 from resources.create_report_dialog_rc import Ui_createReportDialog
 
 
-class CreateReportDialog(QDialog, Ui_createReportDialog):
+class ReportDialogCreate(QDialog, Ui_createReportDialog):
     """
     Create a new reportid for date
     """
     def __init__(self, workdate, parent=None):
         """Initialize Dialog"""
-        super(CreateReportDialog, self).__init__(parent)
+        super(ReportDialogCreate, self).__init__(parent)
         self.setupUi(self)
         self.workdate = workdate  # assign date
         self.lineEdit.setText(workdate)  # set workdate in lineedit

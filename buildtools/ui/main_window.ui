@@ -465,7 +465,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="widgetMasterPage">
             <widget class="QWidget" name="layoutWidget">
@@ -738,7 +738,7 @@
                <x>0</x>
                <y>30</y>
                <width>410</width>
-               <height>340</height>
+               <height>91</height>
               </rect>
              </property>
              <property name="statusTip">

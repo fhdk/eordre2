@@ -160,6 +160,7 @@ class Report:
         filters = [("repdate", "LIKE", "and"), ("employee_id", "=", "and"), ("sent", "=")]
         ym_filter = "{}%".format(workdate[:8])
         employee_id = employee["employee_id"]
+        territory = employee["salesrep"]
         values = (ym_filter, employee_id, 1)
 
         sql = self.q.build("select", self.model, aggregates=aggregates, filteron=filters)
@@ -193,8 +194,8 @@ class Report:
             timestamp = datetime.today()
             # init_detail tuple with values to initialze the new report
             new_report_values = (None, employee_id, next_report, workdate, timestamp,
-                                 None, None, None, None, None, None, None, None, None, None, None, None,
-                                 None, None, None, None, None, None, None, None, None, None)
+                                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0, 0, "", territory, 1, "", 0, 0, "", 0)
             # assign return value as new report_id
             report_id = self.insert(new_report_values)
             # insert report_id to identify for which report the totals was calculated
@@ -259,7 +260,7 @@ class Report:
                 row[21] = utils.bool2int(utils.str2bool(row[21]))
                 # init_detail a timestamp
                 local_timestamp = datetime.today()
-                values = (row[0], employee_id, row[1], row[2].strip(), row[3], local_timestamp,
+                values = (row[0], employee_id, row[1], row[2].strip(), local_timestamp, row[3],
                           row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
                           row[13], row[14], row[15], row[16], row[17].strip(), row[18].strip(),
                           row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24])

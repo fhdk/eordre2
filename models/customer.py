@@ -68,7 +68,7 @@ class Customer:
         """
         Set customer based on look_for
         Args:
-            look_for: customer_id or (phone, company)
+            look_for: customer_id or [phone, company]
         """
         try:
             company = look_for[1]
@@ -284,24 +284,27 @@ class Customer:
         Returns:
             bool
         """
-        data = []
-        success = False
         if account:
             filters = [("account", "=", "and"), ("company", "=")]
             values = (account, company)
-            sql = self.q.build("select", self.model, filteron=filters)
-            if config.DEBUG_CUSTOMER:
-                printit(" ->lookup_by_phone_company\n"
-                        "  ->filters: {}\n"
-                        "  ->values: {}\n"
-                        "  ->sql: {}".format(filters, str(values), sql))
-            success, data = self.q.execute(sql, values=values)
-            if config.DEBUG_CUSTOMER:
-                printit("  ->success: {}\n"
-                        "  ->data: {}".format(success, data))
+        else:
+            filters = [("phone1", "=", "and"), ("company", "=")]
+            values = (phone, company)
+
+        sql = self.q.build("select", self.model, filteron=filters)
+        if config.DEBUG_CUSTOMER:
+            printit(" ->lookup_by_phone_company\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(filters, str(values), sql))
+        success, data = self.q.execute(sql, values=values)
+        if config.DEBUG_CUSTOMER:
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
+
         if not success:
-            filters = [("account", "=", "and"), ("company", "=", "and"), ("phone1", "=")]
-            values = ("NY", company, phone)
+            filters = [("account", "=", "and"), ("phone1", "="), ("company", "=", "and")]
+            values = ("NY", phone, company)
             sql = self.q.build("select", self.model, filteron=filters)
             if config.DEBUG_CUSTOMER:
                 printit("   ->filters: {}\n"

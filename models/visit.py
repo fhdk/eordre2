@@ -76,7 +76,7 @@ class Visit:
         :param visit_id:
         :return:
         """
-        self.load(visit_id)
+        self.find(visit_id)
 
     @property
     def customer_visits(self):
@@ -90,7 +90,7 @@ class Visit:
     @customer_visits.setter
     def customer_visits(self, customer_id):
         """
-        Load customer_visits for supplied customer
+        Load customer_visits for a customer_id
         Args:
             customer_id:
         """
@@ -106,14 +106,14 @@ class Visit:
         """
         Report Visit List
         Returns:
-            The current active list of customer_visits for a reportid
+            The active list of report_visits for a report_id
         """
         return self._report_visits
 
     @report_visits.setter
     def report_visits(self, report_id):
         """
-        Load customer_visits for the requested reportid
+        Load report_visits for the requested report_id
         Args:
             report_id:
         """
@@ -132,7 +132,7 @@ class Visit:
         self._report_visits = []
         self._customer_visits = []
 
-    def init(self, report_id, employee_id, customer_id, workdate):
+    def add(self, report_id, employee_id, customer_id, workdate):
         """
         Create a new visit
         Args:
@@ -143,10 +143,48 @@ class Visit:
         """
         values = (None, report_id, employee_id, customer_id, workdate, 0,
                   "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
-        self._visit = dict(zip(self.model["fields"], values))
-        # visit_id = self.insert(values)
-        # self.load(visit_id=visit_id)
-        # self._customer_visits.append(self._visit)
+        new_id = self.insert(values)
+        self.find(new_id)
+        self._customer_visits.append(self._visit)
+        self._report_visits.append(self._visit)
+
+    def delete(self, visit_id):
+        """
+        Delete the specified visit
+        :param visit_id:
+        :return:
+        """
+        filters = [(self.model["id"], "=")]
+        values = (visit_id,)
+        sql = self.q.build("delete", self.model, filters)
+        self.q.execute(sql, values)
+
+    def find(self, visit_id):
+        """
+        Find the specified visit
+        :param visit_id:
+        :return:
+        """
+        filters = [(self.model["id"], "=")]
+        values = (visit_id,)
+        sql = self.q.build("select", self.model, filteron=filters)
+        if config.DEBUG_VISIT:
+            printit(" ->find\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(filters, values, sql))
+        success, data = self.q.execute(sql, values=values)
+        if config.DEBUG_VISIT:
+            printit("  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(filters, values, sql))
+        if success:
+            try:
+                self._visit = dict(zip(self.model["fields"], data[0]))
+                return True
+            except IndexError:
+                self._visit ={}
+        return False
 
     def import_csv(self, filename, headers=False):
         """
@@ -178,55 +216,21 @@ class Visit:
 
     def insert(self, values):
         """
-        Save current
+        Insert a new row in the database
         Args:
             values:
         """
-
         sql = self.q.build("insert", self.model)
-
         if config.DEBUG_VISIT:
             printit(" ->insert\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(values, sql))
-
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_VISIT:
             printit("  ->success: {}\n "
                     "  ->data: {}".format(success, data))
-
         if success and data:
             return data
-        return False
-
-    def load(self, visit_id):
-        """
-        Load a visit from id
-        Args:
-            visit_id:
-        """
-        filters = [("visit_id", "=")]
-        values = (visit_id,)
-
-        sql = self.q.build("select", self.model, filteron=filters)
-
-        if config.DEBUG_VISIT:
-            printit(" ->find\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
-
-        success, data = self.q.execute(sql, values=values)
-
-        if config.DEBUG_VISIT:
-            printit("  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
-
-        if success and data:
-            self._visit = dict(zip(self.model["fields"], data))
-            return True
         return False
 
     def load_for_customer(self, customer_id):
@@ -237,21 +241,16 @@ class Visit:
         """
         filters = [("customer_id", "=")]
         values = (customer_id,)
-
         sql = self.q.build("select", self.model, filteron=filters)
-
         if config.DEBUG_VISIT:
             printit(" ->load_for_customer\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
-
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_VISIT:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
@@ -263,27 +262,22 @@ class Visit:
         """
         filters = [("report_id", "=")]
         values = (report_id,)
-
         sql = self.q.build("select", self.model, filteron=filters)
-
         if config.DEBUG_VISIT:
             printit(" ->load_by_report\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
-
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_VISIT:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-
         if success and data:
             self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
 
     def recreate_table(self):
         """
-        Drop and init_detail table
+        Recreate table
         """
         sql = self.q.build("drop", self.model)
         self.q.execute(sql)
@@ -293,27 +287,22 @@ class Visit:
 
     def update(self):
         """
-        Update current current visit to database
+        Write visit changes to database
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._visit.values())
-
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
-
         if config.DEBUG_VISIT:
             printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(fields, filters, values, sql))
-
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_VISIT:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-
         if success and data:
             return data
         return False

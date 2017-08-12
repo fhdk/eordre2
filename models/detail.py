@@ -36,7 +36,7 @@ class Detail:
         self.model = {
             "name": "detail",
             "id": "detail_id",
-            "fields": ("detail_id", "visit_id", "pcs", "sku", "infotext", "price", "sas", "discount",
+            "fields": ("detail_id", "visit_id", "pcs", "sku", "text", "price", "sas", "discount",
                        "linetype", "extra"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER DEFAULT 0",
                       "TEXT", "TEXT", "REAL", "INTEGER DEFAULT 0", "REAL DEFAULT 0", "TEXT", "TEXT")
@@ -62,6 +62,20 @@ class Detail:
         """
         return self._detail
 
+    @current.setter
+    def current(self, detail_id):
+        """
+        Set the current detail
+        Args:
+            detail_id:
+        """
+        try:
+            d_id = self._detail["detail_id"]
+            if not d_id == detail_id:
+                self.find(detail_id=detail_id)
+        except KeyError:
+            self.find(detail_id=detail_id)
+
     @property
     def details(self):
         """
@@ -74,14 +88,28 @@ class Detail:
     @details.setter
     def details(self, visit_id):
         """
-        Visit details setter. Load the details for at current
+        Visit details setter. Load details for visit_id
         Args:
             visit_id:
         """
         try:
-            _ = self._details[0]
-        except IndexError:
+            vid = self._details[0]["visit_id"]
+            if not vid == visit_id:
+                self.load(visit_id=visit_id)
+        except (IndexError, KeyError):
             self.load(visit_id)
+
+    def add(self, visit_id, line_type):
+        """
+        Initialize a new detail with visitid
+        Args:
+            visit_id:
+            line_type:
+        """
+        line_type = line_type.upper()
+        values = (None, visit_id, "", "", "", "", "", "", line_type, "")
+        new_id = self.insert(values)
+        self.find(new_id)
 
     def clear(self):
         """
@@ -90,41 +118,56 @@ class Detail:
         self._detail = {}
         self._details = []
 
-    def init_detail(self, visit_id):
-        """
-        Initialize a new detail with visitid
-        Args:
-            visit_id:
-        """
-        values = (None, visit_id, None, "", "", None, None, None, None, None)
-        self._detail = dict(zip(self.model["fields"], values))
-        self._details.append(self._detail)
-
     def delete(self, detail_id):
         """
         Delete the detail
         Args:
             detail_id:
+        Returns:
+            bool
         """
         filters = [(self.model["id"], "=")]
         values = (detail_id,)
-
         sql = self.q.build("delete", self.model, filteron=filters)
-
         if config.DEBUG_SALELINE:
             printit(" ->delete\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
-
         success, data = self.q.execute(sql, values)
-
         if config.DEBUG_SALELINE:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-
         if success and data:
             return True
+        return False
+
+    def find(self, detail_id):
+        """
+        Find the specified detail
+        Args:
+            detail_id:
+        Returns:
+            bool
+        """
+        filters = [(self.model["id"]), "="]
+        values = (detail_id,)
+        sql = self.q.build("select", self.model, filteron=filters)
+        if config.DEBUG_SALELINE:
+            printit(" ->all\n"
+                    "  ->sql: {}\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}".format(sql, filters, values))
+        success, data = self.q.execute(sql, values=values)
+        if config.DEBUG_SALELINE:
+            printit("  ->success: {}\n"
+                    "  ->data: {}".format(success, data))
+        if success:
+            try:
+                self._detail = dict(zip(self.model["fields"], data[0]))
+                return True
+            except IndexError:
+                self._detail = {}
         return False
 
     def import_csv(self, filename, headers=False):
@@ -133,6 +176,8 @@ class Detail:
         Args:
             filename: csv file
             headers: flag first row as fieldnames
+        Returns:
+            bool
         """
         self.recreate_table()
         filename.encode("utf8")
@@ -140,24 +185,19 @@ class Detail:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
-
                 if config.DEBUG_SALELINE:
                     printit(" ->import_csv\n"
                             "  ->row: {}".format(row))
-
                 if not len(row) == self._csv_field_count:
                     return False
                 line += 1
                 if headers and line == 1:
                     continue
-
                 # translate bool text to integer col 6
                 row[6] = utils.bool2int(utils.str2bool(row[6]))
-                values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7], "s", None)
-
+                values = (row[0], row[1], row[2], row[3].strip(), row[4].strip(), row[5], row[6], row[7], "S", None)
                 if config.DEBUG_SALELINE:
                     printit("  ->values: {}".format(values))
-
                 self.insert(values)
             return True
 
@@ -166,20 +206,18 @@ class Detail:
         Insert row
         Args:
             values:
+        Returns:
+            bool
         """
         sql = self.q.build("insert", self.model)
-
         if config.DEBUG_SALELINE:
             printit(" ->insert\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql, values))
-
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_SALELINE:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-
         if success and data:
             return data
         return False
@@ -187,29 +225,30 @@ class Detail:
     def load(self, visit_id):
         """
         Load details for visit_id
+        Args:
+            visit_id:
+        Returns:
+            bool
         """
         filters = [("visit_id", "=")]
         values = (visit_id,)
-
         sql = self.q.build("select", self.model, filteron=filters)
-
         if config.DEBUG_SALELINE:
             printit(" ->all\n"
                     "  ->sql: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}".format(sql, filters, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if success and data:
-            self._details = [dict(zip(self.model["fields"], row)) for row in data]
-            self._detail = self._details[0]
-        else:
-            self.clear()
-
         if config.DEBUG_SALELINE:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
+        if success:
+            try:
+                self._details = [dict(zip(self.model["fields"], row)) for row in data]
+                return True
+            except (IndexError, KeyError):
+                self._details = []
+        return False
 
     def recreate_table(self):
         """
@@ -223,46 +262,38 @@ class Detail:
 
     def save_all(self):
         """
-        Write current details to database
+        Write the list of details to database
         """
-        fields = list(self.model["fields"])[1:]
-        filters = [(self.model["id"], "=")]
-        sql = self.q.build("update", self.model, update=fields, filteron=filters)
-
         for detail in self._details:
-            if detail["detail_id"] is None:
-                values = detail.values()
+            if detail[self.model["id"]] is None:
+                self.insert(detail.values())
             else:
-                values = self.q.values_to_arg(detail.values())
-            self.q.execute(sql, values=values)
+                self._detail = detail
+                self.update()
 
     def update(self):
         """
         Write the current detail to database
+        Returns:
+            bool
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._detail.values())
-
         sql = self.q.build("update", self.model, update=fields, filteron=filters)
-
         if sql.startswith("ERROR"):
             printit("{}".format(sql))
             return False
-
         if config.DEBUG_SALELINE:
             printit(" ->all\n"
                     "  ->sql: {}\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}".format(sql, fields, filters, values))
-
         success, data = self.q.execute(sql, values=values)
-
         if config.DEBUG_SALELINE:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
-
         if success and data:
             return data
         return False

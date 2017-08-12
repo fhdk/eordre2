@@ -301,7 +301,7 @@ class Ui_mainWindow(object):
         self.widgetContactsPage = QtWidgets.QWidget()
         self.widgetContactsPage.setObjectName("widgetContactsPage")
         self.widgetContactsList = QtWidgets.QTableWidget(self.widgetContactsPage)
-        self.widgetContactsList.setGeometry(QtCore.QRect(0, 30, 410, 340))
+        self.widgetContactsList.setGeometry(QtCore.QRect(0, 30, 410, 91))
         self.widgetContactsList.setObjectName("widgetContactsList")
         self.widgetContactsList.setColumnCount(4)
         self.widgetContactsList.setRowCount(0)
@@ -449,7 +449,7 @@ class Ui_mainWindow(object):
         self.toolBar.addAction(self.actionExit)
 
         self.retranslateUi(mainWindow)
-        self.widgetCustomerInfo.setCurrentIndex(0)
+        self.widgetCustomerInfo.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(mainWindow)
         mainWindow.setTabOrder(self.txtNewCompany, self.txtNewPhone1)
         mainWindow.setTabOrder(self.txtNewPhone1, self.buttonCreateCustomer)
