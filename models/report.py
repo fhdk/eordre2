@@ -13,7 +13,7 @@ from datetime import datetime
 
 from configuration import config
 from models.query import Query
-from models.report_calculator import Calculator
+from models.calculator import Calculator
 from util import utils
 
 B_COLOR = "\033[0;37m"
@@ -163,6 +163,7 @@ class Report:
         values = (ym_filter, employee_id, 1)
 
         sql = self.q.build("select", self.model, aggregates=aggregates, filters=filters)
+
 
         if config.DEBUG_REPORT:
             printit(" ->init_detail\n"

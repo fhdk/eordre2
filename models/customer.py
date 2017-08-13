@@ -102,7 +102,7 @@ class Customer:
         Returns:
             bool
         """
-        found = self.lookup_by_phone_company(phone, company)
+        found = self.lookup(phone, company)
         if found:
             self._customer = found
             return False
@@ -169,7 +169,7 @@ class Customer:
         zipcode = zipcity[0].strip()
         city = zipcity[1].strip()
         # lookup existing current
-        if self.lookup_by_phone_company(values[0], values[1]):
+        if self.lookup(values[0], values[1]):
             # sanitize and assign values
             if self._customer["account"] == 'NY':
                 self._customer["account"] = values[0]
@@ -266,7 +266,7 @@ class Customer:
                 self._customer = {}
         return False
 
-    def lookup_by_phone_company(self, phone, company, account=None):
+    def lookup(self, phone, company, account=None):
         """
         Look up current
         Args:
@@ -347,3 +347,4 @@ class Customer:
         if success and data:
             return True
         return False
+

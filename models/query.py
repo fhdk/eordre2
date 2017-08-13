@@ -31,15 +31,17 @@ class Query:
     Query Build and Execute
     """
 
-    def build(self, query_type, model_def, update=None, aggregates=None, filters=None, orderby=None):
+    def build(self, query_type, model_def, selection=None, update=None, aggregates=None, filters=None, orderby=None):
         """
         Builds a sql query from definition
 
         Args:
-            query_type: init_detail(table), drop(table), insert(row), all(row), update(row), delete(row))
+            query_type: create(table), drop(table), insert(row), select(row), update(row), delete(row))
 
             model_def: table model definition
             {"name": ("name" ...), "fields": ("field" ...), "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT" ...)}
+
+            selection: limit the result to selection
 
             update: fields to update
             ("field", "field" ...)
@@ -91,7 +93,7 @@ class Query:
 
         # build all row query
         if querytype == "SELECT":
-            return build_select_query(model_def, aggregates, filters, orderby)
+            return build_select_query(model_def, selection, aggregates, filters, orderby)
 
         # build update row query
         if querytype == "UPDATE":
@@ -104,15 +106,16 @@ class Query:
             sql_query:
             values:
         Returns:
-            result of the query - may be an empty result
+            list with result of the query - may be an empty list
         """
         if config.DEBUG_QUERY:
             printit(" ->execute\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql_query, values))
-        # query types: init_detail, delete, insert, all, update
-        select = sql_query.startswith("SELECT")
-        insert = sql_query.startswith("INSERT")
+        # query types: create, drop, delete, insert, select, update
+        # specifically the select and insert query has to return the result
+        select = sql_query.startswith("SELECT")  # returns data
+        insert = sql_query.startswith("INSERT")  # returns rowid for the last inserted record
         db = sqlite3.connect(config.DBPATH)
         with db:
             try:
@@ -160,8 +163,7 @@ class Query:
         Returns:
              bool indicating if table was found
         """
-        statement = "SELECT name FROM sqlite_master " \
-                    "WHERE type='{}' AND name='{}';".format("table", table)
+        statement = "SELECT name FROM sqlite_master WHERE type='{}' AND name='{}';".format("table", table)
 
         success, data = self.execute(statement)
         if data:

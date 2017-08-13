@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>806</width>
     <height>600</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
+    <width>16777215</width>
     <height>16777215</height>
    </size>
   </property>
@@ -82,7 +82,7 @@
             <string>Opret ny kunde</string>
            </property>
            <property name="statusTip">
-            <string>Tryk for at oprette kunde med disse oplysninger</string>
+            <string>Udfyld felterne og tryk her for at oprette firma</string>
            </property>
            <property name="text">
             <string>Opret</string>
@@ -97,13 +97,13 @@
             </font>
            </property>
            <property name="toolTip">
-            <string>Ny kunde firmanavn</string>
+            <string>navn for ny kunde</string>
            </property>
            <property name="statusTip">
-            <string>Her indtastes firmanvn der skal oprettes</string>
+            <string>Her indsættes firmanavn for kunde der skal oprettes</string>
            </property>
            <property name="placeholderText">
-            <string>ny firma kunde</string>
+            <string>navn</string>
            </property>
           </widget>
          </item>
@@ -115,29 +115,17 @@
             </font>
            </property>
            <property name="toolTip">
-            <string>Ny kunde telefon</string>
+            <string>telefon for ny kunde</string>
            </property>
            <property name="statusTip">
-            <string>Her indtastes telefon nummer for kunde der skal oprettes</string>
+            <string>Her indsættes telefon nummer for kunde der skal oprettes</string>
            </property>
            <property name="placeholderText">
-            <string>ny firma telefon</string>
+            <string>telefon</string>
            </property>
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line_1">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
        </item>
        <item>
         <layout class="QGridLayout" name="widgetWorkdate">
@@ -157,7 +145,7 @@
             <string>Arbejdsdato</string>
            </property>
            <property name="statusTip">
-            <string>Dette er arbejdsdato.</string>
+            <string>Dette er systemets arbejdsdato</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignCenter</set>
@@ -181,7 +169,7 @@
             <string>Opret dagsrapport</string>
            </property>
            <property name="statusTip">
-            <string>Her opretter du en ny dagsrapport</string>
+            <string>Her opretter du en dagsrapport datoen i feltet</string>
            </property>
            <property name="text">
             <string>Opret dagsrapport</string>
@@ -189,18 +177,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="Line" name="line_2">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
        </item>
        <item>
         <layout class="QGridLayout" name="widgetLastUpdate">
@@ -347,18 +323,6 @@
       </layout>
      </item>
      <item>
-      <widget class="Line" name="line_3">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
       <layout class="QHBoxLayout" name="mainGrid">
        <item>
         <widget class="QTreeWidget" name="widgetCustomerList">
@@ -374,8 +338,11 @@
          <property name="editTriggers">
           <set>QAbstractItemView::NoEditTriggers</set>
          </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
          <property name="indentation">
-          <number>0</number>
+          <number>20</number>
          </property>
          <property name="rootIsDecorated">
           <bool>false</bool>
@@ -389,6 +356,9 @@
          <property name="columnCount">
           <number>2</number>
          </property>
+         <attribute name="headerDefaultSectionSize">
+          <number>80</number>
+         </attribute>
          <column>
           <property name="text">
            <string>Telefon</string>
@@ -402,21 +372,21 @@
         </widget>
        </item>
        <item>
-        <widget class="Line" name="line_4">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <layout class="QGridLayout" name="widgetInfoButtons">
+           <property name="leftMargin">
+            <number>6</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>6</number>
+           </property>
+           <property name="spacing">
+            <number>6</number>
+           </property>
            <item row="0" column="2">
             <widget class="QPushButton" name="btnShowVisits">
              <property name="font">
@@ -487,10 +457,10 @@
             <widget class="QWidget" name="layoutWidget">
              <property name="geometry">
               <rect>
-               <x>0</x>
+               <x>10</x>
                <y>40</y>
                <width>470</width>
-               <height>260</height>
+               <height>240</height>
               </rect>
              </property>
              <property name="font">
@@ -692,13 +662,19 @@
             <widget class="QWidget" name="gridLayoutWidget_2">
              <property name="geometry">
               <rect>
-               <x>0</x>
-               <y>1</y>
+               <x>10</x>
+               <y>0</y>
                <width>470</width>
-               <height>30</height>
+               <height>31</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_2">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
               <item row="1" column="0">
                <widget class="QLabel" name="labelMasterData">
                 <property name="font">
@@ -747,10 +723,10 @@
             <widget class="QTextEdit" name="txtCustomerInfoText">
              <property name="geometry">
               <rect>
-               <x>0</x>
-               <y>300</y>
+               <x>10</x>
+               <y>290</y>
                <width>470</width>
-               <height>70</height>
+               <height>80</height>
               </rect>
              </property>
             </widget>
@@ -759,13 +735,22 @@
             <widget class="QWidget" name="gridLayoutWidget_3">
              <property name="geometry">
               <rect>
-               <x>0</x>
+               <x>10</x>
                <y>0</y>
                <width>467</width>
                <height>31</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_3">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
+              <property name="spacing">
+               <number>6</number>
+              </property>
               <item row="0" column="2">
                <widget class="QPushButton" name="btnAddContact">
                 <property name="text">
@@ -802,10 +787,10 @@
             <widget class="QTreeWidget" name="widgetContactList">
              <property name="geometry">
               <rect>
-               <x>0</x>
+               <x>10</x>
                <y>40</y>
                <width>470</width>
-               <height>320</height>
+               <height>330</height>
               </rect>
              </property>
              <property name="sizeAdjustPolicy">
@@ -854,13 +839,19 @@
             <widget class="QWidget" name="gridLayoutWidget">
              <property name="geometry">
               <rect>
-               <x>0</x>
+               <x>10</x>
                <y>0</y>
-               <width>470</width>
+               <width>460</width>
                <height>31</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout">
+              <property name="leftMargin">
+               <number>6</number>
+              </property>
+              <property name="rightMargin">
+               <number>6</number>
+              </property>
               <item row="0" column="1">
                <widget class="QLabel" name="label">
                 <property name="text">
@@ -894,226 +885,13 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="gridLayoutWidget_4">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>140</y>
-               <width>470</width>
-               <height>74</height>
-              </rect>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_4">
-              <item row="0" column="2">
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>Salg</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="label_3">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Rekv.</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QLineEdit" name="txtSale">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="txtPoNumber">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLabel" name="lblSent">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_7">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Afsluttet</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QLabel" name="lblApproved">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="2">
-               <widget class="QLabel" name="label_6">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>SAS</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="3">
-               <widget class="QLineEdit" name="txtSas">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="2">
-               <widget class="QLabel" name="label_5">
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>16</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Total</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="3">
-               <widget class="QLineEdit" name="txtTotal">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>20</height>
-                 </size>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>Godkendt</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
             <widget class="QTreeWidget" name="widgetVisitList">
              <property name="geometry">
               <rect>
-               <x>0</x>
-               <y>30</y>
-               <width>470</width>
-               <height>110</height>
+               <x>10</x>
+               <y>40</y>
+               <width>460</width>
+               <height>120</height>
               </rect>
              </property>
              <property name="sizeAdjustPolicy">
@@ -1166,10 +944,10 @@
             <widget class="QTreeWidget" name="widgetVisitDetails">
              <property name="geometry">
               <rect>
-               <x>0</x>
+               <x>10</x>
                <y>260</y>
-               <width>470</width>
-               <height>110</height>
+               <width>460</width>
+               <height>140</height>
               </rect>
              </property>
              <property name="sizeAdjustPolicy">
@@ -1182,7 +960,7 @@
               <bool>true</bool>
              </property>
              <property name="selectionMode">
-              <enum>QAbstractItemView::NoSelection</enum>
+              <enum>QAbstractItemView::SingleSelection</enum>
              </property>
              <property name="indentation">
               <number>0</number>
@@ -1229,25 +1007,230 @@
               </property>
              </column>
             </widget>
-            <widget class="QTextEdit" name="txtVisitInfoText">
+            <widget class="QWidget" name="horizontalLayoutWidget">
              <property name="geometry">
               <rect>
-               <x>0</x>
-               <y>217</y>
-               <width>470</width>
-               <height>40</height>
+               <x>10</x>
+               <y>170</y>
+               <width>460</width>
+               <height>80</height>
               </rect>
              </property>
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_4">
+                <item row="0" column="2">
+                 <widget class="QLabel" name="label_4">
+                  <property name="text">
+                   <string>Salg</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_3">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Rekv.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QLineEdit" name="txtSale">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="txtPoNumber">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLabel" name="lblSent">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="label_7">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Afsl.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLabel" name="lblApproved">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QLabel" name="label_6">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>SAS</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="3">
+                 <widget class="QLineEdit" name="txtSas">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="2">
+                 <widget class="QLabel" name="label_5">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Total</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="3">
+                 <widget class="QLineEdit" name="txtTotal">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_8">
+                  <property name="text">
+                   <string>Godk.</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QTextEdit" name="txtVisitInfoText">
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
-            <zorder>txtVisitInfoText</zorder>
-            <zorder>gridLayoutWidget</zorder>
-            <zorder>gridLayoutWidget_4</zorder>
-            <zorder>widgetVisitList</zorder>
-            <zorder>widgetVisitDetails</zorder>
-            <zorder>widgetCustomerList</zorder>
            </widget>
           </widget>
          </item>
@@ -1263,7 +1246,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>806</width>
      <height>23</height>
     </rect>
    </property>

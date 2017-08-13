@@ -153,23 +153,24 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Populate the contactlist based on currently selected customer
         """
         # load contacts
-        self.contacts.contact_list = self.customers.active["customer_id"]
         self.widgetContactList.clear()
         items = []
         try:
+            self.contacts.contact_list = self.customers.active["customer_id"]
             for c in self.contacts.contact_list:
                 item = QTreeWidgetItem([c["name"], c["department"], c["phone"], c["email"]])
                 items.append(item)
         except IndexError as i:
-            printit(" ->populate_contact_list\n ->exception: {}".format(i))
+            printit(" ->populate_contact_list\n ->IndexError: {}".format(i))
+        except KeyError as k:
+            printit(" ->populate_contact_list\n ->KeyError: {}".format(k))
+
         self.widgetContactList.addTopLevelItems(items)
 
     def populate_visit_list(self):
         """
         Populate the visitlist based on the active customer
         """
-        # load visits
-        self.visits.visit_list_customer = self.customers.active["customer_id"]
         # populate visit list table
         self.widgetVisitList.clear()
         # self.widgetVisitList.setColumnCount(5)
@@ -177,16 +178,16 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.widgetVisitList.setColumnWidth(0, 0)
         items = []
         try:
+            self.visits.visit_list_customer = self.customers.active["customer_id"]
             for visit in self.visits.visit_list_customer:
                 item = QTreeWidgetItem([str(visit["visit_id"]), visit["visit_date"], visit["po_buyer"],
                                         visit["prod_demo"], visit["prod_sale"]])
                 items.append(item)
-
-        except (IndexError, KeyError) as e:
-            printit(" ->populate_visit_list\n-> exception: {}".format(e))
-
+        except IndexError as i:
+            printit(" ->populate_visit_list\n ->IndexError: {}".format(i))
+        except KeyError as k:
+            printit(" ->populate_visit_list\n ->KeyError: {}".format(k))
         self.widgetVisitList.addTopLevelItems(items)
-        # self.widgetVisitList.setSortingEnabled(True)
 
     def populate_details_list(self):
         """
@@ -257,7 +258,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.populate_customer_list()
         if utils.int2bool(self.settings.active["sc"]):
             # check server data
-            self.statusbar.setStatusTip("Checker server for opdateringer ...")
             status = utils.refresh_sync_status(self.settings)
             self.settings.active["sac"] = status[0][1].split()[0]
             self.settings.active["sap"] = status[1][1].split()[0]
@@ -408,23 +408,30 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             current: currently selected item
             previous: previous selected item
         """
-        phone = current.text(0)
-        company = current.text(1)
-        # move current customer
-        # load customer
-        self.customers.lookup_by_phone_company(phone, company)
-        # fields to lineedit
-        self.txtAccount.setText(self.customers.active["account"])
-        self.txtCompany.setText(self.customers.active["company"])
-        self.txtAddress1.setText(self.customers.active["address1"])
-        self.txtAddress2.setText(self.customers.active["address2"])
-        self.txtZipCode.setText(self.customers.active["zipcode"])
-        self.txtCityName.setText(self.customers.active["city"])
-        self.txtPhone1.setText(self.customers.active["phone1"])
-        self.txtPhone2.setText(self.customers.active["phone2"])
-        self.txtEmail.setText(self.customers.active["email"])
-        self.txtFactor.setText(str(self.customers.active["factor"]))
-        self.txtCustomerInfoText.setText(self.customers.active["infotext"])
+        try:
+            phone = current.text(0)
+            company = current.text(1)
+            # move current customer
+            # load customer
+            self.customers.lookup(phone, company)
+            # fields to lineedit
+            self.txtAccount.setText(self.customers.active["account"])
+            self.txtCompany.setText(self.customers.active["company"])
+            self.txtAddress1.setText(self.customers.active["address1"])
+            self.txtAddress2.setText(self.customers.active["address2"])
+            self.txtZipCode.setText(self.customers.active["zipcode"])
+            self.txtCityName.setText(self.customers.active["city"])
+            self.txtPhone1.setText(self.customers.active["phone1"])
+            self.txtPhone2.setText(self.customers.active["phone2"])
+            self.txtEmail.setText(self.customers.active["email"])
+            self.txtFactor.setText(str(self.customers.active["factor"]))
+            self.txtCustomerInfoText.setText(self.customers.active["infotext"])
+        except AttributeError as a:
+            if config.DEBUG_MAIN:
+                printit(" ->current_customer_changed\n ->AttributeError: {}".format(a))
+        except KeyError as k:
+            if config.DEBUG_MAIN:
+                printit(" ->current_customer_changed\n ->KeyError: {}".format(k))
         # load customer infos
         self.populate_contact_list()
         self.populate_visit_list()
@@ -583,7 +590,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.populate_customer_list()
 
         self.settings.active["lsc"] = ""
-        self.self.settings.active["sac"] = ""
+        self.settings.active["sac"] = ""
         self.settings.active["lsp"] = ""
         self.settings.active["sap"] = ""
         self.settings.update()
