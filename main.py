@@ -56,7 +56,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Initialize MainWindow class
         """
-
         super(MainWindow, self).__init__()
         self.setupUi(self)
         configfn.check_config_folder()  # Check app folder in users home
