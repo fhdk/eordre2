@@ -154,6 +154,15 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         # load contacts
         self.contacts.contact_list = self.customers.active["customer_id"]
+        self.widgetContactList.clear()
+        items = []
+        try:
+            for c in self.contacts.contact_list:
+                item = QTreeWidgetItem([c["name"], c["department"], c["phone"], c["email"]])
+                items.append(item)
+        except IndexError as i:
+            printit(" ->populate_contact_list\n ->exception: {}".format(i))
+        self.widgetContactList.addTopLevelItems(items)
 
     def populate_visit_list(self):
         """
@@ -177,7 +186,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             printit(" ->populate_visit_list\n-> exception: {}".format(e))
 
         self.widgetVisitList.addTopLevelItems(items)
-        self.widgetVisitList.setSortingEnabled(True)
+        # self.widgetVisitList.setSortingEnabled(True)
 
     def populate_details_list(self):
         """
@@ -568,7 +577,17 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.visits.recreate_table()
         self.reports.recreate_table()
 
-        self.widgetCustomerList.clear()
+        self.populate_contact_list()
+        self.populate_details_list()
+        self.populate_visit_list()
+        self.populate_customer_list()
+
+        self.settings.active["lsc"] = ""
+        self.self.settings.active["sac"] = ""
+        self.settings.active["lsp"] = ""
+        self.settings.active["sap"] = ""
+        self.settings.update()
+        self.display_sync_status()
 
         msgbox = QMessageBox()
         msgbox.information(self, __appname__, "Salgsdata er nulstillet!", QMessageBox.Ok)
