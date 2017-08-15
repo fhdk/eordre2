@@ -35,6 +35,9 @@
             <property name="value">
                 <number>0</number>
             </property>
+            <property name="format">
+                <string/>
+            </property>
         </widget>
         <widget class="QPushButton" name="buttonStart">
             <property name="geometry">

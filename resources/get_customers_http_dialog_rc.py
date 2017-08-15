@@ -6,8 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_getCustomersHttpDialog(object):
     def setupUi(self, getCustomersHttpDialog):
@@ -19,6 +18,7 @@ class Ui_getCustomersHttpDialog(object):
         self.progress_bar = QtWidgets.QProgressBar(getCustomersHttpDialog)
         self.progress_bar.setGeometry(QtCore.QRect(10, 80, 521, 23))
         self.progress_bar.setProperty("value", 0)
+        self.progress_bar.setFormat("")
         self.progress_bar.setObjectName("progress_bar")
         self.buttonStart = QtWidgets.QPushButton(getCustomersHttpDialog)
         self.buttonStart.setGeometry(QtCore.QRect(370, 10, 161, 26))
@@ -35,3 +35,4 @@ class Ui_getCustomersHttpDialog(object):
         getCustomersHttpDialog.setWindowTitle(_translate("getCustomersHttpDialog", "Kunde import fra server"))
         self.buttonStart.setText(_translate("getCustomersHttpDialog", "Start"))
         self.buttonClose.setText(_translate("getCustomersHttpDialog", "Luk"))
+

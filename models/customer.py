@@ -5,14 +5,13 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 """Customer module"""
-import csv
 
 from models.query import Query
 from util import utils
 
 B_COLOR = "\033[0;33m"
 E_COLOR = "\033[0;m"
-DBG = False
+DBG = True
 
 __module__ = "customer"
 
@@ -74,6 +73,11 @@ class Customer:
         self.lookup_by_id(customer_id=customer_id)
 
     @property
+    def csv_field_count(self):
+        """The number of fields expected on csv import"""
+        return self._csv_field_count
+
+    @property
     def customer_list(self):
         """
         Load customers into primary list
@@ -114,42 +118,23 @@ class Customer:
             self.lookup_by_id(new_id)
         return True
 
-    def import_csv(self, filename, headers=False):
+    def import_csv(self, row):
         """
         Import customers from csv file
         Args:
-            filename:
+            row:
                 The expected file format contains data in the following sequence
                 id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
-            headers:
-                flag indicating if first row is column names
-        Returns:
-            bool
         """
-        self.recreate_table()
-        with open(filename) as csvfile:
-            reader = csv.reader(csvfile, delimiter="|")
-            line = 0
-            for row in reader:
-                if DBG:
-                    printit(" ->row length {}\n"
-                            "  ->row: {}".format(len(row), row))
-                if not len(row) == self._csv_field_count:
-                    return False  # wrong format
-                line += 1
-                if headers and line == 1:
-                    continue
-                # translate bool text in col 15
-                row[15] = utils.bool2int(utils.arg2bool(row[15]))
-                values = (row[0],
-                          row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
-                          row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
-                          row[12].strip(), row[15], row[16], row[17],
-                          row[19].strip(), "", "", 0.0, 0, 0, 0, 0)
-                if DBG:
-                    printit("  ->values: {}".format(values))
-                self.insert(values)
-            return True
+        # translate field from bool text to integer
+        row[15] = utils.bool2int(utils.arg2bool(row[15]))
+        # strip trailing spaces from from text fields
+        new_row = (row[0],
+                   row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
+                   row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
+                   row[12].strip(), row[15], row[16], row[17],
+                   row[19].strip(), "", "", 0.0, 0, 0, 0, 0)
+        self.insert(new_row)
 
     def import_http(self, values):
         """

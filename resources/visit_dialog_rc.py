@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_visitDialog(object):
     def setupUi(self, visitDialog):
         visitDialog.setObjectName("visitDialog")
@@ -226,7 +225,8 @@ class Ui_visitDialog(object):
         self.lblSale.setText(_translate("visitDialog", "Salg"))
         self.lblSas.setText(_translate("visitDialog", "SAS"))
         self.lblTotal.setText(_translate("visitDialog", "Total"))
-        self.lblCompany.setText(_translate("visitDialog", "Kunde "))
+        self.lblCompany.setText(_translate("visitDialog", "Kunde"))
         self.btnInsertSale.setText(_translate("visitDialog", "Indsæt salg"))
         self.btnArchiveVisit.setText(_translate("visitDialog", "Arkiver"))
         self.btnInsertDemo.setText(_translate("visitDialog", "Indsæt demo"))
+

@@ -6,18 +6,12 @@
 
 import os
 
-from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from configuration import config
 from resources.csv_file_import_dialog_rc import Ui_csvFileImportDialog
-
-
-class CsvImportComm(QObject):
-    """
-    Broadcast signals
-    """
-    customersdone = pyqtSignal()
+from util.import_customers_csv import ImportCustomersCsvThread
+from util.status_communication import StatusCommunication
 
 
 class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
@@ -32,17 +26,18 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
 
         self.contacts = contacts
         self.customers = customers
-        self.employees = employees
-        self.visits = visits
         self.details = details
+        self.employees = employees
         self.reports = reports
+        self.visits = visits
 
-        self.c = CsvImportComm()
+        self.comm = StatusCommunication()
         self.file_dialog = QFileDialog()
+        self.progressBar.setRange(0, 1)
 
         self.buttonImport.enabled = False
         # connect to signals
-        self.comboImport.currentIndexChanged.connect(self.combo_current_index_changed_action)
+        self.comboImport.currentIndexChanged.connect(self.combo_changed_action)
         self.buttonBrowse.clicked.connect(self.button_browse_action)
         self.buttonImport.clicked.connect(self.button_import_action)
         self.buttonClose.clicked.connect(self.button_close_action)
@@ -75,6 +70,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
         self.buttonImport.enabled = False
         self.buttonBrowse.enabled = False
         self.buttonClose.enabled = False
+        self.progressBar.setRange(0, 0)
 
         if self.selectedFile:
             # notice to init_detail to list box
@@ -87,9 +83,15 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
 
             # import selected file to current table
             if self.selectedTable == "customer":
-                success = self.customers.import_csv(self.selectedFile,
-                                                    self.checkHeaders.isChecked())
-                self.c.customersdone.emit()
+                cust_import = ImportCustomersCsvThread(self.customers,
+                                                       self.selectedFile,
+                                                       self.checkHeaders.isCheckable())
+                cust_import.comm.done.connect(self.signal_done)
+                cust_import.comm.status.connect(self.signal_status)
+                cust_import.run()
+                # success = self.customers.import_csv(self.selectedFile,
+                #                                     self.checkHeaders.isChecked())
+                # self.c.customersdone.emit()
 
             # import selected file to ordervisit table
             if self.selectedTable == "visit":
@@ -107,12 +109,6 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
                                                   self.employees.active["employee_id"],
                                                   self.checkHeaders.isChecked())
 
-            if success:
-                self.listImported.addItem(notice)
-            else:
-                QMessageBox.information(self, "Doh!", "Der er opstået en fejl!", QMessageBox.Ok)
-                return
-
             self.selectedFile = ""
             self.txtSelectedFile.clear()
             self.comboImport.removeItem(self.comboImport.currentIndex())
@@ -122,6 +118,26 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog):
         self.buttonBrowse.enabled = True  # enable browse button
         self.buttonClose.enabled = True  # enable close button
 
-    def combo_current_index_changed_action(self):
+    def combo_changed_action(self):
         """Slot for ComboBox currentIndexChanged signal"""
         self.selectedTable = self.comboImport.itemData(self.comboImport.currentIndex())
+
+    def signal_done(self):
+        """
+        Executes when the import is done
+        """
+        self.comm.done.emit()
+        self.progressBar.setRange(0, 1)
+        self.buttonImport.enabled = False  # disable the button till next file is selected
+        self.buttonBrowse.enabled = True  # enable browse button
+        self.buttonClose.enabled = True  # enable close button
+
+    def signal_status(self, text):
+        """
+        Process status notification
+        """
+        self.listImported.addItem(text)
+        # self.progressBar.setRange(0, 0)
+        if text.startswith("ERROR") or text.startswith("FEJL"):
+            title = "Import fejl"
+            QMessageBox.information(self, title, text, QMessageBox.Ok)

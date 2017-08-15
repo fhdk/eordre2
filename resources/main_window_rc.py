@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_mainWindow(object):
     def setupUi(self, mainWindow):
         mainWindow.setObjectName("mainWindow")
@@ -95,14 +94,14 @@ class Ui_mainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(10)
         self.lblCustomer.setFont(font)
-        self.lblCustomer.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.lblCustomer.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.lblCustomer.setObjectName("lblCustomer")
         self.widgetLastUpdate.addWidget(self.lblCustomer, 0, 0, 1, 1)
         self.lblCatalog = QtWidgets.QLabel(self.verticalLayoutWidget)
         font = QtGui.QFont()
         font.setPointSize(10)
         self.lblCatalog.setFont(font)
-        self.lblCatalog.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.lblCatalog.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.lblCatalog.setObjectName("lblCatalog")
         self.widgetLastUpdate.addWidget(self.lblCatalog, 1, 0, 1, 1)
         self.txtCustLocal = QtWidgets.QLineEdit(self.verticalLayoutWidget)
@@ -267,7 +266,6 @@ class Ui_mainWindow(object):
         font.setUnderline(False)
         font.setWeight(75)
         self.labelMasterData.setFont(font)
-        self.labelMasterData.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.labelMasterData.setObjectName("labelMasterData")
         self.gridLayout_2.addWidget(self.labelMasterData, 1, 0, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.gridLayoutWidget_2)
@@ -305,7 +303,6 @@ class Ui_mainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.labelContactsData.setFont(font)
-        self.labelContactsData.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.labelContactsData.setObjectName("labelContactsData")
         self.gridLayout_3.addWidget(self.labelContactsData, 0, 0, 1, 1)
         self.widgetContactList = QtWidgets.QTreeWidget(self.widgetContactsPage)
@@ -335,7 +332,6 @@ class Ui_mainWindow(object):
         font.setBold(True)
         font.setWeight(75)
         self.labelHistoryData.setFont(font)
-        self.labelHistoryData.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.labelHistoryData.setObjectName("labelHistoryData")
         self.gridLayout.addWidget(self.labelHistoryData, 0, 0, 1, 1)
         self.btnVisitDialog = QtWidgets.QPushButton(self.gridLayoutWidget)
@@ -383,7 +379,6 @@ class Ui_mainWindow(object):
         sizePolicy.setHeightForWidth(self.txtSale.sizePolicy().hasHeightForWidth())
         self.txtSale.setSizePolicy(sizePolicy)
         self.txtSale.setMaximumSize(QtCore.QSize(16777215, 20))
-        self.txtSale.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.txtSale.setReadOnly(True)
         self.txtSale.setObjectName("txtSale")
         self.gridLayout_4.addWidget(self.txtSale, 0, 3, 1, 1)
@@ -440,7 +435,6 @@ class Ui_mainWindow(object):
         sizePolicy.setHeightForWidth(self.txtSas.sizePolicy().hasHeightForWidth())
         self.txtSas.setSizePolicy(sizePolicy)
         self.txtSas.setMaximumSize(QtCore.QSize(16777215, 20))
-        self.txtSas.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.txtSas.setReadOnly(True)
         self.txtSas.setObjectName("txtSas")
         self.gridLayout_4.addWidget(self.txtSas, 1, 3, 1, 1)
@@ -455,7 +449,6 @@ class Ui_mainWindow(object):
         sizePolicy.setHeightForWidth(self.txtTotal.sizePolicy().hasHeightForWidth())
         self.txtTotal.setSizePolicy(sizePolicy)
         self.txtTotal.setMaximumSize(QtCore.QSize(16777215, 20))
-        self.txtTotal.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.txtTotal.setReadOnly(True)
         self.txtTotal.setObjectName("txtTotal")
         self.gridLayout_4.addWidget(self.txtTotal, 2, 3, 1, 1)
@@ -473,7 +466,7 @@ class Ui_mainWindow(object):
         self.verticalLayout.addLayout(self.mainGrid)
         mainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(mainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 806, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 806, 27))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.menubar.setFont(font)
@@ -603,15 +596,14 @@ class Ui_mainWindow(object):
         self.txtNewCompany.setStatusTip(_translate("mainWindow", "Her indsættes firmanavn for kunde der skal oprettes"))
         self.txtNewCompany.setPlaceholderText(_translate("mainWindow", "navn"))
         self.txtNewPhone1.setToolTip(_translate("mainWindow", "telefon for ny kunde"))
-        self.txtNewPhone1.setStatusTip(
-            _translate("mainWindow", "Her indsættes telefon nummer for kunde der skal oprettes"))
+        self.txtNewPhone1.setStatusTip(_translate("mainWindow", "Her indsættes telefon nummer for kunde der skal oprettes\n"
+"                                                "))
         self.txtNewPhone1.setPlaceholderText(_translate("mainWindow", "telefon"))
         self.txtWorkdate.setToolTip(_translate("mainWindow", "Arbejdsdato"))
         self.txtWorkdate.setStatusTip(_translate("mainWindow", "Dette er systemets arbejdsdato"))
         self.txtWorkdate.setPlaceholderText(_translate("mainWindow", "arbejdsdato"))
         self.btnCreateReportDialog.setToolTip(_translate("mainWindow", "Opret dagsrapport"))
-        self.btnCreateReportDialog.setStatusTip(
-            _translate("mainWindow", "Her opretter du en dagsrapport datoen i feltet"))
+        self.btnCreateReportDialog.setStatusTip(_translate("mainWindow", "Her opretter du en dagsrapport datoen i feltet"))
         self.btnCreateReportDialog.setText(_translate("mainWindow", "Opret dagsrapport"))
         self.txtCustServer.setToolTip(_translate("mainWindow", "Tilgængelig kundeliste"))
         self.txtCustServer.setStatusTip(_translate("mainWindow", "Dette datoen for serverens kundeliste"))
@@ -619,8 +611,7 @@ class Ui_mainWindow(object):
         self.lblCustomer.setText(_translate("mainWindow", "Kundeliste"))
         self.lblCatalog.setText(_translate("mainWindow", "Prisliste"))
         self.txtCustLocal.setToolTip(_translate("mainWindow", "Kundeliste synkroniseret"))
-        self.txtCustLocal.setStatusTip(
-            _translate("mainWindow", "Dette er dato for sidste synkronisering af kundeliste"))
+        self.txtCustLocal.setStatusTip(_translate("mainWindow", "Dette er dato for sidste synkronisering af kundeliste"))
         self.txtCustLocal.setPlaceholderText(_translate("mainWindow", "dato"))
         self.txtProdServer.setToolTip(_translate("mainWindow", "Tilgængelig prisliste"))
         self.txtProdServer.setStatusTip(_translate("mainWindow", "Dette er datoen for serverens prisliste"))
@@ -640,13 +631,18 @@ class Ui_mainWindow(object):
         self.btnShowMasterdata.setStatusTip(_translate("mainWindow", "Klik her for at vise stamdata for kunde"))
         self.btnShowMasterdata.setText(_translate("mainWindow", "Stamdata"))
         self.txtPhone2.setToolTip(_translate("mainWindow", "Anden telefon"))
-        self.txtPhone2.setStatusTip(_translate("mainWindow", "Dette felt er mobil eller anden telefon til kunde"))
+        self.txtPhone2.setStatusTip(_translate("mainWindow", "Dette felt er mobil eller anden telefon til\n"
+"                                                                        kunde\n"
+"                                                                    "))
         self.txtPhone2.setPlaceholderText(_translate("mainWindow", "mobil telefon"))
         self.txtPhone1.setToolTip(_translate("mainWindow", "Primær telefon"))
-        self.txtPhone1.setStatusTip(_translate("mainWindow", "Dette felt er primær telefon til kunde"))
+        self.txtPhone1.setStatusTip(_translate("mainWindow", "Dette felt er primær telefon til kunde\n"
+"                                                                    "))
         self.txtPhone1.setPlaceholderText(_translate("mainWindow", "primær telefon"))
         self.txtFactor.setToolTip(_translate("mainWindow", "Faktor"))
-        self.txtFactor.setStatusTip(_translate("mainWindow", "Ved salg bliver liste priser ganget med faktor"))
+        self.txtFactor.setStatusTip(_translate("mainWindow", "Ved salg bliver liste priser ganget med\n"
+"                                                                        faktor\n"
+"                                                                    "))
         self.txtFactor.setPlaceholderText(_translate("mainWindow", "faktor"))
         self.txtAccount.setToolTip(_translate("mainWindow", "Kundekonto"))
         self.txtAccount.setStatusTip(_translate("mainWindow", "Dette felt er konto for kunde"))
@@ -667,11 +663,14 @@ class Ui_mainWindow(object):
         self.txtCityName.setStatusTip(_translate("mainWindow", "Dette felt er bynavn for kunde"))
         self.txtCityName.setPlaceholderText(_translate("mainWindow", "by navn"))
         self.txtEmail.setToolTip(_translate("mainWindow", "Epost adresse"))
-        self.txtEmail.setStatusTip(_translate("mainWindow", "Dette felt er epost adresse for kunde"))
+        self.txtEmail.setStatusTip(_translate("mainWindow", "Dette felt er epost adresse for kunde\n"
+"                                                                    "))
         self.txtEmail.setPlaceholderText(_translate("mainWindow", "epost adresse"))
         self.labelMasterData.setText(_translate("mainWindow", "Stamdata"))
         self.btnArchiveMasterdata.setToolTip(_translate("mainWindow", "Arkiver ændringer"))
-        self.btnArchiveMasterdata.setStatusTip(_translate("mainWindow", "Tryk her for at gemme rettelser i databasen"))
+        self.btnArchiveMasterdata.setStatusTip(_translate("mainWindow", "Tryk her for at gemme rettelser i\n"
+"                                                                        databasen\n"
+"                                                                    "))
         self.btnArchiveMasterdata.setText(_translate("mainWindow", "Arkiver rettelser"))
         self.btnAddContact.setText(_translate("mainWindow", "Tilføj kontakt ..."))
         self.btnArchiveContacts.setText(_translate("mainWindow", "Arkiver rettelser"))
@@ -739,3 +738,5 @@ class Ui_mainWindow(object):
         self.actionReport.setText(_translate("mainWindow", "Dagsrapport"))
         self.actionZeroDatabase.setText(_translate("mainWindow", "Nulstil database"))
         self.actionReportList.setText(_translate("mainWindow", "Rapport oversigt"))
+
+from . import system_rc

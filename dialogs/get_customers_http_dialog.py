@@ -5,22 +5,17 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 
-from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
+import util.import_customers_csv
+import util.import_customers_http
 from resources.get_customers_http_dialog_rc import Ui_getCustomersHttpDialog
-from util import threads
-
-
-class Communicate(QObject):
-    """
-    Broadcasting signals
-    """
-    finished = pyqtSignal()
+from util.status_communication import StatusCommunication
 
 
 class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
     """
+    Import customers from http
     """
 
     def __init__(self, customers, employees, settings, parent=None):
@@ -34,14 +29,14 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
         super(GetCustomersHttpDialog, self).__init__(parent)
         self.setupUi(self)
 
-        self.c = Communicate()
+        self.comm = StatusCommunication()
 
         self.counter = 0  # Used when setting progress values
         self.rowcounter = 0  # Used when updating the status listbox
         self.progresscount = 0
-        self.import_thread = threads.ImportCustomersThread(customers=customers,
-                                                           employees=employees,
-                                                           settings=settings)
+        self.import_thread = util.import_customers_http.ImportCustomersHttpThread(customers=customers,
+                                                                                  employees=employees,
+                                                                                  settings=settings)
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_action)
         self.buttonClose.clicked.connect(self.button_close_action)
@@ -64,25 +59,19 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
 
     def button_start_action(self):
         """Slot for buttonStart clicked signal"""
-        self.progress_bar.setValue(0)
+        self.progress_bar.setValue(0, 0)
         # connect to the thread signals
-        self.import_thread.c.finished.connect(self.threaddone)
-        self.import_thread.c.processing.connect(self.add_row)
-        self.import_thread.c.rowcount.connect(self.set_progressbar)
+        self.import_thread.comm.done.connect(self.threaddone)
+        self.import_thread.comm.status.connect(self.add_row)
         # start the thread
         self.import_thread.start()
         # we don't want to double the processes or close before finished
         self.buttonStart.setEnabled(False)
         self.buttonClose.setEnabled(False)
 
-    def set_progressbar(self, count):
-        """Slot for import thread rowcount signal"""
-        self.progresscount = count / 100
-        self.progresscount = int(self.progresscount)
-
     def threaddone(self):
         """Slot for import thread finished signal"""
         self.buttonStart.setEnabled(True)
         self.buttonClose.setEnabled(True)
-        self.progress_bar.setValue(100)
-        self.c.finished.emit()
+        self.progress_bar.setRange(0, 1)
+        self.comm.done.emit()

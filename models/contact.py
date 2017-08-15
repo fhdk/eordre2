@@ -149,7 +149,7 @@ class Contact:
         """
         Import contact from file
         Args:
-            filename: 
+            filename:
             headers:
         Returns:
             bool

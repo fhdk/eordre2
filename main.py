@@ -507,7 +507,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_customers = GetCustomersHttpDialog(customers=self.customers,
                                                   employees=self.employees,
                                                   settings=self.settings)
-        import_customers.c.finished.connect(self.sig_get_customers_http_done)
+        import_customers.comm.finished.connect(self.sig_get_customers_http_done)
         import_customers.exec_()
 
     def sig_get_customers_http_done(self):
@@ -526,7 +526,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         import_product = GetProductsHttpDialog(products=self.products,
                                                settings=self.settings)
-        import_product.c.finished.connect(self.sig_get_product_http_done)
+        import_product.comm.finished.connect(self.sig_get_product_http_done)
         import_product.exec_()
 
     def sig_get_product_http_done(self):
