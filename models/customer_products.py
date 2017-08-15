@@ -12,10 +12,12 @@ from models.visit import Visit
 B_COLOR = "\033[0;33m"
 E_COLOR = "\033[0;m"
 DBG = True
+
 __module__ = "customer_product"
 
 
 def printit(string):
+    """Print a variable string for debug purposes"""
     print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
@@ -48,6 +50,10 @@ class CustomerProduct:
 
     @property
     def cp_list(self):
+        """
+        Customer products
+        :return:
+        """
         return self._products
 
     @cp_list.setter

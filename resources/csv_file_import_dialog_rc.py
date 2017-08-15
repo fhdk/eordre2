@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_csvFileImportDialog(object):
     def setupUi(self, csvFileImportDialog):
         csvFileImportDialog.setObjectName("csvFileImportDialog")
@@ -41,7 +42,7 @@ class Ui_csvFileImportDialog(object):
         self.txtSelectedFile = QtWidgets.QLineEdit(csvFileImportDialog)
         self.txtSelectedFile.setEnabled(True)
         self.txtSelectedFile.setGeometry(QtCore.QRect(10, 50, 341, 41))
-        self.txtSelectedFile.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.txtSelectedFile.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.txtSelectedFile.setObjectName("txtSelectedFile")
         self.checkHeaders = QtWidgets.QCheckBox(csvFileImportDialog)
         self.checkHeaders.setGeometry(QtCore.QRect(370, 100, 220, 24))
@@ -65,4 +66,3 @@ class Ui_csvFileImportDialog(object):
         self.label.setText(_translate("csvFileImportDialog", "Import"))
         self.buttonClose.setText(_translate("csvFileImportDialog", "Luk"))
         self.checkHeaders.setText(_translate("csvFileImportDialog", "Første linje er feltnavne"))
-

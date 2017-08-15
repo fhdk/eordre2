@@ -16,23 +16,23 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScreen, QTreeWidgetItem
 
 # import resources.splash_rc
-from configuration import configfn, config
-from dialogs.visit_dialog import VisitDialog
-from dialogs.report_dialog_create import ReportDialogCreate
+from configuration import config, configfn
 from dialogs.csv_file_import_dialog import CsvFileImportDialog
 from dialogs.get_customers_http_dialog import GetCustomersHttpDialog
 from dialogs.get_products_http_dialog import GetProductsHttpDialog
+from dialogs.report_dialog_create import ReportDialogCreate
 from dialogs.settings_dialog import SettingsDialog
+from dialogs.visit_dialog import VisitDialog
 from models.contact import Contact
 from models.customer import Customer
-from models.employee import Employee
-from models.visit import Visit
 from models.detail import Detail
+from models.employee import Employee
 from models.product import Product
 from models.report import Report
 from models.settings import Settings
+from models.visit import Visit
 from resources.main_window_rc import Ui_mainWindow
-from util import httpfn, utils
+from util import utils
 from util.rules import check_settings
 
 __appname__ = "Eordre NG"
@@ -40,13 +40,18 @@ __module__ = "main"
 
 BC = "\033[1;36m"
 EC = "\033[0;1m"
+DBG = True
 
 
 def printit(string):
+    """
+    Print variable string when debugging
+    Args:
+        string: the string to be printed
+    """
     print("{}\n{}{}{}".format(__module__, BC, string, EC))
 
 
-# noinspection PyMethodMayBeStatic
 class MainWindow(QMainWindow, Ui_mainWindow):
     """
     Main Application Window
@@ -115,7 +120,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         pass
 
-    def sig_exit(self):
+    @staticmethod
+    def sig_exit():
         """
         Slot for sig_exit triggered signal
         """
@@ -161,9 +167,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 item = QTreeWidgetItem([c["name"], c["department"], c["phone"], c["email"]])
                 items.append(item)
         except IndexError as i:
-            printit(" ->populate_contact_list\n ->IndexError: {}".format(i))
+            if DBG:
+                printit(" ->populate_contact_list\n ->IndexError: {}".format(i))
         except KeyError as k:
-            printit(" ->populate_contact_list\n ->KeyError: {}".format(k))
+            if DBG:
+                printit(" ->populate_contact_list\n ->KeyError: {}".format(k))
 
         self.widgetContactList.addTopLevelItems(items)
 
@@ -184,9 +192,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                         visit["prod_demo"], visit["prod_sale"]])
                 items.append(item)
         except IndexError as i:
-            printit(" ->populate_visit_list\n ->IndexError: {}".format(i))
+            if DBG:
+                printit(" ->populate_visit_list\n ->IndexError: {}".format(i))
         except KeyError as k:
-            printit(" ->populate_visit_list\n ->KeyError: {}".format(k))
+            if DBG:
+                printit(" ->populate_visit_list\n ->KeyError: {}".format(k))
         self.widgetVisitList.addTopLevelItems(items)
 
     def populate_details_list(self):
@@ -219,9 +229,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                         str(detail["price"]), str(detail["discount"]), detail["extra"]])
                 items.append(item)
         except KeyError as k:
-            printit(" ->populate_details_list\n  ->KeyError: {}".format(k))
+            if DBG:
+                printit(" ->populate_details_list\n  ->KeyError: {}".format(k))
         except IndexError as i:
-            printit(" ->populate_details_list\n  ->IndexError: {}".format(i))
+            if DBG:
+                printit(" ->populate_details_list\n  ->IndexError: {}".format(i))
         self.widgetVisitDetails.addTopLevelItems(items)
 
     def resizeEvent(self, event):
@@ -242,15 +254,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         if is_set:
             try:
                 _ = self.employees.active["fullname"]
+
             except KeyError:
-                if httpfn.inet_conn_check():
-                    pass
-                else:
-                    msgbox = QMessageBox()
-                    msgbox.about(self, __appname__, "Check din netværksforbindelse! Tak")
+                msgbox = QMessageBox()
+                msgbox.about(self.mainGrid, __appname__, "Check din netværksforbindelse! Tak")
         else:
             msgbox = QMessageBox()
-            msgbox.about(self, __appname__, "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
+            msgbox.about(self.mainGrid, __appname__,
+                         "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
             self.sig_settings_dialog()
         # load report for workdate if exist
         self.reports.load_report(self.txtWorkdate.text())
@@ -264,7 +275,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             self.settings.update()
         # update display
         self.display_sync_status()
-        self.widgetVisitList.setColumnWidth(0, 0)
+        # Hide the id column
+        self.widgetVisitList.setColumnHidden(0, True)
+
         self.widgetVisitDetails.setColumnWidth(0, 30)
         self.widgetVisitDetails.setColumnWidth(1, 30)
         self.widgetVisitDetails.setColumnWidth(2, 100)
@@ -427,10 +440,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             self.txtFactor.setText(str(self.customers.active["factor"]))
             self.txtCustomerInfoText.setText(self.customers.active["infotext"])
         except AttributeError as a:
-            if config.DEBUG_MAIN:
+            if DBG:
                 printit(" ->current_customer_changed\n ->AttributeError: {}".format(a))
         except KeyError as k:
-            if config.DEBUG_MAIN:
+            if DBG:
                 printit(" ->current_customer_changed\n ->KeyError: {}".format(k))
         # load customer infos
         self.populate_contact_list()
@@ -440,14 +453,20 @@ class MainWindow(QMainWindow, Ui_mainWindow):
     def sig_current_visit_changed(self, current, previous):
         """
         Response to current visit changed
+        Args:
+            current:
+            previous:
         """
         try:
-            printit(" ->active_visit_changed\n ->visit_id: {}".format(current.text(0)))
+            if DBG:
+                printit(" ->active_visit_changed\n ->visit_id: {}".format(current.text(0)))
             self.visits.active = current.text(0)
         except AttributeError as a:
-            printit(" ->active_visit_changed\n ->AttributeError: {}".format(a))
+            if DBG:
+                printit(" ->active_visit_changed\n ->AttributeError: {}".format(a))
         except KeyError as k:
-            printit(" ->active_visit_changed\n ->KeyError: {}".format(k))
+            if DBG:
+                printit(" ->active_visit_changed\n ->KeyError: {}".format(k))
         self.populate_details_list()
 
     def sig_csv_file_import_dialog(self):

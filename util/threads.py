@@ -8,7 +8,7 @@
 Threads module
 """
 
-from PyQt5.QtCore import QThread, pyqtSignal, QObject
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 
 from util import httpfn
 
@@ -26,6 +26,7 @@ class ImportCustomersThread(QThread):
     """
     Thread for importing current through http
     """
+
     def __init__(self, customers, employees, settings, parent=None):
         """
         Initialize thread
@@ -62,6 +63,7 @@ class ImportProductsThread(QThread):
     """
     Thread for importing product through http
     """
+
     def __init__(self, products, settings, parent=None):
         """
         Initialize the thread

@@ -8,18 +8,19 @@
 Employee Module
 """
 
-from configuration import config
 from models.query import Query
 from models.settings import Settings
 from util import httpfn, rules
 
 B_COLOR = "\033[0;34m"
 E_COLOR = "\033[0;m"
+DBG = False
 
 __module__ = "employee"
 
 
 def printit(string):
+    """Print a variable string for debug purposes"""
     print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
@@ -43,12 +44,13 @@ class Employee:
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
-            if config.DEBUG_EMPLOYEE:
+            if DBG:
                 printit(" ->init_detail table\n"
                         "  ->success: {}\n"
                         "  ->data: {}".format(success, data))
         self.s = Settings()
-        self.load(self.s.active["usermail"])
+        if rules.check_settings(self.s.active):
+            self.load(self.s.active["usermail"])
 
     @property
     def active(self):
@@ -65,14 +67,14 @@ class Employee:
         """
         sql = self.q.build("insert", self.model)
 
-        if config.DEBUG_EMPLOYEE:
+        if DBG:
             printit(" ->insert\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
-        if config.DEBUG_EMPLOYEE:
+        if DBG:
             printit("  ->success: {}\n"
                     "  -->data: {}".format(success, data))
 
@@ -84,14 +86,14 @@ class Employee:
         values = (email,)
         sql = self.q.build("select", self.model, filters=filters)
 
-        if config.DEBUG_EMPLOYEE:
+        if DBG:
             printit(" ->all\n"
                     "  ->sql: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}".format(sql, filters, values))
 
         success, data = self.q.execute(sql, values)
-        if config.DEBUG_EMPLOYEE:
+        if DBG:
             printit("  ->first check\n"
                     "  ->success: {}\n"
                     "  ->data: {}".format(success, data))
@@ -100,22 +102,26 @@ class Employee:
             _ = data[0]
             self._employee = dict(zip(self.model["fields"], data[0]))
         except IndexError:
-            self.load_from_http()
+            if httpfn.inet_conn_check():
+                self.load_from_http()
 
-            success, data = self.q.execute(sql, values)
-            if config.DEBUG_EMPLOYEE:
-                printit("  ->second check\n"
-                        "  ->success: {}\n"
-                        "  ->data: {}".format(success, data))
-            try:
-                _ = data[0]
-                self._employee = dict(zip(self.model["fields"], data[0]))
-            except IndexError:
-                pass
+                success, data = self.q.execute(sql, values)
+                if DBG:
+                    printit("  ->second check\n"
+                            "  ->success: {}\n"
+                            "  ->data: {}".format(success, data))
+                try:
+                    _ = data[0]
+                    self._employee = dict(zip(self.model["fields"], data[0]))
+                except IndexError:
+                    self._employee = {}
 
     def load_from_http(self):
+        """
+        Load employee from http
+        """
         data = httpfn.get_employee_data(self.s)
-        if config.DEBUG_EMPLOYEE:
+        if DBG:
             printit("  ->load_from_http\n"
                     "  ->data: {}".format(data))
         if data:
@@ -133,7 +139,7 @@ class Employee:
 
         sql = self.q.build("update", self.model, update=fields, filters=filters)
 
-        if config.DEBUG_EMPLOYEE:
+        if DBG:
             printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
@@ -142,6 +148,6 @@ class Employee:
 
         success, data = self.q.execute(sql, values=values)
 
-        if config.DEBUG_EMPLOYEE:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))

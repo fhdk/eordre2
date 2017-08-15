@@ -23,6 +23,7 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
     """
     Dialog for importing products from server
     """
+
     def __init__(self, products, settings, parent=None):
         """
         Initialize Dialog

@@ -6,25 +6,25 @@
 
 """Report class"""
 
-__module__ = "report"
-
 import csv
 from datetime import datetime
 
-from configuration import config
-from models.query import Query
 from models.calculator import Calculator
+from models.query import Query
 from util import utils
 
 B_COLOR = "\033[0;37m"
 E_COLOR = "\033[0;m"
+DBG = True
+
+__module__ = "report"
 
 
 def printit(string):
+    """Print a variable string for debug purposes"""
     print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
-# noinspection PyMethodMayBeStatic
 class Report:
     """
     Report
@@ -60,7 +60,7 @@ class Report:
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
-            if config.DEBUG_REPORT:
+            if DBG:
                 printit(" ->init_detail table\n"
                         "  ->success: {}\n"
                         "  ->data: {}".format(success, data))
@@ -164,8 +164,7 @@ class Report:
 
         sql = self.q.build("select", self.model, aggregates=aggregates, filters=filters)
 
-
-        if config.DEBUG_REPORT:
+        if DBG:
             printit(" ->init_detail\n"
                     "  ->aggregates: {}\n"
                     "  ->sql: {}\n"
@@ -173,7 +172,7 @@ class Report:
 
         success, data = self.q.execute(sql, values)
 
-        if config.DEBUG_REPORT:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
 
@@ -202,7 +201,7 @@ class Report:
             current_month_totals[1] = report_id
             # revert to tuple
             current_month_totals = tuple(current_month_totals)
-            if config.DEBUG_REPORT:
+            if DBG:
                 printit("  ->month: {}".format(current_month_totals))
             # insert the values in the calculation table
             self.c.insert(current_month_totals)
@@ -216,14 +215,14 @@ class Report:
         """
         sql = self.q.build("insert", self.model)
 
-        if config.DEBUG_REPORT:
+        if DBG:
             printit(" ->insert\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
-        if config.DEBUG_REPORT:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
 
@@ -246,7 +245,7 @@ class Report:
             line = 0
             for row in reader:
 
-                if config.DEBUG_REPORT:
+                if DBG:
                     printit(" ->import_csv\n"
                             "  ->row: {}".format(row))
 
@@ -265,7 +264,7 @@ class Report:
                           row[13], row[14], row[15], row[16], row[17].strip(), row[18].strip(),
                           row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24])
 
-                if config.DEBUG_REPORT:
+                if DBG:
                     printit("  ->values: {}".format(values))
                 self.insert(values)
             return True
@@ -282,14 +281,14 @@ class Report:
 
         sql = self.q.build("select", self.model, filters=filters)
 
-        if config.DEBUG_REPORT:
+        if DBG:
             printit(" ->load_report\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
-        if config.DEBUG_REPORT:
+        if DBG:
             printit("  ->success: {}\n  ->data: {}".format(success, data))
 
         if success:
@@ -318,14 +317,14 @@ class Report:
         values = (value,)
         sql = self.q.build("select", self.model, filters=filters)
 
-        if config.DEBUG_REPORT:
+        if DBG:
             printit(" ->load_reports\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
-        if config.DEBUG_REPORT:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
 
@@ -359,12 +358,12 @@ class Report:
         # update_where = [(self.model["id"], "=")]
         # self.q.values_to_arg(self._report.values())
 
-        # if config.DEBUG_REPORT:
+        # if DBG:
         #     printit(
         #         "{}\n ->update\n  ->sql: {}\n  ->values: {}".format(
         #             sql, values))
 
-        # if config.DEBUG_REPORT:
+        # if DBG:
         #     printit(
         #         "{}\n ->update\n  ->success: {}\n  ->data: {}".format(
         #             success, data))

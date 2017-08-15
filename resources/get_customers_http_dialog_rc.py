@@ -6,7 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
+
 
 class Ui_getCustomersHttpDialog(object):
     def setupUi(self, getCustomersHttpDialog):
@@ -34,4 +35,3 @@ class Ui_getCustomersHttpDialog(object):
         getCustomersHttpDialog.setWindowTitle(_translate("getCustomersHttpDialog", "Kunde import fra server"))
         self.buttonStart.setText(_translate("getCustomersHttpDialog", "Start"))
         self.buttonClose.setText(_translate("getCustomersHttpDialog", "Luk"))
-

@@ -8,19 +8,21 @@
 Visit details module
 """
 
-from configuration import config
 import csv
 
+from configuration import config
 from models.query import Query
 from util import utils
 
-__module__ = "detail"
-
 B_COLOR = "\033[1;30m"
 E_COLOR = "\033[0;m"
+DBG = False
+
+__module__ = "detail"
 
 
 def printit(string):
+    """Print a variable string for debug purposes"""
     print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
@@ -286,7 +288,7 @@ class Detail:
         if sql.startswith("ERROR"):
             printit("{}".format(sql))
             return False
-        if config.DEBUG_SALELINE:
+        if DBG:
             printit(" ->all\n"
                     "  ->sql: {}\n"
                     "  ->fields: {}\n"

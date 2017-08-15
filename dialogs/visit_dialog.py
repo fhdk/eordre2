@@ -10,7 +10,6 @@ Visit Dialog Module
 from PyQt5.QtWidgets import QDialog, QTableWidgetItem
 
 from models.detail import Detail
-
 from resources.visit_dialog_rc import Ui_visitDialog
 
 

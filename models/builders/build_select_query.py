@@ -75,25 +75,29 @@ def build_select_query(model, selection=None, aggregates=None, filters=None, ord
     # all aggregated values where
     if sql_aggregates and sql_wheres:
         if result_orderby_field:
-            result = "SELECT {} FROM {} WHERE {} ORDER BY {} {}}".format(sql_aggregates, name, sql_wheres, result_orderby_field, result_order_direction)
+            result = "SELECT {} FROM {} WHERE {} ORDER BY {} {}}".format(sql_aggregates, name, sql_wheres,
+                                                                         result_orderby_field, result_order_direction)
         else:
             result = "SELECT {} FROM {} WHERE {};".format(sql_aggregates, name, sql_wheres)
     # all aggregated values
     elif sql_aggregates and not sql_wheres:
         if result_orderby_field:
-            result = "SELECT {} FROM {} ORDER BY {} {}".format(sql_aggregates, name, result_orderby_field, result_order_direction)
+            result = "SELECT {} FROM {} ORDER BY {} {}".format(sql_aggregates, name, result_orderby_field,
+                                                               result_order_direction)
         else:
             result = "SELECT {} FROM {};".format(sql_aggregates, name)
     # all everything where
     elif sql_wheres and not sql_aggregates:
         if result_orderby_field:
-            result = "SELECT {} FROM {} WHERE {} ORDER BY {} {}".format(sql_filters, name, sql_wheres, result_orderby_field, result_order_direction)
+            result = "SELECT {} FROM {} WHERE {} ORDER BY {} {}".format(sql_filters, name, sql_wheres,
+                                                                        result_orderby_field, result_order_direction)
         else:
             result = "SELECT {} FROM {} WHERE {};".format(sql_filters, name, sql_wheres)
     # all everything
     else:
         if result_orderby_field:
-            result = "SELECT {} FROM {} ORDER BY {} {}".format(sql_filters, name, result_orderby_field, result_order_direction)
+            result = "SELECT {} FROM {} ORDER BY {} {}".format(sql_filters, name, result_orderby_field,
+                                                               result_order_direction)
         else:
             result = "SELECT {} FROM {};".format(sql_filters, name)
     return result.replace("  ", " ")

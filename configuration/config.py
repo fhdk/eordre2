@@ -20,7 +20,6 @@ DEBUG_SETTINGS = False
 DEBUG_VISIT = False
 DEBUG_QUERY = False
 
-
 CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
 COUNTRIES = [("dk", "Danmark"), ("no", "Norge"), ("s", "Sverige")]
 HOME = os.path.expanduser("~")

@@ -8,16 +8,17 @@
 settings module
 """
 
-from configuration import config
 from models.query import Query
 
 B_COLOR = "\033[1;34m"
 E_COLOR = "\033[0;1m"
+DBG = False
 
 __module__ = "settings"
 
 
 def printit(string):
+    """Print a variable string for debug purposes"""
     print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
@@ -45,7 +46,7 @@ class Settings:
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
-            if config.DEBUG_SETTINGS:
+            if DBG:
                 printit(" ->table\n"
                         "  ->success: {}\n"
                         "  ->data: {}".format(success, data))
@@ -86,14 +87,14 @@ class Settings:
 
         sql = self.q.build("insert", self.model)
 
-        if config.DEBUG_SETTINGS:
+        if DBG:
             printit(" ->insert\n"
                     "  ->sql: {}\n"
                     "  ->values: {}".format(sql, values))
 
         success, data = self.q.execute(sql, values=values)
 
-        if config.DEBUG_SETTINGS:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
 
@@ -106,7 +107,7 @@ class Settings:
         """
         sql = self.q.build("select", self.model)
 
-        if config.DEBUG_SETTINGS:
+        if DBG:
             printit(" ->all\n"
                     "  ->sql: {}".format(sql))
 
@@ -123,7 +124,7 @@ class Settings:
         if success and data:
             self._settings = dict(zip(self.model["fields"], data[0]))
 
-        if config.DEBUG_SETTINGS:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
 
@@ -142,7 +143,7 @@ class Settings:
 
         sql = self.q.build("update", self.model, update=fields, filters=filters)
 
-        if config.DEBUG_SETTINGS:
+        if DBG:
             printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
@@ -151,7 +152,7 @@ class Settings:
 
         success, data = self.q.execute(sql, values=values)
 
-        if config.DEBUG_SETTINGS:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
 

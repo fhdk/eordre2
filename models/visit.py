@@ -10,21 +10,21 @@ Visit module
 
 import csv
 
-from configuration import config
 from models.query import Query
 from util import utils
 
 B_COLOR = "\033[1;36m"
 E_COLOR = "\033[0;1m"
+DBG = False
 
 __module__ = "visit"
 
 
 def printit(string):
+    """Print a variable string for debug purposes"""
     print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
-# noinspection PyMethodMayBeStatic
 class Visit:
     """
     Visit class
@@ -55,7 +55,7 @@ class Visit:
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
             success, data = self.q.execute(sql)
-            if config.DEBUG_VISIT:
+            if DBG:
                 printit(" ->table\n"
                         "  ->success: {}\n"
                         "  ->data: {}".format(success, data))
@@ -158,13 +158,13 @@ class Visit:
         filters = [(self.model["id"], "=")]
         values = (visit_id,)
         sql = self.q.build("select", self.model, filters=filters)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit(" ->find\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit("  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
@@ -211,12 +211,12 @@ class Visit:
             values:
         """
         sql = self.q.build("insert", self.model)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit(" ->insert\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(values, sql))
         success, data = self.q.execute(sql, values=values)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit("  ->success: {}\n "
                     "  ->data: {}".format(success, data))
         if success and data:
@@ -232,13 +232,13 @@ class Visit:
         filters = [("customer_id", "=")]
         values = (customer_id,)
         sql = self.q.build("select", self.model, filters=filters)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit(" ->load_for_customer\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
         if success:
@@ -258,13 +258,13 @@ class Visit:
         filters = [("report_id", "=")]
         values = (report_id,)
         sql = self.q.build("select", self.model, filters=filters)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit(" ->load_for_report\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
         if success:
@@ -293,14 +293,14 @@ class Visit:
         filters = [(self.model["id"], "=")]
         values = self.q.values_to_arg(self._visit.values())
         sql = self.q.build("update", self.model, update=fields, filters=filters)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit(" ->update\n"
                     "  ->fields: {}\n"
                     "  ->filters: {}\n"
                     "  ->values: {}\n"
                     "  ->sql: {}".format(fields, filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if config.DEBUG_VISIT:
+        if DBG:
             printit("  ->success: {}\n"
                     "  ->data: {}".format(success, data))
         if success and data:

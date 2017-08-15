@@ -22,6 +22,7 @@ class Communicate(QObject):
 class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
     """
     """
+
     def __init__(self, customers, employees, settings, parent=None):
         """
         Initialize Dialog

@@ -8,7 +8,7 @@
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from resources.settings_dialog_rc import Ui_settingsDialog
-from util import utils, passwdfn
+from util import passwdfn, utils
 
 
 class SettingsDialog(QDialog, Ui_settingsDialog):

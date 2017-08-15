@@ -5,7 +5,6 @@
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
 import os
-import sys
 
 icons = "/icons/"
 icon_res_path = os.getenv("PWD")

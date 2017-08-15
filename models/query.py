@@ -9,20 +9,22 @@
 import sqlite3
 
 from configuration import config
+from models.builders.build_create_query import build_create_query
 from models.builders.build_delete_query import build_delete_query
+from models.builders.build_drop_query import build_drop_query
 from models.builders.build_insert_query import build_insert_query
 from models.builders.build_select_query import build_select_query
 from models.builders.build_update_query import build_update_query
-from models.builders.build_create_query import build_create_query
-from models.builders.build_drop_query import build_drop_query
 
 B_COLOR = "\033[0;36m"
 E_COLOR = "\033[0;m"
+DBG = False
 
 __module__ = "query"
 
 
 def printit(string):
+    """Print a variable string for debug purposes"""
     print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
@@ -138,7 +140,8 @@ class Query:
             printit("  ->result: {}\r".format(result))
         return True, result
 
-    def values_to_arg(self, values):
+    @staticmethod
+    def values_to_arg(values):
         """
         Moves the id field from first to last element
         Args:
