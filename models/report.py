@@ -87,6 +87,11 @@ class Report:
             self.load_report(workdate=workdate)
 
     @property
+    def csv_field_count(self):
+        """The number of fields expected on csv import"""
+        return self._csv_field_count
+
+    @property
     def report_list(self):
         """
         Report List
@@ -230,44 +235,26 @@ class Report:
             return data
         return False
 
-    def import_csv(self, filename, employee_id, headers=False):
+    def import_csv(self, row, employee_id):
         """
-        Import reportid from file
+        Translate a csv row
         Args:
-            filename: 
+            row:
             employee_id:
-            headers: 
         """
-        self.recreate_table()
-        filename.encode("utf8")
-        with open(filename) as csvdata:
-            reader = csv.reader(csvdata, delimiter="|")
-            line = 0
-            for row in reader:
+        # translate bool text to integer for col 19, 21
+        field_19 = utils.bool2int(utils.arg2bool(row[19]))
+        field_21 = utils.bool2int(utils.arg2bool(row[21]))
+        # create timestamp
+        local_timestamp = datetime.today()
+        values = (row[0], employee_id, row[1], row[2].strip(), local_timestamp, row[3],
+                  row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
+                  row[13], row[14], row[15], row[16], row[17].strip(), row[18].strip(),
+                  field_19, row[20].strip(), field_21, row[22], row[23].strip(), row[24])
 
-                if DBG:
-                    printit(" ->import_csv\n"
-                            "  ->row: {}".format(row))
-
-                if not len(row) == self._csv_field_count:
-                    return False
-                line += 1
-                if headers and line == 1:
-                    continue
-                # translate bool text to integer for col 19, 21
-                row[19] = utils.bool2int(utils.arg2bool(row[19]))
-                row[21] = utils.bool2int(utils.arg2bool(row[21]))
-                # init_detail a timestamp
-                local_timestamp = datetime.today()
-                values = (row[0], employee_id, row[1], row[2].strip(), local_timestamp, row[3],
-                          row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12],
-                          row[13], row[14], row[15], row[16], row[17].strip(), row[18].strip(),
-                          row[19], row[20].strip(), row[21], row[22], row[23].strip(), row[24])
-
-                if DBG:
-                    printit("  ->values: {}".format(values))
-                self.insert(values)
-            return True
+        if DBG:
+            printit("  ->values: {}".format(values))
+        self.insert(values)
 
     def load_report(self, workdate):
         """

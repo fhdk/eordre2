@@ -12,7 +12,7 @@ from models.query import Query
 
 B_COLOR = "\033[0;32m"
 E_COLOR = "\033[0;m"
-DBG = False
+DBG = True
 
 __module__ = "contact"
 
@@ -70,6 +70,11 @@ class Contact:
     @contact_list.setter
     def contact_list(self, customer_id):
         self.load_for_customer(customer_id=customer_id)
+
+    @property
+    def csv_field_count(self):
+        """The number of fields expected on csv import"""
+        return self._csv_field_count
 
     def clear(self):
         """
@@ -145,35 +150,16 @@ class Contact:
             return True
         return False
 
-    def import_csv(self, filename, headers=False):
+    def import_csv(self, row):
         """
-        Import contact from file
+        Translate a csv row
         Args:
-            filename:
-            headers:
-        Returns:
-            bool
+            row:
         """
-        self.recreate_table()
-        filename.encode("utf8")
-        with open(filename) as csvdata:
-            reader = csv.reader(csvdata, delimiter="|")
-            line = 0
-            for row in reader:
-                if DBG:
-                    printit(" ->import_csv\n"
-                            "  ->row: {}".format(row))
-                if not len(row) == self._csv_field_count:
-                    return False
-                line += 1
-                if headers and line == 1:
-                    continue
-                values = (row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
-                          row[7].strip())
-                if DBG:
-                    printit("  ->values: {}".format(values))
-                self.insert(values)
-            return True
+        new_row = (row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip())
+        if DBG:
+            printit("  ->values: {}".format(new_row))
+        self.insert(new_row)
 
     def insert(self, values):
         """

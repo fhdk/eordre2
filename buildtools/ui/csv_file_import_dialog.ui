@@ -87,22 +87,6 @@
     <string>Luk</string>
    </property>
   </widget>
-  <widget class="QListWidget" name="listImported">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>9</x>
-     <y>130</y>
-     <width>341</width>
-     <height>140</height>
-    </rect>
-   </property>
-   <property name="selectionMode">
-    <enum>QAbstractItemView::MultiSelection</enum>
-   </property>
-  </widget>
   <widget class="QLineEdit" name="txtSelectedFile">
    <property name="enabled">
     <bool>true</bool>
@@ -117,6 +101,9 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+   <property name="readOnly">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkHeaders">
@@ -154,6 +141,16 @@
     <string/>
    </property>
   </widget>
+  <widget class="QTextBrowser" name="log">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>340</width>
+     <height>140</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>comboImport</tabstop>
@@ -162,7 +159,6 @@
   <tabstop>buttonImport</tabstop>
   <tabstop>buttonClose</tabstop>
   <tabstop>txtSelectedFile</tabstop>
-  <tabstop>listImported</tabstop>
  </tabstops>
  <resources/>
  <connections/>

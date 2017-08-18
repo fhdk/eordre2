@@ -33,15 +33,11 @@ class Ui_csvFileImportDialog(object):
         self.buttonClose = QtWidgets.QPushButton(csvFileImportDialog)
         self.buttonClose.setGeometry(QtCore.QRect(370, 230, 230, 40))
         self.buttonClose.setObjectName("buttonClose")
-        self.listImported = QtWidgets.QListWidget(csvFileImportDialog)
-        self.listImported.setEnabled(True)
-        self.listImported.setGeometry(QtCore.QRect(9, 130, 341, 140))
-        self.listImported.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        self.listImported.setObjectName("listImported")
         self.txtSelectedFile = QtWidgets.QLineEdit(csvFileImportDialog)
         self.txtSelectedFile.setEnabled(True)
         self.txtSelectedFile.setGeometry(QtCore.QRect(10, 50, 341, 41))
         self.txtSelectedFile.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.txtSelectedFile.setReadOnly(False)
         self.txtSelectedFile.setObjectName("txtSelectedFile")
         self.checkHeaders = QtWidgets.QCheckBox(csvFileImportDialog)
         self.checkHeaders.setGeometry(QtCore.QRect(370, 100, 220, 24))
@@ -53,6 +49,9 @@ class Ui_csvFileImportDialog(object):
         self.progressBar.setProperty("value", 0)
         self.progressBar.setFormat("")
         self.progressBar.setObjectName("progressBar")
+        self.log = QtWidgets.QTextBrowser(csvFileImportDialog)
+        self.log.setGeometry(QtCore.QRect(10, 130, 340, 140))
+        self.log.setObjectName("log")
 
         self.retranslateUi(csvFileImportDialog)
         QtCore.QMetaObject.connectSlotsByName(csvFileImportDialog)
@@ -61,7 +60,6 @@ class Ui_csvFileImportDialog(object):
         csvFileImportDialog.setTabOrder(self.checkHeaders, self.buttonImport)
         csvFileImportDialog.setTabOrder(self.buttonImport, self.buttonClose)
         csvFileImportDialog.setTabOrder(self.buttonClose, self.txtSelectedFile)
-        csvFileImportDialog.setTabOrder(self.txtSelectedFile, self.listImported)
 
     def retranslateUi(self, csvFileImportDialog):
         _translate = QtCore.QCoreApplication.translate

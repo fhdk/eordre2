@@ -79,6 +79,11 @@ class Visit:
         self.find(visit_id)
 
     @property
+    def csv_field_count(self):
+        """The number of fields expected on csv import"""
+        return self._csv_field_count
+
+    @property
     def visit_list_customer(self):
         """
         The list of visits for a customer
@@ -176,33 +181,20 @@ class Visit:
                 self._visit = {}
         return False
 
-    def import_csv(self, filename, headers=False):
+    def import_csv(self, row):
         """
-        Import orders from file
+        Translate a csv row
         Args:
-            filename:
-            headers:
+            row:
         """
-        self.recreate_table()
-        filename.encode("utf8")
-        with open(filename) as csvdata:
-            reader = csv.reader(csvdata, delimiter="|")
-            line = 0
-            for row in reader:
-                if not len(row) == self._csv_field_count:
-                    return False
-                line += 1
-                if headers and line == 1:
-                    continue
-                # translate bool text to integer col 5
-                row[5] = utils.bool2int(utils.arg2bool(row[5]))
-                values = (row[0], row[1], row[2], row[3], row[4].strip(),
-                          row[5], row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
-                          row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
-                          row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
-                          row[20], row[21])
-                self.insert(values)  # call insert function
-            return True
+        # translate bool text to integer col 5
+        field_5 = utils.bool2int(utils.arg2bool(row[5]))
+        new_row = (row[0], row[1], row[2], row[3], row[4].strip(),
+                   field_5, row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
+                   row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
+                   row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
+                   row[20], row[21])
+        self.insert(new_row)  # call insert function
 
     def insert(self, values):
         """

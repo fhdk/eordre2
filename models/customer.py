@@ -120,19 +120,19 @@ class Customer:
 
     def import_csv(self, row):
         """
-        Import customers from csv file
+        Translate a csv row
         Args:
             row:
                 The expected file format contains data in the following sequence
                 id acc comp add1 add2 zipcode city country s_rep phon1 vat email del mod cre info
         """
         # translate field from bool text to integer
-        row[15] = utils.bool2int(utils.arg2bool(row[15]))
+        field_15 = utils.bool2int(utils.arg2bool(row[15]))
         # strip trailing spaces from from text fields
         new_row = (row[0],
                    row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(),
                    row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(), row[10].strip(),
-                   row[12].strip(), row[15], row[16], row[17],
+                   row[12].strip(), field_15, row[16], row[17],
                    row[19].strip(), "", "", 0.0, 0, 0, 0, 0)
         self.insert(new_row)
 
