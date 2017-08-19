@@ -399,15 +399,15 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         try:
             if DBG:
-                printit(" ->active_visit_changed\n ->visit_id: {}".format(current.text(0)))
+                printit("  ->active_visit_changed\n ->visit_id: {}".format(current.text(0)))
             self.visits.active = current.text(0)
         except AttributeError as a:
             if DBG:
-                printit(" ->active_visit_changed\n ->AttributeError: {}".format(a))
+                printit("  ->active_visit_changed\n ->AttributeError: {}".format(a))
         except KeyError as k:
             if DBG:
-                printit(" ->active_visit_changed\n ->KeyError: {}".format(k))
-        self.populate_details_list()
+                printit("  ->active_visit_changed\n ->KeyError: {}".format(k))
+        self.populate_visit_details_list()
 
     @pyqtSlot()
     def data_export(self):

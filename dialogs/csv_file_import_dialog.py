@@ -119,7 +119,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->contacts\n ->exception: {}".format(t))
+                        printit(" ->contacts\n ->exception handled: {}".format(t))
 
             # import selected file to customer table
             if self.selectedTable == "customer":
@@ -139,7 +139,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->customers\n ->exception: {}".format(t))
+                        printit(" ->customers\n ->exception handled: {}".format(t))
 
             # import selected file to visit table
             if self.selectedTable == "visit":
@@ -159,7 +159,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->visits\n ->exception: {}".format(t))
+                        printit(" ->visits\n ->exception handled: {}".format(t))
 
             # import selected file to detail table
             if self.selectedTable == "detail":
@@ -179,7 +179,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->visit_details\n ->exception: {}".format(t))
+                        printit(" ->visit_details\n ->exception handled: {}".format(t))
 
             # import selected file to report table
             if self.selectedTable == "report":
@@ -200,7 +200,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->reports\n ->exception: {}".format(t))
+                        printit(" ->reports\n ->exception handled: {}".format(t))
 
             self.selectedFile = ""
             self.txtSelectedFile.clear()
