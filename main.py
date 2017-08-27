@@ -527,7 +527,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                            __appname__,
                            "<strong>Ved import slettes alle eksisterende data</strong>!<br/><br/>"
                            "Det er alt eller intet af hensyn til datas sammenhæng.<br/>"
-                           "Du  <strong>SKAL</strong> importere <strong>ALLE<strong> tabeller fra i listen!<br/><br/>"
+                           "Du <strong>SKAL</strong> importere <strong>ALLE<strong> tabeller fra listen!<br/><br/>"
                            "<strong>Gør du ikke det giver det uløselige problemer</strong>!",
                            QMessageBox.Ok)
         # app, contact, customer, detail, employee, report, visit, tables
