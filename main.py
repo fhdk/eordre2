@@ -546,7 +546,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                                   customers=self.customers,
                                                   employees=self.employees,
                                                   settings=self.settings)
-        import_customers.sig_done.connect(self.get_customers_http_done)
+        import_customers.sig_done.connect(self.get_customers_done)
         import_customers.exec_()
 
     @pyqtSlot()
@@ -557,7 +557,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_product = GetProductsHttpDialog(app,
                                                products=self.products,
                                                settings=self.settings)
-        import_product.sig_done.connect(self.get_product_http_done)
+        import_product.sig_done.connect(self.get_products_done)
         import_product.exec_()
 
     @pyqtSlot()

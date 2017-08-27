@@ -61,6 +61,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
         self.browseDir = config.HOME  # setup file import dir to home
         self.selectedFile = ""  # initalize selected file
         self.selectedTable = self.comboImport.itemData(0)  # initialize selected table
+
         self.__workers_done = 0
         self.__threads = []
 
@@ -105,7 +106,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
             if self.selectedTable == "contact":
                 worker = Worker(1, self.__app)
                 thread = QThread(self)
-                thread.setObjectName("contacts")
+                thread.setObjectName("contacts_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
                 worker.sig_step.connect(self.on_worker_step)
@@ -125,7 +126,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
             if self.selectedTable == "customer":
                 worker = Worker(2, self.__app)
                 thread = QThread(self)
-                thread.setObjectName("customers")
+                thread.setObjectName("customers_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
                 worker.sig_step.connect(self.on_worker_step)
@@ -145,7 +146,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
             if self.selectedTable == "visit":
                 worker = Worker(3, self.__app)
                 thread = QThread(self)
-                thread.setObjectName("visits")
+                thread.setObjectName("visits_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
                 worker.sig_step.connect(self.on_worker_step)
@@ -165,7 +166,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
             if self.selectedTable == "detail":
                 worker = Worker(4, self.__app)
                 thread = QThread(self)
-                thread.setObjectName("details")
+                thread.setObjectName("details_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
                 worker.sig_step.connect(self.on_worker_step)
@@ -185,7 +186,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
             if self.selectedTable == "report":
                 worker = Worker(5, self.__app)
                 thread = QThread(self)
-                thread.setObjectName("reports")
+                thread.setObjectName("reports_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
                 worker.sig_step.connect(self.on_worker_step)

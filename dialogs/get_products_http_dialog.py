@@ -8,8 +8,18 @@ from PyQt5.QtCore import QThread, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
 from util.worker import Worker
-from util.status_communication import StatusCommunication
 from resources.get_products_http_dialog_rc import Ui_getProductsHttpDialog
+
+B_COLOR = "\033[0;37m"
+E_COLOR = "\033[0;m"
+DBG = True
+
+__module__ = "products_http"
+
+
+def printit(string):
+    """Print a variable string for debug purposes"""
+    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
@@ -28,16 +38,20 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
         super(GetProductsHttpDialog, self).__init__(parent)
         self.setupUi(self)
         self.__app = app
-        self.progresscount = 1  # Used when setting progress values
-        self.counter = 0  # Used when setting progress values
-        self.rowcounter = 0  # Used when updating the status listbox
+        self.products = products
+        self.settings = settings
         # connect signals
         self.buttonStart.clicked.connect(self.button_start_clicked)
         self.buttonClose.clicked.connect(self.button_close_clicked)
 
-    def add_row(self, text):
+        self.__workers_done = 0
+        self.__threads = []
+
+    @pyqtSlot(int, str)
+    def on_status(self, worker_id: int, text: str):
         """Slot for import thread processing signal"""
-        self.log.append(text)
+        status = "{}-{}".format(worker_id, text)
+        self.log.append(status)
 
     @pyqtSlot()
     def button_close_clicked(self):
@@ -47,21 +61,47 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
     @pyqtSlot()
     def button_start_clicked(self):
         """Slot for buttonStart clicked signal"""
-        # self.progress_bar.setValue(0)
-        # # connect to the thread signals
-        # self.thread.comm.processing.connect(self.add_row)
-        # self.thread.comm.finished.connect(self.threaddone)
-        # self.thread.comm.rowcount.connect(self.set_progressbar)
-        # # start the thread
-        # self.thread.start()
-        # # we don't want to double the processes or close before finished
-        # self.buttonStart.setEnabled(False)
-        # self.buttonClose.setEnabled(False)
+        self.progressBar.setRange(0, 0)
+        self.buttonStart.setEnabled(False)
+        self.buttonClose.setEnabled(False)
+        worker = Worker(20, self.__app)
+        thread = QThread(self)
+        thread.setObjectName("products_http")
+        self.__threads.append((thread, worker))
+        worker.moveToThread(thread)
+        worker.sig_step.connect(self.on_worker_step)
+        worker.status.connect(self.on_status)
+        worker.done.connect(self.on_done)
+        worker.sig_done.connect(self.on_worker_done)
+        try:
+            thread.started.connect(worker.import_products_http(self.products, self.settings))
+            thread.start()
+        except TypeError as t:
+            if DBG:
+                printit(" ->products -> http\n ->exception handled: {}".format(t))
 
     @pyqtSlot()
-    def threaddone(self):
+    def on_done(self):
         """Slot for import thread finished signal"""
         self.buttonStart.setEnabled(True)
         self.buttonClose.setEnabled(True)
-        self.progress_bar.setRange(0, 1)
+        self.progressBar.setRange(0, 1)
         self.sig_done.emit()
+
+    @pyqtSlot(int, str)
+    def on_worker_step(self, worker_id: int, data: str):
+        self.log.append('Worker #{}: {}'.format(worker_id, data))
+        self.progress.append('{}: {}'.format(worker_id, data))
+
+    @pyqtSlot(int)
+    def on_worker_done(self, worker_id: int):
+        self.log.append('worker #{} done'.format(worker_id))
+        self.progress.append('-- Worker {} DONE'.format(worker_id))
+        self.__workers_done += 1
+        if self.__workers_done == len(self.__threads):
+            self.progressBar.setRange(0, 1)  # set progressbar normal
+            self.log.append('No more workers active')
+            self.sig_done.emit()
+            # self.button_start_threads.setEnabled(True)
+            # self.button_stop_threads.setDisabled(True)
+            # self.__threads = None

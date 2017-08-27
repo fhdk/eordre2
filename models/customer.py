@@ -147,35 +147,38 @@ class Customer:
         # app use 'zip' 'city' in different columns
         # zip city can contain more than one space
         # eg '2200  København K' or '4430 Kirke Hyllinge'
-        # it is necessary to find the first occurence of space
+        # find the first occurence of space
         # and insert '|' and use it to split zip and city
         loc = values[4].find(" ")
         zipcity = values[4][:loc] + "|" + values[4][loc:]
         zipcity = zipcity.split("|")
         zipcode = zipcity[0].strip()
         city = zipcity[1].strip()
+        phone = values[7].strip()
+        account = values[0].strip()
+        company = values[1].strip()
         # lookup existing current
-        if self.lookup(values[0], values[1]):
+        if self.lookup(values[7], values[1], values[0]):
             # sanitize and assign values
             if self._customer["account"] == 'NY':
-                self._customer["account"] = values[0]
+                self._customer["account"] = account
             if self._customer["modified"] == 1:
                 self._customer["modified"] = 0
-            self._customer["company"] = values[1].strip()
+            self._customer["company"] = company
             self._customer["address1"] = values[2].strip()
             self._customer["address2"] = values[3].strip()
             self._customer["zipcode"] = zipcode  # zipcity[4]
             self._customer["city"] = city  # zipcity[4]
             # skip over country[5] and salesrep[6]
-            self._customer["phone1"] = values[7].strip()
+            self._customer["phone1"] = phone
             self._customer["vat"] = values[8].strip()
             self._customer["email"] = values[9].strip()
             self._customer["att"] = values[10].strip()
             self._customer["phone2"] = values[11].strip()
             self.update()  # call update function
         else:
-            row_values = (None, values[0].strip(), values[1].strip(), values[2], values[3].strip(), zipcode, city,
-                          values[5].strip(), values[6].strip(), values[7].strip(), values[8].strip(),
+            row_values = (None, account, company, values[2], values[3].strip(), zipcode, city,
+                          values[5].strip(), values[6].strip(), phone, values[8].strip(),
                           values[9].strip(), 0, 0, 0, "", values[10].strip(), values[11].strip(), 0.0, 0, 0, 0, 0)
             self.insert(row_values)
 
@@ -263,8 +266,8 @@ class Customer:
             bool
         """
         if account:
-            filters = [("account", "=", "and"), ("company", "=")]
-            values = (account, company)
+            filters = [("account", "=")]
+            values = (account,)
         else:
             filters = [("phone1", "=", "and"), ("company", "=")]
             values = (phone, company)
