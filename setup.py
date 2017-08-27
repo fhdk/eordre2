@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='eordre-app.pyqt',
-    version='0.1.1',
+    version='0.2.1',
     packages=['', 'util', 'models', 'dialogs', 'resources', 'configuration'],
     url='https://github.com/fhdk/eordre-app.pyqt.pyqt',
     license='AGPL',
