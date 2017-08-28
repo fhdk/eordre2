@@ -92,7 +92,6 @@ class VisitDialog(QDialog, Ui_visitDialog):
 
     def button_add_demo_action(self):
         """Slot for Add Demo button clicked"""
-
         pass
 
     def button_add_sale_action(self):
