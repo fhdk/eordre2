@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/graphics/">
-        <file>splash/splash.png</file>
-    </qresource>
+  <qresource prefix="/">
+    <file>splash/splash.png</file>
+  </qresource>
 </RCC>

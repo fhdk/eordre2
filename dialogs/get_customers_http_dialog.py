@@ -64,8 +64,8 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
         thread.setObjectName("customers_http")
         self.__threads.append((thread, worker))
         worker.moveToThread(thread)
-        worker.status.connect(self.on_status)
-        worker.done.connect(self.on_done)
+        worker.sig_status.connect(self.on_status)
+        worker.sig_done.connect(self.on_done)
         try:
             thread.started.connect(worker.import_customers_http(self.customers, self.employees, self.settings))
             thread.start()
@@ -80,9 +80,10 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
         self.buttonClose.setEnabled(True)
         self.progressBar.setRange(0, 1)
         self.sig_done.emit()
+        self.button_close_action()
 
     @pyqtSlot(int, str)
     def on_status(self, worker_id: int, text: str):
         """Slot for import thread processing signal"""
-        status = "{}-{}".format(worker_id, text)
-        self.log.append(status)
+        # status = "{}-{}".format(worker_id, text)
+        self.log.append(text)

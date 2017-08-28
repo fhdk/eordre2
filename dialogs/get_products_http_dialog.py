@@ -41,19 +41,19 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
         self.products = products
         self.settings = settings
         # connect signals
-        self.buttonStart.clicked.connect(self.button_start_clicked)
-        self.buttonClose.clicked.connect(self.button_close_clicked)
+        self.buttonStart.clicked.connect(self.button_start_action)
+        self.buttonClose.clicked.connect(self.button_close_action)
 
         self.__workers_done = 0
         self.__threads = []
 
     @pyqtSlot()
-    def button_close_clicked(self):
+    def button_close_action(self):
         """Slot for buttonClose clicked signal"""
         self.done(True)
 
     @pyqtSlot()
-    def button_start_clicked(self):
+    def button_start_action(self):
         """Slot for buttonStart clicked signal"""
         self.progressBar.setRange(0, 0)
         self.buttonStart.setEnabled(False)
@@ -63,8 +63,8 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
         thread.setObjectName("products_http")
         self.__threads.append((thread, worker))
         worker.moveToThread(thread)
-        worker.status.connect(self.on_status)
-        worker.done.connect(self.on_done)
+        worker.sig_status.connect(self.on_status)
+        worker.sig_done.connect(self.on_done)
         try:
             thread.started.connect(worker.import_products_http(self.products, self.settings))
             thread.start()
@@ -79,9 +79,10 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
         self.buttonClose.setEnabled(True)
         self.progressBar.setRange(0, 1)
         self.sig_done.emit()
+        self.button_close_action()
 
     @pyqtSlot(int, str)
     def on_status(self, worker_id: int, text: str):
         """Slot for import thread processing signal"""
-        status = "{}-{}".format(worker_id, text)
-        self.log.append(status)
+        # status = "{}-{}".format(worker_id, text)
+        self.log.append(text)

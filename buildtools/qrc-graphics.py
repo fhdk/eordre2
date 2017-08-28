@@ -6,7 +6,7 @@
 
 import os
 
-graphics = "/graphics/"
+res_root = "/"
 graphic_res_path = os.getenv("PWD")
 graphic_dirs = ["splash"]
 
@@ -18,7 +18,7 @@ for graphic_dir in graphic_dirs:
         break
     outfile = "{}.qrc".format(graphic_dir)
     with open(outfile, "w") as resfile:
-        resfile.write("<RCC>\n  <qresource prefix=\"{}\">\n".format(graphics))
+        resfile.write("<RCC>\n  <qresource prefix=\"{}\">\n".format(res_root))
         for icon_name in f:
             resfile.write("    <file>{}/{}</file>\n".format(graphic_dir, icon_name))
         resfile.write("  </qresource>\n</RCC>\n")

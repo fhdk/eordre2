@@ -71,9 +71,9 @@ class MyWidget(QWidget):
             worker.moveToThread(thread)
 
             # get progress messages from worker:
-            worker.sig_step.connect(self.on_worker_step)
-            worker.sig_done.connect(self.on_worker_done)
-            worker.sig_msg.connect(self.log.append)
+            worker.sig_step_demo.connect(self.on_worker_step)
+            worker.sig_done_demo.connect(self.on_worker_done)
+            worker.sig_msg_demo.connect(self.log.append)
 
             # control worker:
             self.sig_abort_workers.connect(worker.abort)

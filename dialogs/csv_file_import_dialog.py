@@ -29,7 +29,6 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
     """
     Dialog for importing CSV data
     """
-    sig_abort_workers = pyqtSignal()
     sig_done = pyqtSignal()
 
     def __init__(self, app, contact, customer, detail, employee, report, visit, tables):
@@ -78,13 +77,14 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
 
     def button_close_action(self):
         """Slot for buttonClose clicked signal"""
-        if not self.__workers_done == len(self.__threads):
+        if not self.__workers_done == 5:
             self.sig_done.emit()
         self.done(False)
 
     def button_import_action(self):
-        """Slot for buttonImport clicked signal"""
-
+        """
+        Slot for buttonImport clicked signal
+        """
         self.buttonClose.setEnabled(False)
         headers = True
         if not self.checkHeaders.isChecked():
@@ -111,8 +111,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("contacts_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.status.connect(self.on_status)
-                worker.done.connect(self.on_done)
+                worker.sig_status.connect(self.on_status)
+                worker.sig_done.connect(self.on_done)
                 try:
                     thread.started.connect(worker.import_contacts_csv(self.contacts,
                                                                       self.selectedFile,
@@ -120,7 +120,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->contacts\n ->exception handled: {}".format(t))
+                        printit(" ->contacts\n"
+                                "  ->exception handled: {}".format(t))
 
             # import selected file to customer table
             if self.selectedTable == "customer":
@@ -129,8 +130,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("customers_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.status.connect(self.on_status)
-                worker.done.connect(self.on_done)
+                worker.sig_status.connect(self.on_status)
+                worker.sig_done.connect(self.on_done)
                 try:
                     thread.started.connect(worker.import_customers_csv(self.customers,
                                                                        self.selectedFile,
@@ -138,7 +139,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->customers\n ->exception handled: {}".format(t))
+                        printit(" ->customers\n"
+                                "  ->exception handled: {}".format(t))
 
             # import selected file to visit table
             if self.selectedTable == "visit":
@@ -147,8 +149,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("visits_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.status.connect(self.on_status)
-                worker.done.connect(self.on_done)
+                worker.sig_status.connect(self.on_status)
+                worker.sig_done.connect(self.on_done)
                 try:
                     thread.started.connect(worker.import_visits_csv(self.visits,
                                                                     self.selectedFile,
@@ -156,7 +158,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->visits\n ->exception handled: {}".format(t))
+                        printit(" ->visits\n"
+                                "  ->exception handled: {}".format(t))
 
             # import selected file to detail table
             if self.selectedTable == "detail":
@@ -165,8 +168,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("details_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.status.connect(self.on_status)
-                worker.done.connect(self.on_done)
+                worker.sig_status.connect(self.on_status)
+                worker.sig_done.connect(self.on_done)
                 try:
                     thread.started.connect(worker.import_visit_details_csv(self.details,
                                                                            self.selectedFile,
@@ -174,7 +177,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->visit_details\n ->exception handled: {}".format(t))
+                        printit(" ->visit_details\n"
+                                "  ->exception handled: {}".format(t))
 
             # import selected file to report table
             if self.selectedTable == "report":
@@ -183,8 +187,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("reports_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.status.connect(self.on_status)
-                worker.done.connect(self.on_done)
+                worker.sig_status.connect(self.on_status)
+                worker.sig_done.connect(self.on_done)
                 try:
                     thread.started.connect(worker.import_reports_csv(self.employees.active["employee_id"],
                                                                      self.reports,
@@ -193,7 +197,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                     thread.start()
                 except TypeError as t:
                     if DBG:
-                        printit(" ->reports\n ->exception handled: {}".format(t))
+                        printit(" ->reports\n"
+                                "  ->exception handled: {}".format(t))
 
             self.selectedFile = ""
             self.txtSelectedFile.clear()
@@ -215,8 +220,9 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
         Executes when the import is done
         """
         self.__workers_done += 1
-        if self.__workers_done == len(self.__threads):
+        if self.__workers_done == 5:
             self.sig_done.emit()
+            self.button_close_action()
         self.progressBar.setRange(0, 1)
         self.buttonImport.setEnabled(False)  # disable the button till next file is selected
         self.buttonBrowse.setEnabled(True)  # enable browse button

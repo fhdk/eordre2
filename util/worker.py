@@ -9,23 +9,12 @@
 """Worker module"""
 
 import csv
-import sys
 import time
 
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
 
 from util import httpfn
 
-
-# def trap_exc_during_debug(*args):
-#     """
-#     when app raises uncaught exception, print info
-#     """
-#     print(args)
-#
-#
-# # install exception hook: without this, uncaught exception would cause application to exit
-# sys.excepthook = trap_exc_during_debug
 
 B_COLOR = "\033[1;30m"
 E_COLOR = "\033[0;m"
@@ -43,13 +32,13 @@ class Worker(QObject):
     """
     Must derive from QObject in order to emit signals, connect slots to other signals, and operate in a QThread.
     """
-    sig_step = pyqtSignal(int, str)  # worker id, step description: emitted every step through work() loop
-    sig_done = pyqtSignal(int)  # worker id: emitted at end of work()
-    sig_msg = pyqtSignal(str)  # message to be shown to user
-
-    status = pyqtSignal(int, str)  # worker id, progress: emitted every step through get_products_http() loop
-    count = pyqtSignal(int)  # the number of product rows
-    done = pyqtSignal(int)  # worker id: emitted at end of get_products_http
+    # demo signals
+    sig_step_demo = pyqtSignal(int, str)  # worker id, step description: emitted every step through work() loop
+    sig_done_demo = pyqtSignal(int)  # worker id: emitted at end of work()
+    sig_msg_demo = pyqtSignal(str)  # message to be shown to user
+    # real world signals
+    sig_status = pyqtSignal(int, str)  # worker id, progress: emitted every step through the file
+    sig_done = pyqtSignal(int)  # worker id: emitted at end of the file
 
     def __init__(self, thread_id: int, app):
         super().__init__()
@@ -66,14 +55,10 @@ class Worker(QObject):
         :param header:
         :return:
         """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())
-        self.sig_msg.emit("Running worker #{} from thread '{}' (#{})".format(self.__thread_id, thread_name, thread_id))
-
         filename.encode("utf8")
-        self.status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
         contacts.recreate_table()
-        ftext = "    Import er færdig!"
+        ftext = ">>> Import er færdig!"
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
@@ -85,11 +70,11 @@ class Worker(QObject):
                 if header and line == 0:
                     line += 1
                     continue
-                self.status.emit(self.__thread_id, "{}: {} - {}".format("Behandler", row[2].strip(), row[3].strip()))
+                self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
                 contacts.import_csv(row)  # send row to database
 
-        self.status.emit(self.__thread_id, "{}".format(ftext))
-        self.done.emit(self.__thread_id)
+        self.sig_status.emit(self.__thread_id, "{}".format(ftext))
+        self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot()
     def import_customers_csv(self, customers, filename, header):
@@ -100,14 +85,10 @@ class Worker(QObject):
         :param header:
         :return:
         """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())
-        self.sig_msg.emit("Running worker #{} from thread '{}' (#{})".format(self.__thread_id, thread_name, thread_id))
-
         filename.encode("utf8")
-        self.status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
         customers.recreate_table()
-        ftext = "    Import er færdig!"
+        ftext = ">>> Import er færdig!"
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
@@ -120,11 +101,11 @@ class Worker(QObject):
                 # self.progress_c.rowcount.emit(line)
                 if header and line == 0:
                     continue
-                self.status.emit(self.__thread_id, "{}: {} - {}".format("Behandler", row[1].strip(), row[2].strip()))
+                self.sig_status.emit(self.__thread_id, "{} - {}".format(row[1].strip(), row[2].strip()))
                 customers.import_csv(row)  # send row to database
 
-        self.status.emit(self.__thread_id, "{}".format(ftext))
-        self.done.emit(self.__thread_id)
+        self.sig_status.emit(self.__thread_id, "{}".format(ftext))
+        self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot()
     def import_customers_http(self, customers, employees, settings):
@@ -135,21 +116,15 @@ class Worker(QObject):
         :param settings:
         :return:
         """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())
-        self.sig_msg.emit("Running worker #{} from thread '{}' (#{})".format(self.__thread_id, thread_name, thread_id))
-
-        self.status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
         # fetch datafile from http server
         data = httpfn.get_customers(settings, employees)
-        self.status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
-        self.count.emit(len(data))
+        self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
         for row in data:  # data processing
             self.__app.processEvents()
-            self.status.emit(self.__thread_id, "{}: {} - {}".format("Behandler", row[0], row[1]))
+            self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
             customers.import_http(row)  # init_detail row to database
-        self.status.emit(self.__thread_id, "{}".format("   Færdig!"))
-        self.done.emit(self.__thread_id)
+        self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot()
     def import_products_http(self, products, settings):
@@ -158,22 +133,16 @@ class Worker(QObject):
         :param products:
         :param settings:
         """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())
-        self.sig_msg.emit("Running worker #{} from thread '{}' (#{})".format(self.__thread_id, thread_name, thread_id))
-
-        self.status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
         products.drop_table()  # drop product table
-        self.status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
         # fetching datafile using http with settings
         data = httpfn.get_products(settings)
-        self.count.emit(len(data))
         for row in data:  # data processing
             self.__app.processEvents()
-            self.status.emit(self.__thread_id, "{}: {} - {}".format("Behandler", row[0], row[1]))
+            self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
             products.insert(row)  # init_detail row to database
-        self.status.emit(self.__thread_id, "{}".format("   Færdig!"))
-        self.done.emit(self.__thread_id)
+        self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot()
     def import_reports_csv(self, employeeid, reports, filename, header):
@@ -185,14 +154,10 @@ class Worker(QObject):
         :param header:
         :return:
         """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())
-        self.sig_msg.emit("Running worker #{} from thread '{}' (#{})".format(self.__thread_id, thread_name, thread_id))
-
         filename.encode("utf8")
-        self.status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
         reports.recreate_table()
-        ftext = "    Import er færdig!"
+        ftext = ">>> Import er færdig!"
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
@@ -205,11 +170,11 @@ class Worker(QObject):
                 # self.progress_c.rowcount.emit(line)
                 if header and line == 0:
                     continue
-                self.status.emit(self.__thread_id, "{}: {} - {}".format("Behandler", row[2].strip(), row[3].strip()))
+                self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
                 reports.import_csv(row, employeeid)  # send row to database
 
-        self.status.emit(self.__thread_id, "{}".format(ftext))
-        self.done.emit(self.__thread_id)
+        self.sig_status.emit(self.__thread_id, "{}".format(ftext))
+        self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot()
     def import_visits_csv(self, visits, filename, header):
@@ -220,14 +185,10 @@ class Worker(QObject):
         :param header:
         :return:
         """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())
-        self.sig_msg.emit("Running worker #{} from thread '{}' (#{})".format(self.__thread_id, thread_name, thread_id))
-
         filename.encode("utf8")
-        self.status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
         visits.recreate_table()
-        ftext = "    Import er færdig!"
+        ftext = ">>> Import er færdig!"
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
@@ -240,11 +201,11 @@ class Worker(QObject):
                 # self.progress_c.rowcount.emit(line)
                 if header and line == 0:
                     continue
-                self.status.emit(self.__thread_id, "{}: {} - {}".format("Behandler", row[2].strip(), row[3].strip()))
+                self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
                 visits.import_csv(row)  # send row to database
 
-        self.status.emit(self.__thread_id, "{}".format(ftext))
-        self.done.emit(self.__thread_id)
+        self.sig_status.emit(self.__thread_id, "{}".format(ftext))
+        self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot()
     def import_visit_details_csv(self, details, filename, header):
@@ -255,14 +216,10 @@ class Worker(QObject):
         :param header:
         :return:
         """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())
-        self.sig_msg.emit("Running worker #{} from thread '{}' (#{})".format(self.__thread_id, thread_name, thread_id))
-
         filename.encode("utf8")
-        self.status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
         details.recreate_table()
-        ftext = "    Import er færdig!"
+        ftext = ">>> Import er færdig!"
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
@@ -275,14 +232,14 @@ class Worker(QObject):
                 # self.progress_c.rowcount.emit(line)
                 if header and line == 0:
                     continue
-                self.status.emit(self.__thread_id, "{}: {} - {}".format("Behandler", row[2].strip(), row[3].strip()))
+                self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
                 details.import_csv(row)  # send row to database
 
-        self.status.emit(self.__thread_id, "{}".format(ftext))
-        self.done.emit(self.__thread_id)
+        self.sig_status.emit(self.__thread_id, "{}".format(ftext))
+        self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot()
-    def work(self):
+    def work_demo(self):
         """
         Pretend this worker method does work that takes a long time. During this time, the thread's
         event loop is blocked, except if the application's processEvents() is called: this gives every
@@ -291,25 +248,24 @@ class Worker(QObject):
         """
         thread_name = QThread.currentThread().objectName()
         thread_id = int(QThread.currentThreadId())  # cast to int() is necessary
-        self.sig_msg.emit('Running worker #{} from thread "{}" (#{})'.format(self.__thread_id, thread_name, thread_id))
+        self.sig_msg_demo.emit('Running worker #{} from thread "{}" (#{})'.format(self.__thread_id, thread_name, thread_id))
 
         for step in range(100):
             time.sleep(0.1)
-            self.sig_step.emit(self.__thread_id, 'step ' + str(step))
+            self.sig_step_demo.emit(self.__thread_id, 'step ' + str(step))
 
             # check if we need to abort the loop; need to process events to receive signals;
             self.__app.processEvents()  # this could cause change to self.__abort
             if self.__abort:
                 # note that "step" value will not necessarily be same for every thread
-                self.sig_msg.emit('Worker #{} aborting work at step {}'.format(self.__thread_id, step))
+                self.sig_msg_demo.emit('Worker #{} aborting work at step {}'.format(self.__thread_id, step))
                 break
 
-        self.sig_done.emit(self.__thread_id)
+        self.sig_done_demo.emit(self.__thread_id)
 
-    def abort(self):
+    def abort_work_demo(self):
         """
         Signal to abort work
         """
-        self.sig_msg.emit('Worker #{} notified to abort'.format(self.__thread_id))
+        self.sig_msg_demo.emit('Worker #{} notified to abort'.format(self.__thread_id))
         self.__abort = True
-

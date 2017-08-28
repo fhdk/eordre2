@@ -6,7 +6,7 @@
 
 import os
 
-icons = "/icons/"
+res_root = "/"
 icon_res_path = os.getenv("PWD")
 icon_dirs = ["system"]
 
@@ -18,7 +18,7 @@ for icon_dir in icon_dirs:
         break
     outfile = "{}.qrc".format(icon_dir)
     with open(outfile, "w") as resfile:
-        resfile.write("<RCC>\n  <qresource prefix=\"{}\">\n".format(icons))
+        resfile.write("<RCC>\n  <qresource prefix=\"{}\">\n".format(res_root))
         for icon_name in f:
             resfile.write("    <file>{}/{}</file>\n".format(icon_dir, icon_name))
         resfile.write("  </qresource>\n</RCC>\n")

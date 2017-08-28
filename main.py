@@ -112,6 +112,16 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.widgetCustomerList.currentItemChanged.connect(self.on_customer_changed)
         self.widgetVisitList.currentItemChanged.connect(self.on_visit_changed)
 
+        # Hide the id column
+        self.widgetVisitList.setColumnHidden(0, True)
+
+        self.widgetVisitDetails.setColumnWidth(0, 30)
+        self.widgetVisitDetails.setColumnWidth(1, 30)
+        self.widgetVisitDetails.setColumnWidth(2, 100)
+        self.widgetVisitDetails.setColumnWidth(3, 150)
+        self.widgetVisitDetails.setColumnWidth(4, 60)
+        self.widgetVisitDetails.setColumnWidth(5, 40)
+
     def closeEvent(self, event):
         """
         Slot for close event signal
@@ -127,6 +137,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slot for exit triggered signal
         """
+        # Save current customer
+        # Save current page
+
         app.quit()
 
     def display_sync_status(self):
@@ -152,10 +165,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 items.append(item)
         except IndexError as i:
             if DBG:
-                printit(" ->populate_contact_list\n ->IndexError: {}".format(i))
+                printit(" ->populate_contact_list\n"
+                        "  ->exception handled\n"
+                        "  ->IndexError: {}".format(i))
         except KeyError as k:
             if DBG:
-                printit(" ->populate_contact_list\n ->KeyError: {}".format(k))
+                printit(" ->populate_contact_list\n"
+                        "  ->exception handled\n"
+                        "  ->KeyError: {}".format(k))
 
         self.widgetContactList.addTopLevelItems(items)
 
@@ -203,15 +220,24 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             self.txtVisitInfoText.setText(self.visits.active["info_text"])
 
             for detail in self.details.details_list:
-                item = QTreeWidgetItem([detail["linetype"], str(detail["pcs"]), detail["sku"], detail["text"],
-                                        str(detail["price"]), str(detail["discount"]), detail["extra"]])
+                item = QTreeWidgetItem([detail["linetype"],
+                                        str(detail["pcs"]),
+                                        detail["sku"],
+                                        detail["text"],
+                                        str(detail["price"]),
+                                        str(detail["discount"]),
+                                        detail["extra"]])
                 items.append(item)
         except KeyError as k:
             if DBG:
-                printit(" ->populate_details_list\n  ->KeyError: {}".format(k))
+                printit(" ->populate_details_list\n"
+                        "  ->exception handled\n"
+                        "  ->KeyError: {}".format(k))
         except IndexError as i:
             if DBG:
-                printit(" ->populate_details_list\n  ->IndexError: {}".format(i))
+                printit(" ->populate_details_list\n"
+                        "  ->exception handled\n"
+                        "  ->IndexError: {}".format(i))
         self.widgetVisitDetails.addTopLevelItems(items)
 
     def populate_visit_list(self):
@@ -227,15 +253,22 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         try:
             self.visits.visit_list_customer = self.customers.active["customer_id"]
             for visit in self.visits.visit_list_customer:
-                item = QTreeWidgetItem([str(visit["visit_id"]), visit["visit_date"], visit["po_buyer"],
-                                        visit["prod_demo"], visit["prod_sale"]])
+                item = QTreeWidgetItem([str(visit["visit_id"]),
+                                        visit["visit_date"],
+                                        visit["po_buyer"],
+                                        visit["prod_demo"],
+                                        visit["prod_sale"]])
                 items.append(item)
         except IndexError as i:
             if DBG:
-                printit(" ->populate_visit_list\n ->IndexError: {}".format(i))
+                printit(" ->populate_visit_list\n"
+                        "  ->exception handled\n"
+                        "  ->IndexError: {}".format(i))
         except KeyError as k:
             if DBG:
-                printit(" ->populate_visit_list\n ->KeyError: {}".format(k))
+                printit(" ->populate_visit_list\n"
+                        "  ->exception handled\n"
+                        "  ->KeyError: {}".format(k))
         self.widgetVisitList.addTopLevelItems(items)
 
     def resizeEvent(self, event):
@@ -251,12 +284,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Setup database and basic configuration
         """
-        # current needs to be up for inet connection to work
+        # basic settings must be done
         is_set = check_settings(self.settings.active)
         if is_set:
             try:
                 _ = self.employees.active["fullname"]
-
             except KeyError:
                 msgbox = QMessageBox()
                 msgbox.about(self.mainGrid, __appname__, "Check din netværksforbindelse! Tak")
@@ -265,27 +297,23 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             msgbox.about(self.mainGrid, __appname__,
                          "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
             self.settings_dialog()
+
         # load report for workdate if exist
         self.reports.load_report(self.txtWorkdate.text())
-        # all customerlist
+
+        # display customerlist
         self.populate_customer_list()
+
+        # if requested check server data
         if utils.int2bool(self.settings.active["sc"]):
-            # check server data
+            # update sync status
             status = utils.refresh_sync_status(self.settings)
             self.settings.active["sac"] = status[0][1].split()[0]
             self.settings.active["sap"] = status[1][1].split()[0]
             self.settings.update()
-        # update display
-        self.display_sync_status()
-        # Hide the id column
-        self.widgetVisitList.setColumnHidden(0, True)
 
-        self.widgetVisitDetails.setColumnWidth(0, 30)
-        self.widgetVisitDetails.setColumnWidth(1, 30)
-        self.widgetVisitDetails.setColumnWidth(2, 100)
-        self.widgetVisitDetails.setColumnWidth(3, 150)
-        self.widgetVisitDetails.setColumnWidth(4, 60)
-        self.widgetVisitDetails.setColumnWidth(5, 40)
+        # display known sync data
+        self.display_sync_status()
 
     @pyqtSlot()
     def add_contact(self):
@@ -293,7 +321,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Save changes made to contacts
         """
         msgbox = QMessageBox()
-        msgbox.information(self, __appname__, "# TODO add new contact", QMessageBox.Ok)
+        msgbox.information(self,
+                           __appname__,
+                           "# TODO add new contact",
+                           QMessageBox.Ok)
 
     @pyqtSlot()
     def archive_contacts(self):
@@ -301,7 +332,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Save changes made to contacts
         """
         msgbox = QMessageBox()
-        msgbox.information(self, __appname__, "# TODO save changes made to contacts", QMessageBox.Ok)
+        msgbox.information(self,
+                           __appname__,
+                           "# TODO save changes made to contacts",
+                           QMessageBox.Ok)
 
     @pyqtSlot()
     def archive_customer(self):
@@ -399,6 +433,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slog for csv import done signal
         """
+        if DBG:
+            printit(" ->signal recieved\n"
+                    "  ->on_csv_import_done")
         self.populate_customer_list()
 
     @pyqtSlot()
@@ -407,7 +444,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Slot for getCustomers finished signal
         """
         if DBG:
-            printit(" ->signal recieved\n  ->on_customers_done")
+            printit(" ->signal recieved\n"
+                    "  ->on_customers_done")
         self.populate_customer_list()
         lsc = datetime.date.today().isoformat()
         self.txtCustLocal.setText(lsc)
@@ -420,7 +458,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Slot for getProducts finished signal
         """
         if DBG:
-            printit(" ->signal recieved\n  ->on_products_done")
+            printit(" ->signal recieved\n"
+                    "  ->on_products_done")
         self.products.all()
         lsp = datetime.date.today().isoformat()
         self.txtProdLocal.setText(lsp)
@@ -438,7 +477,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         try:
             if DBG:
                 printit("  ->active_visit_changed\n"
-                        "  ->visit_id: {}".format(current.text(0)))
+                        "   ->visit_id: {}".format(current.text(0)))
             self.visits.active = current.text(0)
         except AttributeError as a:
             if DBG:
@@ -458,7 +497,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         Slot for dataExport triggered signal
         """
         msgbox = QMessageBox()
-        msgbox.information(self, __appname__, "TODO: Opret CSV data backup", QMessageBox.Ok)
+        msgbox.information(self,
+                           __appname__,
+                           "# TODO: Opret CSV data backup",
+                           QMessageBox.Ok)
 
     @pyqtSlot()
     def show_about_qt(self):
@@ -627,7 +669,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 _ = self.customers.active["company"]
             except KeyError:
                 msgbox = QMessageBox()
-                msgbox.information(self, __appname__, "Ingen valgt kunde! Besøg kan ikke oprettes.", QMessageBox.Ok)
+                msgbox.information(self,
+                                   __appname__,
+                                   "Ingen valgt kunde! Besøg kan ikke oprettes.",
+                                   QMessageBox.Ok)
                 return
             # Launch the visit dialog
             visit_dialog = VisitDialog(self.customers, self.employees, self.products,
@@ -668,7 +713,7 @@ if __name__ == '__main__':
     app.setDesktopSettingsAware(True)
     app.setAttribute(Qt.AA_EnableHighDpiScaling)
     pixmap = QPixmap(":/graphics/splash/splash.png")
-    splash = QSplashScreen(pixmap)
+    splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
     splash.show()
 
     app.processEvents()
@@ -676,7 +721,7 @@ if __name__ == '__main__':
     window = MainWindow()
     window.show()
 
-    QTimer.singleShot(1, window.run)
+    QTimer.singleShot(1000, window.run)
     splash.finish(window)
 
     sys.exit(app.exec_())
