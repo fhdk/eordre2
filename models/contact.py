@@ -12,7 +12,7 @@ from models.query import Query
 
 B_COLOR = "\033[0;32m"
 E_COLOR = "\033[0;m"
-DBG = True
+DBG = False
 
 __module__ = "contact"
 

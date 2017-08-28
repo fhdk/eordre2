@@ -11,7 +11,7 @@ from util import utils
 
 B_COLOR = "\033[0;33m"
 E_COLOR = "\033[0;m"
-DBG = True
+DBG = False
 
 __module__ = "customer"
 

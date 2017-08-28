@@ -15,7 +15,7 @@ from util import utils
 
 B_COLOR = "\033[1;36m"
 E_COLOR = "\033[0;1m"
-DBG = False
+DBG = True
 
 __module__ = "visit"
 

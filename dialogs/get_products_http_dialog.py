@@ -47,12 +47,6 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
         self.__workers_done = 0
         self.__threads = []
 
-    @pyqtSlot(int, str)
-    def on_status(self, worker_id: int, text: str):
-        """Slot for import thread processing signal"""
-        status = "{}-{}".format(worker_id, text)
-        self.log.append(status)
-
     @pyqtSlot()
     def button_close_clicked(self):
         """Slot for buttonClose clicked signal"""
@@ -69,10 +63,8 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
         thread.setObjectName("products_http")
         self.__threads.append((thread, worker))
         worker.moveToThread(thread)
-        worker.sig_step.connect(self.on_worker_step)
         worker.status.connect(self.on_status)
         worker.done.connect(self.on_done)
-        worker.sig_done.connect(self.on_worker_done)
         try:
             thread.started.connect(worker.import_products_http(self.products, self.settings))
             thread.start()
@@ -89,19 +81,7 @@ class GetProductsHttpDialog(QDialog, Ui_getProductsHttpDialog):
         self.sig_done.emit()
 
     @pyqtSlot(int, str)
-    def on_worker_step(self, worker_id: int, data: str):
-        self.log.append('Worker #{}: {}'.format(worker_id, data))
-        self.progress.append('{}: {}'.format(worker_id, data))
-
-    @pyqtSlot(int)
-    def on_worker_done(self, worker_id: int):
-        self.log.append('worker #{} done'.format(worker_id))
-        self.progress.append('-- Worker {} DONE'.format(worker_id))
-        self.__workers_done += 1
-        if self.__workers_done == len(self.__threads):
-            self.progressBar.setRange(0, 1)  # set progressbar normal
-            self.log.append('No more workers active')
-            self.sig_done.emit()
-            # self.button_start_threads.setEnabled(True)
-            # self.button_stop_threads.setDisabled(True)
-            # self.__threads = None
+    def on_status(self, worker_id: int, text: str):
+        """Slot for import thread processing signal"""
+        status = "{}-{}".format(worker_id, text)
+        self.log.append(status)

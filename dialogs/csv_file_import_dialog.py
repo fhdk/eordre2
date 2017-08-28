@@ -78,6 +78,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
 
     def button_close_action(self):
         """Slot for buttonClose clicked signal"""
+        if not self.__workers_done == len(self.__threads):
+            self.sig_done.emit()
         self.done(False)
 
     def button_import_action(self):
@@ -109,10 +111,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("contacts_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.sig_step.connect(self.on_worker_step)
                 worker.status.connect(self.on_status)
                 worker.done.connect(self.on_done)
-                worker.sig_done.connect(self.on_worker_done)
                 try:
                     thread.started.connect(worker.import_contacts_csv(self.contacts,
                                                                       self.selectedFile,
@@ -129,10 +129,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("customers_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.sig_step.connect(self.on_worker_step)
                 worker.status.connect(self.on_status)
                 worker.done.connect(self.on_done)
-                worker.sig_done.connect(self.on_worker_done)
                 try:
                     thread.started.connect(worker.import_customers_csv(self.customers,
                                                                        self.selectedFile,
@@ -149,10 +147,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("visits_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.sig_step.connect(self.on_worker_step)
                 worker.status.connect(self.on_status)
                 worker.done.connect(self.on_done)
-                worker.sig_done.connect(self.on_worker_done)
                 try:
                     thread.started.connect(worker.import_visits_csv(self.visits,
                                                                     self.selectedFile,
@@ -169,10 +165,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("details_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.sig_step.connect(self.on_worker_step)
                 worker.status.connect(self.on_status)
                 worker.done.connect(self.on_done)
-                worker.sig_done.connect(self.on_worker_done)
                 try:
                     thread.started.connect(worker.import_visit_details_csv(self.details,
                                                                            self.selectedFile,
@@ -189,10 +183,8 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 thread.setObjectName("reports_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
-                worker.sig_step.connect(self.on_worker_step)
                 worker.status.connect(self.on_status)
                 worker.done.connect(self.on_done)
-                worker.sig_done.connect(self.on_worker_done)
                 try:
                     thread.started.connect(worker.import_reports_csv(self.employees.active["employee_id"],
                                                                      self.reports,
@@ -212,36 +204,6 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
         self.buttonBrowse.setEnabled(True)  # enable browse button
         self.buttonClose.setEnabled(True)  # enable close button
 
-    @pyqtSlot(int, str)
-    def on_worker_step(self, worker_id: int, data: str):
-        self.log.append('Worker #{}: {}'.format(worker_id, data))
-        self.progress.append('{}: {}'.format(worker_id, data))
-
-    @pyqtSlot(int)
-    def on_worker_done(self, worker_id: int):
-        self.log.append('worker #{} done'.format(worker_id))
-        self.progress.append('-- Worker {} DONE'.format(worker_id))
-        self.__workers_done += 1
-        if self.__workers_done == len(self.__threads):
-            self.progressBar.setRange(0, 1)  # set progressbar normal
-            self.log.append('No more workers active')
-            self.sig_done.emit()
-            # self.button_start_threads.setEnabled(True)
-            # self.button_stop_threads.setDisabled(True)
-            # self.__threads = None
-
-    @pyqtSlot()
-    def abort_workers(self):
-        self.sig_abort_workers.emit()
-        self.log.append('Asking each worker to abort')
-        for thread, worker in self.__threads:  # note nice unpacking by Python, avoids indexing
-            thread.quit()  # this will quit **as soon as thread event loop unblocks**
-            thread.wait()  # <- so you need to wait for it to *actually* quit
-
-        # even though threads have exited, there may still be messages on the main thread's
-        # queue (messages that threads emitted before the abort):
-        self.log.append('All threads exited')
-
     @pyqtSlot()
     def combo_changed_action(self):
         """Slot for ComboBox currentIndexChanged signal"""
@@ -252,6 +214,9 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
         """
         Executes when the import is done
         """
+        self.__workers_done += 1
+        if self.__workers_done == len(self.__threads):
+            self.sig_done.emit()
         self.progressBar.setRange(0, 1)
         self.buttonImport.setEnabled(False)  # disable the button till next file is selected
         self.buttonBrowse.setEnabled(True)  # enable browse button
@@ -262,9 +227,10 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
         """
         Process status notification
         """
-        status = "{}-{}".format(worker_id, text)
-        self.log.append(status)
+        self.log.append(text)
         if text.startswith("ERROR") or text.startswith("FEJL"):
+            if DBG:
+                printit(" ->text: {}".format(text))
             title = "Import fejl"
             QMessageBox.information(self, title, text, QMessageBox.Ok)
 
@@ -276,4 +242,4 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
         else:
             self.buttonImport.setEnabled(False)
         if DBG:
-            printit("self.selectedFile: {}".format(self.selectedFile))
+            printit(" ->selectedFile: {}".format(self.selectedFile))

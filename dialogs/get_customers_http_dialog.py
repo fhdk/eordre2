@@ -52,12 +52,6 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
         self.__workers_done = 0
         self.__threads = []
 
-    @pyqtSlot(int, str)
-    def on_status(self, worker_id: int, text: str):
-        """Slot for import thread processing signal"""
-        status = "{}-{}".format(worker_id, text)
-        self.log.append(status)
-
     def button_close_action(self):
         """Slot for buttonClose clicked signal"""
         self.done(True)
@@ -70,10 +64,8 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
         thread.setObjectName("customers_http")
         self.__threads.append((thread, worker))
         worker.moveToThread(thread)
-        worker.sig_step.connect(self.on_worker_step)
         worker.status.connect(self.on_status)
         worker.done.connect(self.on_done)
-        worker.sig_done.connect(self.on_worker_done)
         try:
             thread.started.connect(worker.import_customers_http(self.customers, self.employees, self.settings))
             thread.start()
@@ -90,17 +82,7 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
         self.sig_done.emit()
 
     @pyqtSlot(int, str)
-    def on_worker_step(self, worker_id: int, data: str):
-        self.log.append('Worker #{}: {}'.format(worker_id, data))
-        self.progress.append('{}: {}'.format(worker_id, data))
-
-    @pyqtSlot(int)
-    def on_worker_done(self, worker_id: int):
-        self.log.append('worker #{} done'.format(worker_id))
-        self.progress.append('-- Worker {} DONE'.format(worker_id))
-        self.__workers_done += 1
-        if self.__workers_done == len(self.__threads):
-            self.progressBar.setRange(0, 1)  # set progressbar normal
-            self.log.append('No more workers active')
-            self.sig_done.emit()
-
+    def on_status(self, worker_id: int, text: str):
+        """Slot for import thread processing signal"""
+        status = "{}-{}".format(worker_id, text)
+        self.log.append(status)

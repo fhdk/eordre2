@@ -15,7 +15,8 @@ from PyQt5.QtCore import QTimer, Qt, QThread, pyqtSlot
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScreen, QTreeWidgetItem
 
-# import resources.splash_rc
+import resources.splash_rc
+
 from configuration import config, configfn
 from dialogs.csv_file_import_dialog import CsvFileImportDialog
 from dialogs.get_customers_http_dialog import GetCustomersHttpDialog
@@ -366,7 +367,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             # move current customer
             # load customer
             self.customers.lookup(phone, company)
-            # fields to lineedit
+            # fields to lineedits
             self.txtAccount.setText(self.customers.active["account"])
             self.txtCompany.setText(self.customers.active["company"])
             self.txtAddress1.setText(self.customers.active["address1"])
@@ -380,14 +381,51 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             self.txtCustomerInfoText.setText(self.customers.active["infotext"])
         except AttributeError as a:
             if DBG:
-                printit(" ->current_customer_changed\n ->AttributeError: {}".format(a))
+                printit(" ->current_customer_changed\n "
+                        "  ->exception handled\n"
+                        "  ->AttributeError: {}".format(a))
         except KeyError as k:
             if DBG:
-                printit(" ->current_customer_changed\n ->KeyError: {}".format(k))
+                printit(" ->current_customer_changed\n"
+                        "  ->exception handled\n"
+                        "  ->KeyError: {}".format(k))
         # load customer infos
         self.populate_contact_list()
         self.populate_visit_list()
         self.populate_visit_details_list()
+
+    @pyqtSlot()
+    def on_csv_import_done(self):
+        """
+        Slog for csv import done signal
+        """
+        self.populate_customer_list()
+
+    @pyqtSlot()
+    def on_customers_done(self):
+        """
+        Slot for getCustomers finished signal
+        """
+        if DBG:
+            printit(" ->signal recieved\n  ->on_customers_done")
+        self.populate_customer_list()
+        lsc = datetime.date.today().isoformat()
+        self.txtCustLocal.setText(lsc)
+        self.settings.active["lsc"] = lsc
+        self.settings.update()
+
+    @pyqtSlot()
+    def on_products_done(self):
+        """
+        Slot for getProducts finished signal
+        """
+        if DBG:
+            printit(" ->signal recieved\n  ->on_products_done")
+        self.products.all()
+        lsp = datetime.date.today().isoformat()
+        self.txtProdLocal.setText(lsp)
+        self.settings.active["lsp"] = lsp
+        self.settings.update()
 
     @pyqtSlot(QTreeWidgetItem, QTreeWidgetItem)
     def on_visit_changed(self, current, previous):
@@ -399,14 +437,19 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         try:
             if DBG:
-                printit("  ->active_visit_changed\n ->visit_id: {}".format(current.text(0)))
+                printit("  ->active_visit_changed\n"
+                        "  ->visit_id: {}".format(current.text(0)))
             self.visits.active = current.text(0)
         except AttributeError as a:
             if DBG:
-                printit("  ->active_visit_changed\n ->AttributeError: {}".format(a))
+                printit("  ->active_visit_changed\n"
+                        "   ->exception handled\n"  
+                        "   ->AttributeError: {}".format(a))
         except KeyError as k:
             if DBG:
-                printit("  ->active_visit_changed\n ->KeyError: {}".format(k))
+                printit("  ->active_visit_changed\n"
+                        "   ->exception handled\n"
+                        "   ->KeyError: {}".format(k))
         self.populate_visit_details_list()
 
     @pyqtSlot()
@@ -416,28 +459,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         msgbox = QMessageBox()
         msgbox.information(self, __appname__, "TODO: Opret CSV data backup", QMessageBox.Ok)
-
-    @pyqtSlot()
-    def get_customers_done(self):
-        """
-        Slot for getCustomers finished signal
-        """
-        self.populate_customer_list()
-        lsc = datetime.date.today().isoformat()
-        self.txtCustLocal.setText(lsc)
-        self.settings.active["lsc"] = lsc
-        self.settings.update()
-
-    @pyqtSlot()
-    def get_products_done(self):
-        """
-        Slot for getProducts finished signal
-        """
-        self.products.all()
-        lsp = datetime.date.today().isoformat()
-        self.txtProdLocal.setText(lsp)
-        self.settings.active["lsp"] = lsp
-        self.settings.update()
 
     @pyqtSlot()
     def show_about_qt(self):
@@ -534,7 +555,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_dialog = CsvFileImportDialog(app, self.contacts, self.customers, self.details,
                                             self.employees, self.reports, self.visits,
                                             config.CSV_TABLES)
-        import_dialog.sig_done.connect(self.populate_customer_list)
+        import_dialog.sig_done.connect(self.on_csv_import_done)
         import_dialog.exec_()
 
     @pyqtSlot()
@@ -546,7 +567,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                                   customers=self.customers,
                                                   employees=self.employees,
                                                   settings=self.settings)
-        import_customers.sig_done.connect(self.get_customers_done)
+        import_customers.sig_done.connect(self.on_customers_done)
         import_customers.exec_()
 
     @pyqtSlot()
@@ -557,7 +578,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_product = GetProductsHttpDialog(app,
                                                products=self.products,
                                                settings=self.settings)
-        import_product.sig_done.connect(self.get_products_done)
+        import_product.sig_done.connect(self.on_products_done)
         import_product.exec_()
 
     @pyqtSlot()
