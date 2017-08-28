@@ -36,10 +36,10 @@ class Settings:
             "id": "settings_id",
             "fields": ("settings_id", "usermail", "userpass", "usercountry", "pd", "pf", "sf",
                        "http", "smtp", "port", "mailto", "mailserver", "mailport", "mailuser", "mailpass",
-                       "fc", "fp", "fe", "lsc", "lsp", "sac", "sap", "sc"),
+                       "fc", "fp", "fe", "lsc", "lsp", "sac", "sap", "sc", "cust_idx", "page_idx", "cust_blob"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
                       "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
-                      "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER")
+                      "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER", "INTEGER", "INTEGER", "BLOB")
         }
         self._settings = {}
         self.q = Query()

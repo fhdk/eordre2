@@ -37,7 +37,7 @@ class Report:
         self.model = {
             "name": "report",
             "id": "report_id",
-            "fields": ("report_id", "employee_id", "repno", "repdate", "timestamp",
+            "fields": ("report_id", "employee_id", "rep_no", "rep_date", "timestamp",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
                        "recallvisitday", "recalldemoday", "recallsaleday", "recallturnoverday",
                        "sasday", "sasturnoverday", "demoday", "saleday",
@@ -82,7 +82,7 @@ class Report:
             workdate:
         """
         try:
-            _ = self._report["repdate"]
+            _ = self._report["rep_date"]
         except KeyError:
             self.load_report(workdate=workdate)
 
@@ -161,7 +161,7 @@ class Report:
                       "(sum(kmprivate)) AS 'kmprivate'",
                       "(sum(workday = 1)) AS 'workdays'",
                       "(sum(offday = 1)) AS 'offdays'"]
-        filters = [("repdate", "LIKE", "and"), ("employee_id", "=", "and"), ("sent", "=")]
+        filters = [("rep_date", "LIKE", "and"), ("employee_id", "=", "and"), ("sent", "=")]
         ym_filter = "{}%".format(workdate[:8])
         employee_id = employee["employee_id"]
         territory = employee["salesrep"]
@@ -263,7 +263,7 @@ class Report:
         Args:
             workdate: iso formatted str representing the date for the report to be loaded
         """
-        filters = [("repdate", "=")]
+        filters = [("rep_date", "=")]
         values = (workdate,)
 
         sql = self.q.build("select", self.model, filters=filters)
@@ -295,7 +295,7 @@ class Report:
             :type year: str
             :type month: str
         """
-        filters = ["repdate", "like"]
+        filters = ["rep_date", "like"]
         value = "{}-{}-{}".format("%", "%", "%")
         if year:
             value = "{}-{}-{}".format(year, "%", "%")

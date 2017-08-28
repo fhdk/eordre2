@@ -18,10 +18,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QSplashScree
 import resources.splash_rc
 
 from configuration import config, configfn
-from dialogs.csv_file_import_dialog import CsvFileImportDialog
-from dialogs.get_customers_http_dialog import GetCustomersHttpDialog
-from dialogs.get_products_http_dialog import GetProductsHttpDialog
-from dialogs.report_dialog_create import ReportDialogCreate
+from dialogs.csv_import_dialog import CsvFileImportDialog
+from dialogs.http_customers_dialog import GetCustomersHttpDialog
+from dialogs.http_products_dialog import GetProductsHttpDialog
+from dialogs.create_report_dialog import ReportDialogCreate
 from dialogs.settings_dialog import SettingsDialog
 from dialogs.visit_dialog import VisitDialog
 from models.contact import Contact
@@ -84,10 +84,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.actionContactsInfo.triggered.connect(self.show_contact_data_page)
         self.actionCreateCustomer.triggered.connect(self.create_customer)
         self.actionCreateVisit.triggered.connect(self.show_visit_dialog)
-        self.actionImportCsvFiles.triggered.connect(self.show_csv_file_import_dialog)
+        self.actionImportCsvFiles.triggered.connect(self.show_csv_import_dialog)
         self.actionExit.triggered.connect(self.app_exit)
-        self.actionGetCatalogHttp.triggered.connect(self.show_get_products_http_dialog)
-        self.actionGetCustomersHttp.triggered.connect(self.show_get_customers_http_dialog)
+        self.actionGetCatalogHttp.triggered.connect(self.show_http_products_dialog)
+        self.actionGetCustomersHttp.triggered.connect(self.show_http_customers_dialog)
         self.actionMasterInfo.triggered.connect(self.show_master_data_page)
         self.actionReport.triggered.connect(self.show_create_report_dialog)
         self.actionReportList.triggered.connect(self.show_reports_dialog)
@@ -111,16 +111,31 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         # connect list changes
         self.widgetCustomerList.currentItemChanged.connect(self.on_customer_changed)
         self.widgetVisitList.currentItemChanged.connect(self.on_visit_changed)
-
-        # Hide the id column
+        # Hide the id column on visit list
         self.widgetVisitList.setColumnHidden(0, True)
-
+        # Set header on visit details
         self.widgetVisitDetails.setColumnWidth(0, 30)
         self.widgetVisitDetails.setColumnWidth(1, 30)
         self.widgetVisitDetails.setColumnWidth(2, 100)
         self.widgetVisitDetails.setColumnWidth(3, 150)
         self.widgetVisitDetails.setColumnWidth(4, 60)
         self.widgetVisitDetails.setColumnWidth(5, 40)
+        # load report for workdate if exist
+        self.reports.load_report(self.txtWorkdate.text())
+        # display customerlist
+        self.populate_customer_list()
+        # set latest customer active
+        if self.customers.lookup_by_id(self.settings.active["cust_idx"]):
+            try:
+                phone = self.customers.active["phone1"]
+                self.widgetCustomerList.setCurrentIndex(
+                    self.widgetCustomerList.indexFromItem(
+                        self.widgetCustomerList.findItems(phone, Qt.MatchExactly, column=0)[0]))
+            except KeyError:
+                pass
+        # set last info page used
+        if self.settings.active["page_idx"]:
+            self.widgetCustomerInfo.setCurrentIndex(self.settings.active["page_idx"])
 
     def closeEvent(self, event):
         """
@@ -137,9 +152,16 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slot for exit triggered signal
         """
-        # Save current customer
-        # Save current page
-
+        # customer id
+        try:
+            self.settings.active["cust_idx"] = self.customers.active["customer_id"]
+        except KeyError:
+            self.settings.active["cust_idx"] = 0
+        # customer info page
+        if not self.settings.active["page_idx"]:
+            self.settings.active["page_idx"] = self.widgetCustomerInfo.currentIndex()
+        # save setttings
+        self.settings.update()
         app.quit()
 
     def display_sync_status(self):
@@ -161,7 +183,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         try:
             self.contacts.contact_list = self.customers.active["customer_id"]
             for c in self.contacts.contact_list:
-                item = QTreeWidgetItem([c["name"], c["department"], c["phone"], c["email"]])
+                item = QTreeWidgetItem([c["name"],
+                                        c["department"],
+                                        c["phone"],
+                                        c["email"]])
                 items.append(item)
         except IndexError as i:
             if DBG:
@@ -182,11 +207,13 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         self.widgetCustomerList.clear()  # shake the tree for leaves
         self.widgetCustomerList.setColumnCount(2)  # set columns
-        self.widgetCustomerList.setHeaderLabels(["Telefon", "Firma"])
+        self.widgetCustomerList.setHeaderLabels(["Telefon",
+                                                 "Firma"])
         items = []  # temporary list
         try:
             for c in self.customers.customer_list:
-                item = QTreeWidgetItem([c["phone1"], c["company"]])
+                item = QTreeWidgetItem([c["phone1"],
+                                        c["company"]])
                 items.append(item)
         except (IndexError, KeyError):
             pass
@@ -291,18 +318,15 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 _ = self.employees.active["fullname"]
             except KeyError:
                 msgbox = QMessageBox()
-                msgbox.about(self.mainGrid, __appname__, "Check din netværksforbindelse! Tak")
+                msgbox.about(self.mainGrid,
+                             __appname__,
+                             "Check din netværksforbindelse! Tak")
         else:
             msgbox = QMessageBox()
-            msgbox.about(self.mainGrid, __appname__,
+            msgbox.about(self.mainGrid,
+                         __appname__,
                          "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
             self.settings_dialog()
-
-        # load report for workdate if exist
-        self.reports.load_report(self.txtWorkdate.text())
-
-        # display customerlist
-        self.populate_customer_list()
 
         # if requested check server data
         if utils.int2bool(self.settings.active["sc"]):
@@ -401,7 +425,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             # move current customer
             # load customer
             self.customers.lookup(phone, company)
-            # fields to lineedits
+            # fields to line edits
             self.txtAccount.setText(self.customers.active["account"])
             self.txtCompany.setText(self.customers.active["company"])
             self.txtAddress1.setText(self.customers.active["address1"])
@@ -535,12 +559,12 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         try:
             # check the report date
             # no report triggers KeyError which in turn launches the CreateReportDialog
-            repdate = self.reports.active["repdate"]
+            repdate = self.reports.active["rep_date"]
             if not repdate == self.txtWorkdate.text():
                 # if active report is not the same replace it with workdate
                 self.reports.load_report(self.txtWorkdate.text())
                 # trigger a KeyError if no report is current which launches the CreateReportDialog
-                repdate = self.reports.active["repdate"]
+                repdate = self.reports.active["rep_date"]
                 # check if the report is sent
                 if self.reports.active["sent"] == 1:
                     # we do not allow visits to be created on a report which is closed
@@ -562,7 +586,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 self.reports.load_report(self.txtWorkdate.text())
                 try:
                     # did the user choose an existing report
-                    _ = self.reports.active["repdate"]
+                    _ = self.reports.active["rep_date"]
                     infotext = "Eksisterende rapport hentet: {}".format(self.txtWorkdate.text())
                 except KeyError:
                     # create the report
@@ -580,7 +604,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 return False
 
     @pyqtSlot()
-    def show_csv_file_import_dialog(self):
+    def show_csv_import_dialog(self):
         """
         Slot for fileImport triggered signal
         """
@@ -594,14 +618,19 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                            "<strong>Gør du ikke det giver det uløselige problemer</strong>!",
                            QMessageBox.Ok)
         # app, contact, customer, detail, employee, report, visit, tables
-        import_dialog = CsvFileImportDialog(app, self.contacts, self.customers, self.details,
-                                            self.employees, self.reports, self.visits,
-                                            config.CSV_TABLES)
+        import_dialog = CsvFileImportDialog(app,
+                                            contact=self.contacts,
+                                            customer=self.customers,
+                                            detail=self.details,
+                                            employee=self.employees,
+                                            report=self.reports,
+                                            visit=self.visits,
+                                            tables=config.CSV_TABLES)
         import_dialog.sig_done.connect(self.on_csv_import_done)
         import_dialog.exec_()
 
     @pyqtSlot()
-    def show_get_customers_http_dialog(self):
+    def show_http_customers_dialog(self):
         """
         Slot for getCustomers triggered signal
         """
@@ -613,7 +642,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_customers.exec_()
 
     @pyqtSlot()
-    def show_get_products_http_dialog(self):
+    def show_http_products_dialog(self):
         """
         Slot for getProducts triggered signal
         """
@@ -659,11 +688,17 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         try:
             # do we have a report
-            _ = self.reports.active["repdate"]
+            _ = self.reports.active["rep_date"]
             active_report = True
         except KeyError:
-            active_report = self.create_report_dialog()
+            active_report = self.show_create_report_dialog()
         if active_report:
+            try:
+                rep = self.reports.active["rep_date"]
+                print("{}".format(rep))
+            except KeyError:
+                pass
+
             try:
                 # do we have a customer
                 _ = self.customers.active["company"]
@@ -675,8 +710,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                    QMessageBox.Ok)
                 return
             # Launch the visit dialog
-            visit_dialog = VisitDialog(self.customers, self.employees, self.products,
-                                       self.reports, self.visits)
+            visit_dialog = VisitDialog(customer=self.customers,
+                                       employee=self.employees,
+                                       product=self.products,
+                                       report=self.reports,
+                                       visit=self.visits)
             if visit_dialog.exec_():
                 pass
 
@@ -704,7 +742,10 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.display_sync_status()
 
         msgbox = QMessageBox()
-        msgbox.information(self, __appname__, "Salgsdata er nulstillet!", QMessageBox.Ok)
+        msgbox.information(self,
+                           __appname__,
+                           "Salgsdata er nulstillet!",
+                           QMessageBox.Ok)
 
 
 if __name__ == '__main__':

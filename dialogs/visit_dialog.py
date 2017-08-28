@@ -18,31 +18,31 @@ class VisitDialog(QDialog, Ui_visitDialog):
     Dialog for creating a new current
     """
 
-    def __init__(self, customers, employees, products, reports, visits, parent=None):
+    def __init__(self, customer, employee, product, report, visit, parent=None):
         """
         Initialize
         Args:
-            customers: main current object
-            employees: main current object
-            products: main products object
-            reports: main current object
-            visits: main current object
+            customer:
+            employee:
+            product:
+            report:
+            visit:
             parent:
         """
         super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
-        self.customerid = customers.active["customer_id"]
-        self.employeeid = employees.active["employee_id"]
-        self.reportid = reports.active["report_id"]
-        self.workdate = reports.active["repdate"]
-        self.products = products.product_list
+        self.customerid = customer.active["customer_id"]
+        self.employeeid = employee.active["employee_id"]
+        self.reportid = report.active["report_id"]
+        self.workdate = report.active["rep_date"]
+        self.products = product.product_list
         self.txtVisitDate.setText(self.workdate)
-        if customers.active["account"] == "NY":
+        if customer.active["account"] == "NY":
             self.visitType = "N"
         else:
             self.visitType = "R"
 
-        self.visits = visits
+        self.visits = visit
         self.visits.add(self.reportid, self.employeeid, self.customerid, self.workdate)
         self.visits.active["visit_type"] = self.visitType
 
@@ -57,7 +57,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
             self.widgetVisit.setItem(i, 1, item)
 
         # If customer needs special settings on prices
-        factor = customers.active["factor"]
+        factor = customer.active["factor"]
         if factor > 0.0:
             for item in self.products:
                 item["price"] = item["price"] * factor
@@ -84,7 +84,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(customers.active["company"])
+        self.txtCompany.setText(customer.active["company"])
         # connect to signals
         self.btnInsertDemo.clicked.connect(self.button_add_demo_action)
         self.btnInsertSale.clicked.connect(self.button_add_sale_action)
