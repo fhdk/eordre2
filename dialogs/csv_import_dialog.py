@@ -10,7 +10,7 @@ from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from configuration import config
-from resources.csv_file_import_dialog_rc import Ui_csvFileImportDialog
+from resources.csv_import_dialog_rc import Ui_csvFileImportDialog
 from util.worker import Worker
 
 B_COLOR = "\033[0;37m"

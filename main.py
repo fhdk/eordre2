@@ -692,13 +692,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             active_report = True
         except KeyError:
             active_report = self.show_create_report_dialog()
-        if active_report:
-            try:
-                rep = self.reports.active["rep_date"]
-                print("{}".format(rep))
-            except KeyError:
-                pass
 
+        if active_report:
+            self.reports.load_report(self.txtWorkdate.text())
             try:
                 # do we have a customer
                 _ = self.customers.active["company"]
@@ -753,7 +749,7 @@ if __name__ == '__main__':
     app.setAutoSipEnabled(True)
     app.setDesktopSettingsAware(True)
     app.setAttribute(Qt.AA_EnableHighDpiScaling)
-    pixmap = QPixmap(":/graphics/splash/splash.png")
+    pixmap = QPixmap(":/splash/splash.png")
     splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
     splash.show()
 

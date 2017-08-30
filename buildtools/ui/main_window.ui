@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>806</width>
-    <height>872</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -58,7 +58,7 @@
       <x>11</x>
       <y>3</y>
       <width>781</width>
-      <height>501</height>
+      <height>491</height>
      </rect>
     </property>
     <property name="font">
@@ -464,7 +464,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="widgetMasterPage">
             <widget class="QWidget" name="layoutWidget">
@@ -472,7 +472,7 @@
               <rect>
                <x>10</x>
                <y>40</y>
-               <width>470</width>
+               <width>450</width>
                <height>240</height>
               </rect>
              </property>
@@ -683,7 +683,7 @@
               <rect>
                <x>10</x>
                <y>0</y>
-               <width>470</width>
+               <width>450</width>
                <height>31</height>
               </rect>
              </property>
@@ -743,7 +743,7 @@
               <rect>
                <x>10</x>
                <y>290</y>
-               <width>470</width>
+               <width>450</width>
                <height>80</height>
               </rect>
              </property>
@@ -755,7 +755,7 @@
               <rect>
                <x>10</x>
                <y>0</y>
-               <width>467</width>
+               <width>450</width>
                <height>31</height>
               </rect>
              </property>
@@ -804,8 +804,8 @@
               <rect>
                <x>10</x>
                <y>40</y>
-               <width>470</width>
-               <height>330</height>
+               <width>450</width>
+               <height>320</height>
               </rect>
              </property>
              <property name="sizeAdjustPolicy">
@@ -856,7 +856,7 @@
               <rect>
                <x>10</x>
                <y>0</y>
-               <width>460</width>
+               <width>450</width>
                <height>31</height>
               </rect>
              </property>
@@ -902,7 +902,7 @@
               <rect>
                <x>10</x>
                <y>40</y>
-               <width>460</width>
+               <width>450</width>
                <height>120</height>
               </rect>
              </property>
@@ -958,8 +958,8 @@
               <rect>
                <x>10</x>
                <y>260</y>
-               <width>460</width>
-               <height>140</height>
+               <width>450</width>
+               <height>110</height>
               </rect>
              </property>
              <property name="sizeAdjustPolicy">
@@ -1024,7 +1024,7 @@
               <rect>
                <x>10</x>
                <y>170</y>
-               <width>460</width>
+               <width>450</width>
                <height>80</height>
               </rect>
              </property>
@@ -1249,7 +1249,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>806</width>
+     <width>800</width>
      <height>27</height>
     </rect>
    </property>

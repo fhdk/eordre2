@@ -8,7 +8,7 @@ from PyQt5.QtCore import QThread, pyqtSlot, pyqtSignal
 from PyQt5.QtWidgets import QDialog
 
 from util.worker import Worker
-from resources.get_products_http_dialog_rc import Ui_getProductsHttpDialog
+from resources.http_products_dialog_rc import Ui_getProductsHttpDialog
 
 B_COLOR = "\033[0;37m"
 E_COLOR = "\033[0;m"

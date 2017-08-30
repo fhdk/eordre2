@@ -48,13 +48,28 @@ class VisitDialog(QDialog, Ui_visitDialog):
 
         self.details = Detail()
         self.details.load(self.visits.active["visit_id"])
-        # for idx, detail in enumerate(self.details.details):
-        self.widgetVisit.setRowCount(10)
-        self.widgetVisit.setColumnCount(len(self.details.model["fields"]))
-        for i in range(10):
-            item = QTableWidgetItem("item {}".format(i + 1))
-            self.widgetVisit.setSortingEnabled(False)
-            self.widgetVisit.setItem(i, 1, item)
+        for idx, detail in enumerate(self.details.details_list):
+            # "pcs", "sku", "text", "price", "sas", "discount", "linetype", "extra"
+            row_count = idx + 1
+            self.widgetVisitDetails.setRowCount(row_count)
+            self.widgetVisitDetails.setRowHeight(row_count, 20)
+            w = QTableWidgetItem()
+            w.setText(detail["linetype"])
+            self.widgetVisitDetails.setItem(row_count, 0, w)
+            w.setText(str(detail["pcs"]))
+            self.widgetVisitDetails.setItem(row_count, 1, w)
+            w.setText(detail["item"])
+            self.widgetVisitDetails.setItem(row_count, 2, w)
+            w.setText(detail["sku"])
+            self.widgetVisitDetails.setItem(row_count, 3, w)
+            w.setText(detail["text"])
+            self.widgetVisitDetails.setItem(row_count, 4, w)
+            w.setText(detail["price"])
+            self.widgetVisitDetails.setItem(row_count, 5, w)
+            w.setText(str(detail["discount"]))
+            self.widgetVisitDetails.setItem(row_count, 5, w)
+            w.setText(detail["extra"])
+            self.widgetVisitDetails.setItem(row_count, 6, w)
 
         # If customer needs special settings on prices
         factor = customer.active["factor"]
@@ -86,17 +101,25 @@ class VisitDialog(QDialog, Ui_visitDialog):
         # Set info banner
         self.txtCompany.setText(customer.active["company"])
         # connect to signals
-        self.btnInsertDemo.clicked.connect(self.button_add_demo_action)
-        self.btnInsertSale.clicked.connect(self.button_add_sale_action)
+        self.btnInsertLine.clicked.connect(self.button_add_line_action)
         self.btnArchiveVisit.clicked.connect(self.button_save_visit_action)
+        self.widgetVisitDetails.setColumnWidth(0, 43)   # line_type D/N/S
+        self.widgetVisitDetails.setColumnWidth(1, 44)   # pcs
+        self.widgetVisitDetails.setColumnWidth(2, 83)   # product
+        self.widgetVisitDetails.setColumnWidth(3, 123)  # sku
+        self.widgetVisitDetails.setColumnWidth(4, 153)  # text
+        self.widgetVisitDetails.setColumnWidth(5, 60)   # price
+        self.widgetVisitDetails.setColumnWidth(6, 50)   # discount
+        self.widgetVisitDetails.setColumnWidth(7, 60)   # amount
+        self.widgetVisitDetails.setColumnWidth(8, 30)   # SAS
 
-    def button_add_demo_action(self):
-        """Slot for Add Demo button clicked"""
-        pass
-
-    def button_add_sale_action(self):
-        """Slot for Add Sale button clicked"""
-        pass
+    def button_add_line_action(self):
+        """
+        Slot for Add Demo button clicked
+        """
+        new_row = self.widgetVisitDetails.rowCount() + 1
+        self.widgetVisitDetails.setRowCount(new_row)
+        self.widgetVisitDetails.setRowHeight(new_row, 20)
 
     def button_save_visit_action(self):
         """
