@@ -616,6 +616,9 @@
         <pointsize>10</pointsize>
        </font>
       </property>
+      <property name="editable">
+       <bool>true</bool>
+      </property>
       <item>
        <property name="text">
         <string>dbo</string>
@@ -794,6 +797,9 @@
        <font>
         <pointsize>10</pointsize>
        </font>
+      </property>
+      <property name="editable">
+       <bool>true</bool>
       </property>
       <item>
        <property name="text">
