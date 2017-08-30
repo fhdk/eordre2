@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QDialog, QTableWidgetItem
 
 from models.detail import Detail
 from resources.visit_dialog_rc import Ui_visitDialog
+from util import utils
 
 
 class VisitDialog(QDialog, Ui_visitDialog):
@@ -64,12 +65,16 @@ class VisitDialog(QDialog, Ui_visitDialog):
             self.widgetVisitDetails.setItem(row_count, 3, w)
             w.setText(detail["text"])
             self.widgetVisitDetails.setItem(row_count, 4, w)
-            w.setText(detail["price"])
+            w.setText(str(detail["price"]))
             self.widgetVisitDetails.setItem(row_count, 5, w)
             w.setText(str(detail["discount"]))
-            self.widgetVisitDetails.setItem(row_count, 5, w)
-            w.setText(detail["extra"])
             self.widgetVisitDetails.setItem(row_count, 6, w)
+            w.setText(str(detail["amount"]))
+            self.widgetVisitDetails.setItem(row_count, 7, w)
+            w.setText(utils.int2str_dk(detail["sas"]))
+            self.widgetVisitDetails.setItem(row_count, 8, w)
+            w.setText(detail["extra"])
+            self.widgetVisitDetails.setItem(row_count, 9, w)
 
         # If customer needs special settings on prices
         factor = customer.active["factor"]
@@ -101,8 +106,10 @@ class VisitDialog(QDialog, Ui_visitDialog):
         # Set info banner
         self.txtCompany.setText(customer.active["company"])
         # connect to signals
-        self.btnInsertLine.clicked.connect(self.button_add_line_action)
+        self.btnAppend.clicked.connect(self.button_add_line_action)
+        self.btnClear.clicked.connect(self.button_clear_line_action)
         self.btnArchiveVisit.clicked.connect(self.button_save_visit_action)
+        self.cboDnst.currentIndexChanged.connect(self.dnst_changed_action)
         self.widgetVisitDetails.setColumnWidth(0, 43)   # line_type D/N/S
         self.widgetVisitDetails.setColumnWidth(1, 44)   # pcs
         self.widgetVisitDetails.setColumnWidth(2, 83)   # product
@@ -120,6 +127,11 @@ class VisitDialog(QDialog, Ui_visitDialog):
         new_row = self.widgetVisitDetails.rowCount() + 1
         self.widgetVisitDetails.setRowCount(new_row)
         self.widgetVisitDetails.setRowHeight(new_row, 20)
+
+    def button_clear_line_action(self):
+        """
+        Slot for Add Demo button clicked
+        """
 
     def button_save_visit_action(self):
         """
@@ -139,3 +151,22 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.visits.active["sas"] = self.txtVisitSas.text()
         self.visits.active["sale"] = self.txtVisitSale.text()
         self.visits.active["total"] = self.txtVisitTotal.text()
+
+    def dnst_changed_action(self):
+        """
+        Changed linetype
+        :return: nothing
+        """
+        if self.cboDnst.currentText() == "T":
+            self.set_input(False)
+            return
+        self.set_input(True)
+
+    def set_input(self, arg: bool):
+        """Enable inputs"""
+        self.txtPcs.setEnabled(arg)
+        self.cboProduct.setEnabled(arg)
+        self.cboSku.setEnabled(arg)
+        self.txtLinePrice.setEnabled(arg)
+        self.txtLineDiscount.setEnabled(arg)
+        self.chkSas.setEnabled(arg)
