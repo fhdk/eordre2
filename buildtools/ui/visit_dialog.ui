@@ -607,41 +607,6 @@
       <property name="editable">
        <bool>true</bool>
       </property>
-      <item>
-       <property name="text">
-        <string>dbo</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>sslsh</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>speeda</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>mfcps</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>htwpro6</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>rpcfsg</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>as1500</string>
-       </property>
-      </item>
      </widget>
     </item>
     <item row="0" column="5">
@@ -803,21 +768,6 @@
       <property name="editable">
        <bool>true</bool>
       </property>
-      <item>
-       <property name="text">
-        <string>02,3450,0005</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>02,0135</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>02,3100,5000</string>
-       </property>
-      </item>
      </widget>
     </item>
     <item row="0" column="3">

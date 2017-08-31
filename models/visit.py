@@ -37,15 +37,19 @@ class Visit:
         self.model = {
             "name": "visit",
             "id": "visit_id",
-            "fields": ("visit_id", "report_id", "employee_id", "customer_id", "visit_date", "po_sent",
+            "fields": ("visit_id", "report_id", "employee_id", "customer_id",
+                       "visit_date", "po_sent",
                        "po_buyer", "po_number", "po_company", "po_address1", "po_address2",
                        "po_postcode", "po_postoffice", "po_country",
-                       "info_text", "prod_demo", "prod_sale", "visit_type",
-                       "po_sas", "po_sale", "po_total", "po_approved"),
+                       "po_note", "prod_demo", "prod_sale", "visit_type",
+                       "po_sas", "po_sale", "po_total", "po_approved", "visit_note"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL", "INTEGER NOT NULL",
                       "TEXT NOT NULL", "INTEGER DEFAULT 0",
-                      "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
-                      "TEXT NOT NULL", "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0", "INTEGER DEFAULT 0")
+                      "TEXT", "TEXT", "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT",
+                      "TEXT", "TEXT", "TEXT", "TEXT NOT NULL",
+                      "REAL DEFAULT 0", "REAL DEFAULT 0", "REAL DEFAULT 0",
+                      "INTEGER DEFAULT 0", "TEXT")
         }
         self._report_visits = []
         self._visit = {}
@@ -162,6 +166,31 @@ class Visit:
         """
         filters = [(self.model["id"], "=")]
         values = (visit_id,)
+        sql = self.q.build("select", self.model, filters=filters)
+        if DBG:
+            printit(" ->find\n"
+                    "  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(filters, values, sql))
+        success, data = self.q.execute(sql, values=values)
+        if DBG:
+            printit("  ->filters: {}\n"
+                    "  ->values: {}\n"
+                    "  ->sql: {}".format(filters, values, sql))
+        if success:
+            try:
+                self._visit = dict(zip(self.model["fields"], data[0]))
+                return True
+            except IndexError:
+                self._visit = {}
+        return False
+
+    def find_by_date(self, visit_date):
+        """
+        Locate visit by date
+        """
+        filters = [("visit_date", "=")]
+        values = (visit_date,)
         sql = self.q.build("select", self.model, filters=filters)
         if DBG:
             printit(" ->find\n"

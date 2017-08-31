@@ -7,6 +7,7 @@
 """
 Visit Dialog Module
 """
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QDialog, QTableWidgetItem
 
 from models.detail import Detail
@@ -38,14 +39,20 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.workdate = report.active["rep_date"]
         self.products = product.product_list
         self.txtVisitDate.setText(self.workdate)
-        if customer.active["account"] == "NY":
-            self.visitType = "N"
-        else:
-            self.visitType = "R"
 
         self.visits = visit
-        self.visits.add(self.reportid, self.employeeid, self.customerid, self.workdate)
-        self.visits.active["visit_type"] = self.visitType
+        try:
+
+            v = self.visits.find_by_date(self.workdate)
+            v_id = v["visit_id"]
+
+        except KeyError:
+            self.visits.add(self.reportid, self.employeeid, self.customerid, self.workdate)
+            if customer.active["account"] == "NY":
+                self.visitType = "N"
+            else:
+                self.visitType = "R"
+            self.visits.active["visit_type"] = self.visitType
 
         self.details = Detail()
         self.details.load(self.visits.active["visit_id"])
@@ -120,6 +127,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.widgetVisitDetails.setColumnWidth(7, 60)   # amount
         self.widgetVisitDetails.setColumnWidth(8, 30)   # SAS
 
+    @pyqtSlot()
     def button_add_line_action(self):
         """
         Slot for Add Demo button clicked
@@ -128,15 +136,18 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.widgetVisitDetails.setRowCount(new_row)
         self.widgetVisitDetails.setRowHeight(new_row, 20)
 
+    @pyqtSlot()
     def button_clear_line_action(self):
         """
         Slot for Add Demo button clicked
         """
 
+    @pyqtSlot()
     def button_save_visit_action(self):
         """
         Slot for saving the visit
         """
+        # save visit head contents
         self.visits.active["po_buyer"] = self.txtPoBuyer.text()
         self.visits.active["po_number"] = self.txtPoNumber.text()
         self.visits.active["po_company"] = self.txtPoCompany.text()
@@ -152,17 +163,20 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.visits.active["sale"] = self.txtVisitSale.text()
         self.visits.active["total"] = self.txtVisitTotal.text()
 
+        # TODO: save visitdetails
+
+    @pyqtSlot()
     def dnst_changed_action(self):
         """
         Changed linetype
         :return: nothing
         """
         if self.cboDnst.currentText() == "T":
-            self.set_input(False)
+            self.set_input_enabled(False)
             return
         self.set_input(True)
 
-    def set_input(self, arg: bool):
+    def set_input_enabled(self, arg: bool):
         """Enable inputs"""
         self.txtPcs.setEnabled(arg)
         self.cboProduct.setEnabled(arg)
@@ -170,3 +184,22 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.txtLinePrice.setEnabled(arg)
         self.txtLineDiscount.setEnabled(arg)
         self.chkSas.setEnabled(arg)
+
+    def load_items(self):
+        """Load ITEMS into product combo"""
+        for item in self.products:
+            self.cboProduct.addItem(item["item"], item["sku"])
+
+    def load_sku(self):
+        """Load SKU into sku combo"""
+        for item in self.products:
+            self.cboProduct.addItem(item["sku"], item["name1"])
+
+    def item_changed_action(self):
+        """Update SKU combo when item changes"""
+        self.cboSku.setCurrentText(self.cboProduct.itemData(self.cboProduct.currentIndex()))
+
+    def sku_changed_action(self):
+        """Update ITEM combo when sku changes"""
+        self.txtLineText.setText(self.cboSku.itemData(self.cboSku.currentIndex()))
+        self.cboProduct.setCurrentText(self.cboProduct.currentText())
