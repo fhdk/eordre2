@@ -145,6 +145,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
         intended use is warning about unsaved data
         """
+        # TODO handle close event
+        self.app_exit()
         pass
 
     @pyqtSlot()
@@ -244,7 +246,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             self.txtTotal.setText(str(self.visits.active["po_total"]))
             self.lblSent.setText(utils.bool2dk(utils.int2bool(self.visits.active["po_sent"])))
             self.lblApproved.setText(utils.bool2dk(utils.int2bool(self.visits.active["po_approved"])))
-            self.txtVisitInfoText.setText(self.visits.active["info_text"])
+            self.txtVisitInfoText.setText(self.visits.active["po_note"])
 
             for detail in self.details.details_list:
                 item = QTreeWidgetItem([detail["linetype"],
@@ -257,12 +259,12 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 items.append(item)
         except KeyError as k:
             if DBG:
-                printit(" ->populate_details_list\n"
+                printit(" ->populate_visit_details_list\n"
                         "  ->exception handled\n"
                         "  ->KeyError: {}".format(k))
         except IndexError as i:
             if DBG:
-                printit(" ->populate_details_list\n"
+                printit(" ->populate_visit_details_list\n"
                         "  ->exception handled\n"
                         "  ->IndexError: {}".format(i))
         self.widgetVisitDetails.addTopLevelItems(items)
@@ -305,6 +307,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             event:
         intended use is resize content to window
         """
+        # TODO handle resize event
         pass
 
     def run(self):
@@ -344,6 +347,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Save changes made to contacts
         """
+        # TODO add new contact
         msgbox = QMessageBox()
         msgbox.information(self,
                            __appname__,
@@ -355,6 +359,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Save changes made to contacts
         """
+        # TODO save changes made to contacts
         msgbox = QMessageBox()
         msgbox.information(self,
                            __appname__,
@@ -520,10 +525,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         Slot for dataExport triggered signal
         """
+        # TODO: Opret CSV data backup
         msgbox = QMessageBox()
         msgbox.information(self,
                            __appname__,
-                           "# TODO: Opret CSV data backup",
+                           "TODO: Opret CSV data backup",
                            QMessageBox.Ok)
 
     @pyqtSlot()

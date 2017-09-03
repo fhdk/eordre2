@@ -13,7 +13,7 @@ import csv
 from models.query import Query
 from util import utils
 
-B_COLOR = "\033[1;36m"
+B_COLOR = "\033[1;34m"
 E_COLOR = "\033[0;1m"
 DBG = True
 
@@ -141,7 +141,7 @@ class Visit:
             workdate:
         """
         values = (None, report_id, employee_id, customer_id, workdate, 0,
-                  "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0)
+                  "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0, "")
         new_id = self.insert(values)
         self.find(new_id)
         self._customer_visits.append(self._visit)
@@ -222,7 +222,7 @@ class Visit:
                    field_5, row[6].strip(), row[7].strip(), row[8].strip(), row[9].strip(),
                    row[10].strip(), row[11].strip(), row[12].strip(), row[13].strip(), row[14].strip(),
                    row[15].strip(), row[16].strip(), row[17].strip(), row[18], row[19],
-                   row[20], row[21])
+                   row[20], row[21], row[14].strip())
         self.insert(new_row)  # call insert function
 
     def insert(self, values):
