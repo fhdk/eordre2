@@ -321,15 +321,15 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 _ = self.employees.active["fullname"]
             except KeyError:
                 msgbox = QMessageBox()
-                msgbox.about(self.mainGrid,
+                msgbox.about(self,
                              __appname__,
                              "Check din netværksforbindelse! Tak")
         else:
             msgbox = QMessageBox()
-            msgbox.about(self.mainGrid,
+            msgbox.about(self,
                          __appname__,
                          "Der er mangler i dine indstillinger.\n\nDisse skal tilpasses. Tak")
-            self.settings_dialog()
+            self.show_settings_dialog()
 
         # if requested check server data
         if utils.int2bool(self.settings.active["sc"]):

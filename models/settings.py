@@ -115,7 +115,7 @@ class Settings:
 
         if success and not data:
             values = (None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
-                      "customers", "invenprices", "employees", "", "", "", "", 0)
+                      "customers", "invenprices", "employees", "", "", "", "", 0, 0, 0, None)
 
             self.insert(values)
 
