@@ -7,7 +7,7 @@ setup(
     url='https://github.com/fhdk/eordre-app.pyqt',
     license='AGPL',
     author='Frede Hundewadt',
-    author_email='fh@uex.dk',
+    author_email='echo "ZmhAdWV4LmRrCg==" | base64 -d',
     description='Eordre app build with Python 3 and PyQt5',
     requires=['PyQt5']
 )
