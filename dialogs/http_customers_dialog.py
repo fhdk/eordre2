@@ -13,9 +13,9 @@ from resources.http_customers_dialog_rc import Ui_getCustomersHttpDialog
 
 B_COLOR = "\033[0;37m"
 E_COLOR = "\033[0;m"
-DBG = True
+DBG = False
 
-__module__ = "customers_http"
+__module__ = "http_customers_dialog.py"
 
 
 def printit(string):
@@ -67,6 +67,11 @@ class GetCustomersHttpDialog(QDialog, Ui_getCustomersHttpDialog):
         worker.sig_status.connect(self.on_status)
         worker.sig_done.connect(self.on_done)
         try:
+            """
+            customers object is used by the worker to insert data into customer table
+            employees object is used to fetch the customer file
+            settings object is used to check access
+            """
             thread.started.connect(worker.import_customers_http(self.customers, self.employees, self.settings))
             thread.start()
         except TypeError as t:

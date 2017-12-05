@@ -9,7 +9,7 @@ Utility module
 """
 
 from configuration import config
-from util import httpfn
+from util import httpFn
 
 
 def country_name_from_iso(iso):
@@ -33,7 +33,7 @@ def refresh_sync_status(settings):
     Returns:
         Two tuples with target and date time value
     """
-    return httpfn.update_last_sync_info(settings)
+    return httpFn.update_last_sync_info(settings)
 
 
 def arg2bool(arg):

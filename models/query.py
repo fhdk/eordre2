@@ -101,7 +101,8 @@ class Query:
         if querytype == "UPDATE":
             return build_update_query(model_def, update, filters)
 
-    def execute(self, sql_query, values=None):
+    @staticmethod
+    def execute(sql_query, values=None):
         """
         Execute a query and return the result
         Args:
@@ -134,10 +135,10 @@ class Query:
                     result = cur.lastrowid
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
                 if config.DEBUG_QUERY:
-                    printit("  ->exception: {}".format(e))
+                    printit("  -> exception: {}".format(e))
                 return False, e
         if config.DEBUG_QUERY:
-            printit("  ->result: {}\r".format(result))
+            printit("  ->r esult: {}\r".format(result))
         return True, result
 
     @staticmethod

@@ -10,10 +10,28 @@ import ssl
 from http.client import HTTPException
 from socket import timeout
 from urllib.error import URLError
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
+
+import version
 
 from configuration import config
-from . import sanitizedatafn
+from . import sanitizeDataFn
+
+USER_AGENT = "Eordre NG version {}".format(version.__version__)
+
+BC = "\033[1;36m"
+EC = "\033[0;1m"
+DBG = True
+
+
+def printit(string):
+    """
+    Print variable string when debugging
+    Args:
+        string: the string to be printed
+    """
+    if DBG:
+        print("{}\n{}{}{}".format("utils.httpFn.py", BC, string, EC))
 
 
 def get_customers(settings, employee, maxwait=2):
@@ -27,18 +45,32 @@ def get_customers(settings, employee, maxwait=2):
     Returns:
         customers list
     """
-    s = settings.active
-    e = employee.active
-    f = "".join([s["pf"], s["fc"], s["sf"]])
+    active_settings = settings.active
+    active_employee = employee.active
+    try:
+        # old file
+        # req_file = "".join([active_settings["fc"], active_employee["salesrep"], active_settings["sf"]])
+        # new file
+        req_file = "".join([active_settings["pf"], active_settings["fc"], active_settings["sf"]])
+    except KeyError:
+        return
+
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
-    uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
+    uri = "{}/{}/{}".format(active_settings["http"], active_settings["usercountry"], req_file)
+    printit(" -" + uri)
+    request = Request(uri)
+    request.add_header("User-Agent", USER_AGENT)
     try:
-        with urlopen(uri, timeout=maxwait, context=context) as response:
+        with urlopen(request, timeout=maxwait, context=context) as response:
             data = response.read()
-            data = sanitizedatafn.sanitize_customer_data(data, e["salesrep"])
-    except (HTTPException, timeout, URLError) as e:
-        print("HTTP ERROR: {}".format(e))
+            try:
+                _ = active_employee["salesrep"]
+                data = sanitizeDataFn.sanitize_customer_data(data, active_employee["salesrep"])
+            except KeyError:
+                return data
+    except (HTTPException, timeout, URLError) as active_employee:
+        print("HTTP ERROR: {}".format(active_employee))
 
     return data
 
@@ -58,10 +90,12 @@ def get_employee_data(settings, maxwait=2):
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
     uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
+    request = Request(uri)
+    request.add_header("User-Agent", USER_AGENT)
     try:
-        with urlopen(uri, timeout=maxwait, context=context) as response:
+        with urlopen(request, timeout=maxwait, context=context) as response:
             data = response.read()
-            data = sanitizedatafn.sanitize_employee_data(data, s["usermail"], s["userpass"])
+            data = sanitizeDataFn.sanitize_employee_data(data, s["usermail"], s["userpass"])
 
     except (HTTPException, timeout, URLError) as e:
         print("HTTP ERROR: {}".format(e))
@@ -83,9 +117,11 @@ def get_modified_date(server, country, file, maxwait=2):
     """
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     uri = "{}/{}/{}".format(server, country, file)
+    request = Request(uri)
+    request.add_header("User-Agent", USER_AGENT)
     try:
-        with urlopen(uri, timeout=maxwait, context=context) as response:
-            data = response.read().decode(config.DECODE_HTTP)
+        with urlopen(request, timeout=maxwait, context=context) as response:
+            data = response.read().decode(config.HTTP_ENCODING)
             return data
     except (HTTPException, timeout, URLError) as e:
         print("HTTP ERROR: {}".format(e))
@@ -108,10 +144,12 @@ def get_products(settings, maxwait=2):
     context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     data = []
     uri = "{}/{}/{}".format(s["http"], s["usercountry"], f)
+    request = Request(uri)
+    request.add_header("User-Agent", USER_AGENT)
     try:
-        with urlopen(uri, timeout=maxwait, context=context) as response:
+        with urlopen(request, timeout=maxwait, context=context) as response:
             data = response.read()
-            data = sanitizedatafn.sanitize_product_data(data)
+            data = sanitizeDataFn.sanitize_product_data(data)
     except (HTTPException, timeout, URLError) as e:
         print("HTTP ERROR: {}".format(e))
     return data
@@ -130,9 +168,10 @@ def inet_conn_check(maxwait=2):
     for host in hosts:
         # noinspection PyBroadException
         try:
-            data = urlopen(host, timeout=maxwait)
+            with urlopen(host, timeout=maxwait) as response:
+                data = response.read()
             break
-        except:
+        except (HTTPException, timeout) as e:
             pass
     return bool(data)
 

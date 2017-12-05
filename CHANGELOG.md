@@ -1,0 +1,1 @@
+This file contains notable changes to the project.

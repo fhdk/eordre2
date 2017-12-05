@@ -6,12 +6,12 @@
 
 """Configuration functions"""
 
-from util import filefn
+from util import fileFn
 
 from . import config
 
 
 def check_config_folder():
     """Checks if the APP_DATA folder exist and creates if not"""
-    if not filefn.check_file(config.APP_DATA, folder=True):
-        filefn.create_dir(config.APP_DATA)
+    if not fileFn.check_file(config.APP_DATA, folder=True):
+        fileFn.create_dir(config.APP_DATA)

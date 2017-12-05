@@ -13,7 +13,7 @@ import time
 
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
 
-from util import httpfn
+from util import httpFn
 
 
 B_COLOR = "\033[1;30m"
@@ -117,9 +117,17 @@ class Worker(QObject):
         :return:
         """
         self.sig_status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
-        # fetch datafile from http server
-        data = httpfn.get_customers(settings, employees)
         self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
+        # fetch datafile from http server
+        if DBG:
+            printit(self.__thread_id)
+            printit(settings.active)
+            printit("{}".format(employees.active))
+            printit("{}".format(employees))
+            exit()
+        data = httpFn.get_customers(settings, employees)
+        if DBG:
+            print(data)
         for row in data:  # data processing
             self.__app.processEvents()
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
@@ -137,7 +145,7 @@ class Worker(QObject):
         products.drop_table()  # drop product table
         self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
         # fetching datafile using http with settings
-        data = httpfn.get_products(settings)
+        data = httpFn.get_products(settings)
         for row in data:  # data processing
             self.__app.processEvents()
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))

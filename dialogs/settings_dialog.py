@@ -4,11 +4,11 @@
 # Copyright: Frede Hundewadt <echo "ZmhAdWV4LmRrCg==" | base64 -d>
 # License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
 
-
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QDialog, QMessageBox
 
 from resources.settings_dialog_rc import Ui_settingsDialog
-from util import passwdfn, utils
+from util import utils, passwdFn
 
 
 class SettingsDialog(QDialog, Ui_settingsDialog):
@@ -16,26 +16,29 @@ class SettingsDialog(QDialog, Ui_settingsDialog):
     Dialog for entering and updating current
     """
 
-    def __init__(self, settings, parent=None):
+    settings_changed = pyqtSignal()
+
+    def __init__(self, settings, employees, parent=None):
         """Initialize the dialog"""
         super(SettingsDialog, self).__init__(parent)
         self.setupUi(self)  # setup ui from resource file
-        self.settings = settings
-        self.work = self.settings.active
+        self._settings = settings
+        self._employees = employees
+        self._work = self._settings.active
 
         # assign values to input fields
-        self.editUserMail.setText(self.settings.active["usermail"])
-        self.editUserPass.setText(self.settings.active["userpass"])
-        self.editUserCountry.setText(self.settings.active["usercountry"])
-        self.editHttp.setText(self.settings.active["http"])
-        self.editSmtp.setText(self.settings.active["smtp"])
-        self.editPort.setText(str(self.settings.active["port"]))
-        self.editMailTo.setText(self.settings.active["mailto"])
-        self.checkServerData.setChecked(utils.int2bool(self.settings.active["sc"]))
-        self.editMailServer.setText(self.settings.active["mailserver"])
-        self.editMailPort.setText(str(self.settings.active["mailport"]))
-        self.editMailUser.setText(self.settings.active["mailuser"])
-        self.editMailPass.setText(self.settings.active["mailpass"])
+        self.editUserMail.setText(self._settings.active["usermail"])
+        self.editUserPass.setText(self._settings.active["userpass"])
+        self.editUserCountry.setText(self._settings.active["usercountry"])
+        self.editHttp.setText(self._settings.active["http"])
+        self.editSmtp.setText(self._settings.active["smtp"])
+        self.editPort.setText(str(self._settings.active["port"]))
+        self.editMailTo.setText(self._settings.active["mailto"])
+        self.checkServerData.setChecked(utils.int2bool(self._settings.active["sc"]))
+        self.editMailServer.setText(self._settings.active["mailserver"])
+        self.editMailPort.setText(str(self._settings.active["mailport"]))
+        self.editMailUser.setText(self._settings.active["mailuser"])
+        self.editMailPass.setText(self._settings.active["mailpass"])
         # connect to signals
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -45,40 +48,40 @@ class SettingsDialog(QDialog, Ui_settingsDialog):
         User buttonbox_accepted_action current
         """
         # assign input fields to current
-        self.work["usermail"] = self.editUserMail.text().lower()
-        self.work["userpass"] = self.editUserPass.text()
-        self.work["usercountry"] = self.editUserCountry.text().lower()
-        self.work["http"] = self.editHttp.text().lower()
-        self.work["smtp"] = self.editSmtp.text().lower()
-        self.work["port"] = self.editPort.text()
-        self.work["mailto"] = self.editMailTo.text().lower()
-        self.work["sc"] = utils.bool2int(self.checkServerData.isChecked())
-        self.work["mailserver"] = self.editMailServer.text().lower()
-        self.work["mailport"] = self.editMailPort.text()
-        self.work["mailuser"] = self.editMailUser.text()
-        self.work["mailpass"] = self.editMailPass.text()
+        self._work["usermail"] = self.editUserMail.text().lower()
+        self._work["userpass"] = self.editUserPass.text()
+        self._work["usercountry"] = self.editUserCountry.text().lower()
+        self._work["http"] = self.editHttp.text().lower()
+        self._work["smtp"] = self.editSmtp.text().lower()
+        self._work["port"] = self.editPort.text()
+        self._work["mailto"] = self.editMailTo.text().lower()
+        self._work["sc"] = utils.bool2int(self.checkServerData.isChecked())
+        self._work["mailserver"] = self.editMailServer.text().lower()
+        self._work["mailport"] = self.editMailPort.text()
+        self._work["mailuser"] = self.editMailUser.text()
+        self._work["mailpass"] = self.editMailPass.text()
         # check validity of important settings
         checkok = True
         items = []
-        if self.work["usermail"] == "":
+        if self._work["usermail"] == "":
             items.append("Bruger email (fane 1)")
             checkok = False
-        if self.work["userpass"] == "":
+        if self._work["userpass"] == "":
             items.append("Bruger kode (fane 1)")
             checkok = False
-        if self.work["usercountry"] == "":
+        if self._work["usercountry"] == "":
             items.append("Bruger land (fane 1)")
             checkok = False
-        if self.work["smtp"] == "":
+        if self._work["smtp"] == "":
             items.append("SMTP server (fane 2)")
             checkok = False
-        if self.work["port"] == "":
+        if self._work["port"] == "":
             items.append("SMTP port (fane 2)")
             checkok = False
-        if self.work["mailto"] == "":
+        if self._work["mailto"] == "":
             items.append("Ordremodtager (fane 2)")
             checkok = False
-        if self.work["http"] == "":
+        if self._work["http"] == "":
             items.append("Web server (fane 2)")
             checkok = False
         # inform user about settings validity
@@ -90,11 +93,13 @@ class SettingsDialog(QDialog, Ui_settingsDialog):
                            QMessageBox.Ok)
             return False
         # update password in settings
-        if len(self.work["userpass"]) < 97:
-            self.work["userpass"] = passwdfn.hash_password(self.work["userpass"])
-        if len(self.work["mailpass"]) < 97:
-            self.work["mailpass"] = passwdfn.hash_password(self.work["mailpass"])
-        self.settings.active = self.work
+        if len(self._work["userpass"]) < 97:
+            self._work["userpass"] = passwdFn.hash_password(self._work["userpass"])
+        if len(self._work["mailpass"]) < 97:
+            self._work["mailpass"] = passwdFn.hash_password(self._work["mailpass"])
+        self._settings.active = self._work
+        self._settings.update()
+        self.settings_changed.emit()
         self.done(True)
 
     def reject(self):

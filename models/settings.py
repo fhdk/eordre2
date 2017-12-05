@@ -75,7 +75,7 @@ class Settings:
         self._settings = settings
         self.update()
 
-    def insert(self, values):
+    def __insert(self, values):
         """
         Inserts in database and activates the current settings values
         Args:
@@ -117,7 +117,7 @@ class Settings:
             values = (None, "", "", "", "_", "__", ".txt", "", "", "", "", "", "", "", "",
                       "customers", "invenprices", "employees", "", "", "", "", 0, 0, 0, None)
 
-            self.insert(values)
+            self.__insert(values)
 
             success, data = self.q.execute(sql)
 

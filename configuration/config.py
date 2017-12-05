@@ -20,12 +20,14 @@ DEBUG_SETTINGS = False
 DEBUG_VISIT = False
 DEBUG_QUERY = False
 
-CONN_CHECK = ["https://bitbucket.org", "https://github.com", "https://wikipedia.org"]
-COUNTRIES = [("dk", "Danmark"), ("no", "Norge"), ("s", "Sverige")]
+CONN_CHECK = ["https://wikipedia.org", "https://bitbucket.org", "https://github.com"]
+COUNTRIES = [("dk", "Danmark"), ("n", "Norge"), ("s", "Sverige")]
 HOME = os.path.expanduser("~")
+LOCAL = "{}{}".format(HOME, "./appdata/local/innotec")
 APP_DATA = "./appdata"
 DBPATH = APP_DATA + "/app.db"
 LOGPATH = APP_DATA + "/app.log"
 CSV_TABLES = [("Kontakter", "contact"), ("Kunder", "customer"),
-              ("Ordrelinjer", "detail"), ("Ordrer", "visit"), ("Rapporter", "report")]
-DECODE_HTTP = "ISO-8859-1"
+              ("Ordrelinjer", "detail"), ("Ordrer", "visit"),
+              ("Rapporter", "report")]
+HTTP_ENCODING = "ISO-8859-1"

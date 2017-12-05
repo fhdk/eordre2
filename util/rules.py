@@ -6,6 +6,23 @@
 
 """Validation rules"""
 
+__appname__ = "Eordre NG"
+__module__ = "rules"
+
+BC = "\033[1;36m"
+EC = "\033[0;1m"
+DBG = False
+
+
+def printit(something):
+    """
+    Print something when debugging
+    Args:
+        something: the string to be printed
+    """
+    if DBG:
+        print("{}\n{}{}{}".format(__module__, BC, something, EC))
+
 
 def validate_fields():
     """
@@ -25,6 +42,7 @@ def check_settings(settings):
         bool indicating if current is missing
     """
     s = settings
+    printit(s)
     try:
         return bool(s["usermail"] and s["userpass"] and s["usercountry"] and
                     s["http"] and s["smtp"] and s["port"] and s["mailto"])
