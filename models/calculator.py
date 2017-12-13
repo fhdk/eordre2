@@ -21,7 +21,7 @@ class Calculator:
         Initialize Calculator
         """
         self.model = {
-            "name": "calc",
+            "name": "report_calculations",
             "id": "calc_id",
             "fields": ("calc_id", "calc_date", "report_id", "employee_id", "reports_calculated",
                        "new_visit", "new_demo", "new_sale", "new_turnover",
@@ -51,22 +51,19 @@ class Calculator:
         return self._totals
 
     @active.setter
-    def active(self, wd_eid):
+    def active(self, date_employee):
         """
         Sets the current totals
-        :param wd_eid: string with two 'words' the first is workdate and the second is employee_id
+        :param date_employee: tuple with date and employee
         :return:
         """
-        td = wd_eid.split()
         try:
-            wd = td[0]
-            eid = td[1]
             try:
-                twd = self._totals["workdate"]
-                if not twd == wd:
-                    self.select_by_date_employee(wd, eid)
+                _ = self._totals["workdate"]
+                if not _ == date_employee[0]:
+                    self.select_by_date_employee(date_employee[0], date_employee[1])
             except KeyError:
-                self.select_by_date_employee(wd, eid)
+                self.select_by_date_employee(date_employee[0], date_employee[1])
         except IndexError:
             self.clear()
 
