@@ -9,7 +9,7 @@ Visit details module
 """
 
 from models.query import Query
-from util import utils, printFn as p
+from util import utils
 
 
 __module__ = "order_lines"
