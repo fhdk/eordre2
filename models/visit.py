@@ -8,21 +8,8 @@
 Visit module
 """
 
-import csv
-
 from models.query import Query
 from util import utils
-
-B_COLOR = "\033[1;34m"
-E_COLOR = "\033[0;1m"
-DBG = True
-
-__module__ = "visit"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Visit:
@@ -54,15 +41,11 @@ class Visit:
         self._report_visits = []
         self._visit = {}
         self._customer_visits = []
-        self._csv_field_count = 22
+        self._csv_record_length = 22
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            success, data = self.q.execute(sql)
-            if DBG:
-                printit(" ->table\n"
-                        "  ->success: {}\n"
-                        "  ->data: {}".format(success, data))
+            self.q.execute(sql)
 
     @property
     def active(self):
@@ -85,7 +68,7 @@ class Visit:
     @property
     def csv_field_count(self):
         """The number of fields expected on csv import"""
-        return self._csv_field_count
+        return self._csv_record_length
 
     @property
     def visit_list_customer(self):
@@ -144,8 +127,6 @@ class Visit:
                   "", "", "", "", "", "", "", "", "", "", "", "", 0.0, 0.0, 0.0, 0, "")
         new_id = self.insert(values)
         self.find(new_id)
-        self._customer_visits.append(self._visit)
-        self._report_visits.append(self._visit)
 
     def delete(self, visit_id):
         """
@@ -162,21 +143,12 @@ class Visit:
         """
         Find the specified visit
         :param visit_id:
-        :return:
+        :return: True on success
         """
         filters = [(self.model["id"], "=")]
         values = (visit_id,)
         sql = self.q.build("select", self.model, filters=filters)
-        if DBG:
-            printit(" ->find\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         if success:
             try:
                 self._visit = dict(zip(self.model["fields"], data[0]))
@@ -188,20 +160,15 @@ class Visit:
     def find_by_date(self, visit_date):
         """
         Locate visit by date
+        :rtype: bool
+        :param visit_date:
+        :return: True on success
         """
         filters = [("visit_date", "=")]
         values = (visit_date,)
+
         sql = self.q.build("select", self.model, filters=filters)
-        if DBG:
-            printit(" ->find\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         if success:
             try:
                 self._visit = dict(zip(self.model["fields"], data[0]))
@@ -213,8 +180,9 @@ class Visit:
     def import_csv(self, row):
         """
         Translate a csv row
-        Args:
-            row:
+        :rtype: bool
+        :param row:
+        :return: True / False
         """
         # translate bool text to integer col 5
         field_5 = utils.bool2int(utils.arg2bool(row[5]))
@@ -228,73 +196,62 @@ class Visit:
     def insert(self, values):
         """
         Insert a new row in the database
-        Args:
-            values:
+        :param values:
+        :return: rownumber on success or None
         """
         sql = self.q.build("insert", self.model)
-        if DBG:
-            printit(" ->insert\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->success: {}\n "
-                    "  ->data: {}".format(success, data))
         if success and data:
             return data
-        return False
+        return None
 
-    def load_for_customer(self, customer_id):
+    def load_for_customer(self, customer_id, visit_date=None):
         """
         Load visit_list_customer for specified customer
-        Args:
-            customer_id:
+        :rtype: bool
+        :param customer_id:
+        :param visit_date:
+        :return: True / False
         """
-        filters = [("customer_id", "=")]
-        values = (customer_id,)
+        if visit_date:
+            filters = [("customer_id", "="), ("visit_date", "=")]
+            values = (customer_id, visit_date)
+        else:
+            filters = [("customer_id", "=")]
+            values = (customer_id,)
+
         sql = self.q.build("select", self.model, filters=filters)
-        if DBG:
-            printit(" ->load_for_customer\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success:
             try:
                 self._customer_visits = [dict(zip(self.model["fields"], row)) for row in data]
                 self._visit = self._customer_visits[0]
+                return True
             except (IndexError, KeyError):
                 self._visit = {}
                 self._customer_visits = []
+        return False
 
     def load_for_report(self, report_id):
         """
         Load visit_list_customer for specified report
-        Args:
-            report_id:
+        :rtype: bool
+        :param: report_id
+        :return: True / False
         """
         filters = [("report_id", "=")]
         values = (report_id,)
         sql = self.q.build("select", self.model, filters=filters)
-        if DBG:
-            printit(" ->load_for_report\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success:
             try:
                 self._report_visits = [dict(zip(self.model["fields"], row)) for row in data]
                 self._visit = self._report_visits[0]
+                return True
             except (IndexError, KeyError):
                 self._visit = {}
                 self._report_visits = []
+        return False
 
     def recreate_table(self):
         """
@@ -309,21 +266,13 @@ class Visit:
     def update(self):
         """
         Write visit changes to database
+        :return: rownumber on success or None
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-        values = self.q.values_to_arg(self._visit.values())
+        values = self.q.values_to_update(self._visit.values())
         sql = self.q.build("update", self.model, update=fields, filters=filters)
-        if DBG:
-            printit(" ->update\n"
-                    "  ->fields: {}\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(fields, filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success and data:
             return data
-        return False
+        return None
