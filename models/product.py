@@ -6,8 +6,9 @@
 
 """"product module"""
 
-from configuration import config
 from models.query import Query
+
+__module__ = "product"
 
 
 class Product:
