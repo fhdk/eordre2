@@ -11,7 +11,7 @@ Calculation module
 from models.query import Query
 
 
-class Calculator:
+class ReportCalculator:
     """
     Calculator
     """
