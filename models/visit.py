@@ -11,6 +11,8 @@ Visit module
 from models.query import Query
 from util import utils
 
+__module__ = "visit"
+
 
 class Visit:
     """
