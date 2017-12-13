@@ -10,16 +10,7 @@ settings module
 
 from models.query import Query
 
-B_COLOR = "\033[1;34m"
-E_COLOR = "\033[0;1m"
-DBG = False
-
 __module__ = "settings"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Settings:
@@ -45,11 +36,7 @@ class Settings:
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            success, data = self.q.execute(sql)
-            if DBG:
-                printit(" ->table\n"
-                        "  ->success: {}\n"
-                        "  ->data: {}".format(success, data))
+            self.q.execute(sql)
 
     @property
     def active(self):
@@ -87,16 +74,7 @@ class Settings:
 
         sql = self.q.build("insert", self.model)
 
-        if DBG:
-            printit(" ->insert\n"
-                    "  ->sql: {}\n"
-                    "  ->values: {}".format(sql, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             self._settings = dict(zip(self.model["fields"], values))
@@ -106,10 +84,6 @@ class Settings:
         Load current
         """
         sql = self.q.build("select", self.model)
-
-        if DBG:
-            printit(" ->all\n"
-                    "  ->sql: {}".format(sql))
 
         success, data = self.q.execute(sql)
 
@@ -124,10 +98,6 @@ class Settings:
         if success and data:
             self._settings = dict(zip(self.model["fields"], data[0]))
 
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
-
         if success and data:
             return data
 
@@ -139,22 +109,11 @@ class Settings:
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-        values = self.q.values_to_arg(self._settings.values())
+        values = self.q.values_to_update(self._settings.values())
 
         sql = self.q.build("update", self.model, update=fields, filters=filters)
 
-        if DBG:
-            printit(" ->update\n"
-                    "  ->fields: {}\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(fields, filters, values, sql))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
