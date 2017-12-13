@@ -27,18 +27,18 @@ class SettingsDialog(QDialog, Ui_settingsDialog):
         self._work = self._settings.active
 
         # assign values to input fields
-        self.editUserMail.setText(self._settings.active["usermail"])
-        self.editUserPass.setText(self._settings.active["userpass"])
-        self.editUserCountry.setText(self._settings.active["usercountry"])
-        self.editHttp.setText(self._settings.active["http"])
-        self.editSmtp.setText(self._settings.active["smtp"])
-        self.editPort.setText(str(self._settings.active["port"]))
-        self.editMailTo.setText(self._settings.active["mailto"])
-        self.checkServerData.setChecked(utils.int2bool(self._settings.active["sc"]))
-        self.editMailServer.setText(self._settings.active["mailserver"])
-        self.editMailPort.setText(str(self._settings.active["mailport"]))
-        self.editMailUser.setText(self._settings.active["mailuser"])
-        self.editMailPass.setText(self._settings.active["mailpass"])
+        self.editUserMail.setText(self._settings.purchase_order_line["usermail"])
+        self.editUserPass.setText(self._settings.purchase_order_line["userpass"])
+        self.editUserCountry.setText(self._settings.purchase_order_line["usercountry"])
+        self.editHttp.setText(self._settings.purchase_order_line["http"])
+        self.editSmtp.setText(self._settings.purchase_order_line["smtp"])
+        self.editPort.setText(str(self._settings.purchase_order_line["port"]))
+        self.editMailTo.setText(self._settings.purchase_order_line["mailto"])
+        self.checkServerData.setChecked(utils.int2bool(self._settings.purchase_order_line["sc"]))
+        self.editMailServer.setText(self._settings.purchase_order_line["mailserver"])
+        self.editMailPort.setText(str(self._settings.purchase_order_line["mailport"]))
+        self.editMailUser.setText(self._settings.purchase_order_line["mailuser"])
+        self.editMailPass.setText(self._settings.purchase_order_line["mailpass"])
         # connect to signals
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -87,9 +87,8 @@ class SettingsDialog(QDialog, Ui_settingsDialog):
         # inform user about settings validity
         if not checkok:
             msgbox = QMessageBox()
-            msgbox.warning(self,
-                           self.tr("Eordre"),
-                           self.tr("Der er mangler i dine indstillinger!\n{}".format("\n".join(items))),
+            msgbox.warning(self, "Eordre",
+                           "Der er mangler i dine indstillinger!\n{}".format("\n".join(items)),
                            QMessageBox.Ok)
             return False
         # update password in settings
