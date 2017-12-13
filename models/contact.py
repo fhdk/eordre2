@@ -8,6 +8,8 @@
 
 from models.query import Query
 
+__module = "contact"
+
 
 class Contact:
     """
