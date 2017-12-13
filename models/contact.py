@@ -6,20 +6,7 @@
 
 """Contact module"""
 
-import csv
-
 from models.query import Query
-
-B_COLOR = "\033[0;32m"
-E_COLOR = "\033[0;m"
-DBG = False
-
-__module__ = "contact"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Contact:
@@ -37,15 +24,11 @@ class Contact:
         }
         self._contact = {}
         self._contacts = []
-        self._csv_field_count = 8
+        self._csv_field_count = len(self.model["fields"])
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            success, data = self.q.execute(sql)
-            if DBG:
-                printit(" ->table\n"
-                        "  ->success: {}\n"
-                        "  ->data: {}".format(success, data))
+            self.q.execute(sql)
 
     @property
     def active(self):
@@ -108,16 +91,7 @@ class Contact:
         filters = [("contact_id", "=")]
         values = (contact_id,)
         sql = self.q.build("delete", self.model, filters=filters)
-        if DBG:
-            printit(" ->delete\n"
-                    "  ->filters: {}"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->{]\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success and data:
             return True
         return False
@@ -132,20 +106,12 @@ class Contact:
         """
         values = (contact_id,)
         sql = self.q.build("select", self.model)
-        if DBG:
-            printit(" ->find\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(values, sql))
         success, data = self.q.execute(sql, values=values)
         if success:
             try:
                 self._contact = dict(zip(self.model["fields"], data[0]))
             except IndexError:
                 pass
-        if DBG:
-            printit("  ->{]\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success and data:
             return True
         return False
@@ -157,8 +123,6 @@ class Contact:
             row:
         """
         new_row = (row[0], row[1], row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip())
-        if DBG:
-            printit("  ->values: {}".format(new_row))
         self.insert(new_row)
 
     def insert(self, values):
@@ -170,14 +134,7 @@ class Contact:
             the new rowid
         """
         sql = self.q.build("insert", self.model)
-        if DBG:
-            printit(" ->insert\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success and data:
             return data
         return False
@@ -193,15 +150,7 @@ class Contact:
         filters = [("customer_id", "=")]
         values = (customer_id,)
         sql = self.q.build("select", self.model, filters=filters)
-        if DBG:
-            printit(" ->all for current\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success:
             try:
                 self._contacts = [dict(zip(self.model["fields"], row)) for row in data]
@@ -230,18 +179,9 @@ class Contact:
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-        values = self.q.values_to_arg(self._contact.values())
+        values = self.q.values_to_update(self._contact.values())
         sql = self.q.build("update", self.model, update=fields, filters=filters)
-        if DBG:
-            printit(" ->update\n"
-                    "  ->fields: {}\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}\n"
-                    "  ->sql: {}".format(fields, filters, values, sql))
         success, data = self.q.execute(sql, values=values)
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
         if success and data:
             return True
         return False
