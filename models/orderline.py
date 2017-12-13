@@ -11,8 +11,7 @@ Visit details module
 from models.query import Query
 from util import utils
 
-
-__module__ = "order_lines"
+__module__ = "orderline"
 
 
 class OrderLine:
