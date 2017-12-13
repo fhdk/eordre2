@@ -9,17 +9,6 @@
 from configuration import config
 from models.query import Query
 
-B_COLOR = "\033[0;35m"
-E_COLOR = "\033[0;m"
-DBG = False
-
-__module__ = "product"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
-
 
 class Product:
     """
@@ -31,7 +20,7 @@ class Product:
         Initialize product class
         """
         self.model = {
-            "name": "product",
+            "name": "products",
             "id": "product_id",
             "fields": ("product_id", "sku", "name1", "name2", "name3", "item", "price", "d2", "d4", "d6", "d8", "d12",
                        "d24", "d48", "d96", "min", "net", "groupid"),
@@ -44,11 +33,7 @@ class Product:
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            success, data = self.q.execute(sql)
-            if config.DEBUG_PRODUCT:
-                printit(" ->table\n"
-                        "  ->success: {}\n"
-                        "  ->data: {}".format(success, data))
+            self.q.execute(sql)
 
     @property
     def active(self):
@@ -85,15 +70,7 @@ class Product:
         """
         sql = self.q.build("select", self.model)
 
-        if config.DEBUG_PRODUCT:
-            printit(" ->all\n"
-                    "  ->sql: {}".format(sql))
-
         success, data = self.q.execute(sql)
-
-        if config.DEBUG_PRODUCT:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             self._products = [dict(zip(self.model["fields"], row)) for row in data]
@@ -144,17 +121,7 @@ class Product:
 
         sql = self.q.build("insert", self.model)
 
-        if config.DEBUG_PRODUCT:
-            printit("{}\n"
-                    " ->insert\n"
-                    "  -> values"
-                    "  ->sql: {}".format(values, sql))
-
         success, data = self.q.execute(sql, values=values)
-
-        if config.DEBUG_PRODUCT:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
