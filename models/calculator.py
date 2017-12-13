@@ -10,17 +10,6 @@ Calculation module
 
 from models.query import Query
 
-B_COLOR = "\033[0;31m"
-E_COLOR = "\033[0;m"
-DBG = False
-
-__module__ = "calculator"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
-
 
 class Calculator:
     """
@@ -50,11 +39,7 @@ class Calculator:
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            success, data = self.q.execute(sql)
-            if DBG:
-                printit(" ->init_detail table\n"
-                        "  ->success: {}\n"
-                        "  ->data   : {}".format(success, data))
+            self.q.execute(sql)
 
     @property
     def active(self):
@@ -103,16 +88,7 @@ class Calculator:
 
         sql = self.q.build("insert", self.model)
 
-        if DBG:
-            printit(" ->insert\n"
-                    "  ->sql: {}\n"
-                    "  ->data: {}".format(sql, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
@@ -129,17 +105,7 @@ class Calculator:
 
         sql = self.q.build("select", self.model, filters=filters)
 
-        if DBG:
-            printit(" ->select_by_id\n"
-                    "  ->sql: {}\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}".format(sql, filters, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             self._totals = dict(zip(self.model["fields"], data[0]))
@@ -159,19 +125,7 @@ class Calculator:
         values = (workdate, employee_id)
 
         sql = self.q.build("select", self.model, filters=filters)
-
-        if DBG:
-            printit(" ->select_by_id\n"
-                    "  ->sql: {}\n"
-                    "  ->filters: {}\n"
-                    "  ->values: {}".format(sql, filters, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data   : {}".format(success, data))
-
         if success and data:
             self._totals = dict(zip(self.model["fields"], data[0]))
         return False
@@ -185,22 +139,11 @@ class Calculator:
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-        values = self.q.values_to_arg(self._totals.values())
+        values = self.q.values_to_update(self._totals.values())
 
         sql = self.q.build("update", self.model, update=fields, filters=filters)
 
-        if DBG:
-            printit(" ->select_by_id\n"
-                    "  ->sql: {}\n"
-                    "  ->fields: {}\n"
-                    "  ->filters: {}\n"
-                    "  ->values{}".format(sql, fields, filters, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data   : {}".format(success, data))
 
         if success and data:
             return True
