@@ -17,14 +17,14 @@ class Contact:
     def __init__(self):
         """Initialize contact class"""
         self.model = {
-            "name": "contact",
+            "name": "contacts",
             "id": "contact_id",
             "fields": ("contact_id", "customer_id", "name", "department", "email", "phone", "infotext"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "TEXT")
         }
         self._contact = {}
         self._contacts = []
-        self._csv_field_count = len(self.model["fields"])
+        self._csv_record_len = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
@@ -57,7 +57,7 @@ class Contact:
     @property
     def csv_field_count(self):
         """The number of fields expected on csv import"""
-        return self._csv_field_count
+        return self._csv_record_len
 
     def clear(self):
         """
