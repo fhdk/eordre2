@@ -11,17 +11,17 @@ Visit details module
 from models.query import Query
 from util import utils, printFn as p
 
-__module__ = "line"
+__module__ = "orderline"
 
 
 class OrderLine:
     """
-    Order lines class
+    OrderLine class
     """
 
     def __init__(self):
         """
-        Initialize OrderLines class
+        Initialize OrderLine class
         """
         self.model = {
             "name": "lines",
@@ -78,7 +78,6 @@ class OrderLine:
         Args:
             visit_id:
         """
-        p.debug("{}:{}({})".format(__module__, "visit_id=", visit_id), "visit_id", visit_id)
         try:
             v_id = self._lines[0]
             if not v_id == visit_id:
