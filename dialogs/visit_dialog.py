@@ -10,9 +10,11 @@ Visit Dialog Module
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QDialog, QTableWidgetItem
 
-from models.detail import Detail
+from models.orderline import OrderLine
 from resources.visit_dialog_rc import Ui_visitDialog
-from util import utils
+from util import utils, printFn as p
+
+__module__ = "visit_dialog.py"
 
 
 class VisitDialog(QDialog, Ui_visitDialog):
@@ -20,43 +22,49 @@ class VisitDialog(QDialog, Ui_visitDialog):
     Dialog for creating a new current
     """
 
-    def __init__(self, customer, employee, product, report, visit, parent=None):
+    def __init__(self, customers, employees, products, reports, visits, parent=None):
         """
         Initialize
         Args:
-            customer:
-            employee:
-            product:
-            report:
-            visit:
+            customers:
+            employees:
+            products:
+            reports:
+            visits:
             parent:
         """
         super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
-        self.customerid = customer.active["customer_id"]
-        self.employeeid = employee.active["employee_id"]
-        self.reportid = report.active["report_id"]
-        self.workdate = report.active["rep_date"]
-        self.products = product.product_list
-        self.txtVisitDate.setText(self.workdate)
+        self._customerid = customers.active["customer_id"]
+        self._employeeid = employees.active["employee_id"]
+        self._reportid = reports.active["report_id"]
+        self._workdate = reports.active["rep_date"]
+        self._products = products.product_list
+        self.txtVisitDate.setText(self._workdate)
 
-        self.visits = visit
+        # p.debug("{} {}".format(__module__, "init"), "products", self._products)
+        # exit(p.DEBUG)
+
+        self.visit = visits
+        self.visit.clear()
         try:
-
-            v = self.visits.find_by_date(self.workdate)
-            v_id = v["visit_id"]
+            """
+            load visits for workdata
+            """
+            self.visit.load_for_customer(self._customerid, self._workdate)
+            _ = self.visit.active["visit_id"]
 
         except KeyError:
-            self.visits.add(self.reportid, self.employeeid, self.customerid, self.workdate)
-            if customer.active["account"] == "NY":
-                self.visitType = "N"
-            else:
-                self.visitType = "R"
-            self.visits.active["visit_type"] = self.visitType
+            self.visit.add(self._reportid, self._employeeid, self._customerid, self._workdate)
+            self.visit.active["visit_type"] = "R"
+            if customers.purchase_order_line["account"] == "NY":
+                self.visit.active["visit_type"] = "N"
 
-        self.details = Detail()
-        self.details.load(self.visits.active["visit_id"])
-        for idx, detail in enumerate(self.details.details_list):
+        p.debug("{} {}".format(__module__, "init"), "active visit", self.visit.active)
+
+        self._details = OrderLine()
+        self._details.load(self.visit.active["visit_id"])
+        for idx, detail in enumerate(self._details.order_lines):
             # "pcs", "sku", "text", "price", "sas", "discount", "linetype", "extra"
             row_count = idx + 1
             self.widgetVisitDetails.setRowCount(row_count)
@@ -84,9 +92,9 @@ class VisitDialog(QDialog, Ui_visitDialog):
             self.widgetVisitDetails.setItem(row_count, 9, w)
 
         # If customer needs special settings on prices
-        factor = customer.active["factor"]
+        factor = customers.purchase_order_line["factor"]
         if factor > 0.0:
-            for item in self.products:
+            for item in self._products:
                 item["price"] = item["price"] * factor
                 if not item["d2"] == 0.0:
                     item["d2"] = item["d2"] * factor
@@ -111,7 +119,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(customer.active["company"])
+        self.txtCompany.setText(customers.purchase_order_line["company"])
         # connect to signals
         self.btnAppend.clicked.connect(self.button_add_line_action)
         self.btnClear.clicked.connect(self.button_clear_line_action)
@@ -127,7 +135,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.widgetVisitDetails.setColumnWidth(7, 60)   # amount
         self.widgetVisitDetails.setColumnWidth(8, 30)   # SAS
 
-    @pyqtSlot()
+    @pyqtSlot(name="button_add_line_action")
     def button_add_line_action(self):
         """
         Slot for Add Demo button clicked
@@ -136,36 +144,36 @@ class VisitDialog(QDialog, Ui_visitDialog):
         self.widgetVisitDetails.setRowCount(new_row)
         self.widgetVisitDetails.setRowHeight(new_row, 20)
 
-    @pyqtSlot()
+    @pyqtSlot(name="button_clear_line_action")
     def button_clear_line_action(self):
         """
         Slot for Add Demo button clicked
         """
 
-    @pyqtSlot()
+    @pyqtSlot(name="button_save_visit_action")
     def button_save_visit_action(self):
         """
         Slot for saving the visit
         """
         # save visit head contents
-        self.visits.active["po_buyer"] = self.txtPoBuyer.text()
-        self.visits.active["po_number"] = self.txtPoNumber.text()
-        self.visits.active["po_company"] = self.txtPoCompany.text()
-        self.visits.active["po_address1"] = self.txtPoAddress1.text()
-        self.visits.active["po_address2"] = self.txtPoAddress2.text()
-        self.visits.active["po_postcode"] = self.txtPoPostcode.text()
-        self.visits.active["po_postofffice"] = self.txtPoPostoffice.text()
-        self.visits.active["po_country"] = self.txtPoCountry.text()
-        self.visits.active["info_text"] = self.txtInfoText.toPlainText()
-        self.visits.active["prod_demo"] = self.txtProductDemo.text()
-        self.visits.active["prod_sale"] = self.txtProductSale.text()
-        self.visits.active["sas"] = self.txtVisitSas.text()
-        self.visits.active["sale"] = self.txtVisitSale.text()
-        self.visits.active["total"] = self.txtVisitTotal.text()
+        self.visit.active["po_buyer"] = self.txtPoBuyer.text()
+        self.visit.active["po_number"] = self.txtPoNumber.text()
+        self.visit.active["po_company"] = self.txtPoCompany.text()
+        self.visit.active["po_address1"] = self.txtPoAddress1.text()
+        self.visit.active["po_address2"] = self.txtPoAddress2.text()
+        self.visit.active["po_postcode"] = self.txtPoPostcode.text()
+        self.visit.active["po_postofffice"] = self.txtPoPostoffice.text()
+        self.visit.active["po_country"] = self.txtPoCountry.text()
+        self.visit.active["info_text"] = self.txtInfoText.toPlainText()
+        self.visit.active["prod_demo"] = self.txtProductDemo.text()
+        self.visit.active["prod_sale"] = self.txtProductSale.text()
+        self.visit.active["sas"] = self.txtVisitSas.text()
+        self.visit.active["sale"] = self.txtVisitSale.text()
+        self.visit.active["total"] = self.txtVisitTotal.text()
 
         # TODO: save visitdetails
 
-    @pyqtSlot()
+    @pyqtSlot(name="dnst_changed_action")
     def dnst_changed_action(self):
         """
         Changed linetype
@@ -187,12 +195,12 @@ class VisitDialog(QDialog, Ui_visitDialog):
 
     def load_items(self):
         """Load ITEMS into product combo"""
-        for item in self.products:
+        for item in self._products:
             self.cboProduct.addItem(item["item"], item["sku"])
 
     def load_sku(self):
         """Load SKU into sku combo"""
-        for item in self.products:
+        for item in self._products:
             self.cboProduct.addItem(item["sku"], item["name1"])
 
     def item_changed_action(self):
