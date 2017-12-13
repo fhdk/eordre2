@@ -6,23 +6,13 @@
 
 """Report class"""
 
-import csv
 from datetime import datetime
 
 from models.calculator import Calculator
 from models.query import Query
 from util import utils
 
-B_COLOR = "\033[0;37m"
-E_COLOR = "\033[0;m"
-DBG = False
-
 __module__ = "report"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Report:
@@ -35,7 +25,7 @@ class Report:
         Initilize Report class
         """
         self.model = {
-            "name": "report",
+            "name": "reports",
             "id": "report_id",
             "fields": ("report_id", "employee_id", "rep_no", "rep_date", "timestamp",
                        "newvisitday", "newdemoday", "newsaleday", "newturnoverday",
@@ -54,16 +44,12 @@ class Report:
         }
         self._reports = []
         self._report = {}
-        self._csv_field_count = 25
+        self._csv_record_lenght = 25
         self.q = Query()
         self.c = Calculator()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            success, data = self.q.execute(sql)
-            if DBG:
-                printit(" ->init_detail table\n"
-                        "  ->success: {}\n"
-                        "  ->data: {}".format(success, data))
+            self.q.execute(sql)
 
     @property
     def active(self):
@@ -89,7 +75,7 @@ class Report:
     @property
     def csv_field_count(self):
         """The number of fields expected on csv import"""
-        return self._csv_field_count
+        return self._csv_record_lenght
 
     @property
     def report_list(self):
@@ -169,17 +155,7 @@ class Report:
 
         sql = self.q.build("select", self.model, aggregates=aggregates, filters=filters)
 
-        if DBG:
-            printit(" ->init_detail\n"
-                    "  ->aggregates: {}\n"
-                    "  ->sql: {}\n"
-                    "  ->values: {}".format(aggregates, sql, values))
-
         success, data = self.q.execute(sql, values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             # assign expected result from list item
@@ -206,8 +182,6 @@ class Report:
             current_month_totals[1] = report_id
             # revert to tuple
             current_month_totals = tuple(current_month_totals)
-            if DBG:
-                printit("  ->month: {}".format(current_month_totals))
             # insert the values in the calculation table
             self.c.insert(current_month_totals)
             return True
@@ -220,16 +194,7 @@ class Report:
         """
         sql = self.q.build("insert", self.model)
 
-        if DBG:
-            printit(" ->insert\n"
-                    "  ->sql: {}\n"
-                    "  ->values: {}".format(sql, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success and data:
             return data
@@ -252,8 +217,6 @@ class Report:
                   row[13], row[14], row[15], row[16], row[17].strip(), row[18].strip(),
                   field_19, row[20].strip(), field_21, row[22], row[23].strip(), row[24])
 
-        if DBG:
-            printit("  ->values: {}".format(values))
         self.insert(values)
 
     def load_report(self, workdate):
@@ -268,15 +231,7 @@ class Report:
 
         sql = self.q.build("select", self.model, filters=filters)
 
-        if DBG:
-            printit(" ->load_report\n"
-                    "  ->sql: {}\n"
-                    "  ->values: {}".format(sql, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n  ->data: {}".format(success, data))
 
         if success:
             try:
@@ -304,16 +259,7 @@ class Report:
         values = (value,)
         sql = self.q.build("select", self.model, filters=filters)
 
-        if DBG:
-            printit(" ->load_reports\n"
-                    "  ->sql: {}\n"
-                    "  ->values: {}".format(sql, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
 
         if success:
             try:
@@ -343,7 +289,7 @@ class Report:
         """
         # update_list = list(self.model["fields"])[1:]
         # update_where = [(self.model["id"], "=")]
-        # self.q.values_to_arg(self._report.values())
+        # self.q.values_to_update(self._report.values())
 
         # if DBG:
         #     printit(
