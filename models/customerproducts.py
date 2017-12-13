@@ -12,7 +12,7 @@ from models.visit import Visit
 __module__ = "customer_products"
 
 
-class CustomerProduct:
+class CustomerProducts:
     """
     CustomerProduct class
     """
