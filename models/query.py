@@ -16,6 +16,8 @@ from models.builders.build_insert_query import build_insert_query
 from models.builders.build_select_query import build_select_query
 from models.builders.build_update_query import build_update_query
 
+__module__ = "query"
+
 
 class Query:
     """
