@@ -11,7 +11,7 @@
 import csv
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
-from util import httpFn, printFn as p
+from util import httpFn
 
 __module__ = "worker"
 
@@ -48,9 +48,6 @@ class Worker(QObject):
             line = 0
             for row in reader:
 
-                p.debug("{}: {}({}, {}, {})".format(
-                    __module__, "import_contacts_csv", contacts, filename, header), "import", row)
-
                 self.__app.processEvents()
 
                 if not len(row) == contacts.csv_record_length:
@@ -86,9 +83,6 @@ class Worker(QObject):
             rows = list(reader)
             for line, row in enumerate(rows):
 
-                p.debug("{}: {}({}, {}, {})".format(
-                    __module__, "import_customers_csv", customers, filename, header), "import", row)
-
                 self.__app.processEvents()
 
                 if not len(row) == customers.csv_record_length:
@@ -119,9 +113,13 @@ class Worker(QObject):
 
         data = httpFn.get_customers(settings, employees)     # fetch datafile from http server
         for row in data:                                     # data processing
+
             self.__app.processEvents()
+
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
+
             customers.import_http(row)                       # init_detail row to database
+
         self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot(name="import_order_lines_csv")
@@ -141,9 +139,6 @@ class Worker(QObject):
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
             for line, row in enumerate(rows):
-
-                p.debug("{}: {}({}, {}, {})".format(
-                    __module__, "import_orderlines_csv", orderlines, filename, header), "import", row)
 
                 self.__app.processEvents()
 
@@ -173,9 +168,13 @@ class Worker(QObject):
         self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
         data = httpFn.get_products(settings)                # fetching datafile using http with settings
         for row in data:                                    # process the data
+
             self.__app.processEvents()
+
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
+
             products.insert(row)                            # send row to database
+
         self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot(name="import_reports_csv")
@@ -197,9 +196,6 @@ class Worker(QObject):
             rows = list(reader)
 
             for line, row in enumerate(rows):
-
-                p.debug("{}: {}({}, {}, {}, {})".format(
-                    __module__, "import_reports_csv", employeeid, reports, filename, header), "import", row)
 
                 self.__app.processEvents()
 
@@ -234,9 +230,6 @@ class Worker(QObject):
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
             for line, row in enumerate(rows):
-
-                p.debug("{}: {}({}, {}, {})".format(
-                    __module__, "import_visits_csv", visits, filename, header), "import", row)
 
                 self.__app.processEvents()
 
