@@ -26,7 +26,7 @@ from dialogs.settings_dialog import SettingsDialog
 from dialogs.visit_dialog import VisitDialog
 from models.contact import Contact
 from models.customer import Customer
-from models.detail import Detail
+from models.orderline import OrderLine
 from models.employee import Employee
 from models.product import Product
 from models.report import Report
@@ -70,9 +70,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         configfn.check_config_folder()  # Check appdata folder in users home
 
         self.txtWorkdate.setText(datetime.date.today().isoformat())  # initialize workdate to current date
-        self.contacts = Contact()  # Initialize Contact object
+        self._contacts = Contact()  # Initialize Contact object
         self._customers = Customer()  # Initialize Customer object
-        self.details = Detail()  # Initialize Detail object
+        self._orderlines = OrderLine()  # Initialize Detail object
         self._employees = Employee()  # Initialize Employee object
         self._products = Product()  # Initialize Product object
         self._reports = Report()  # Initialize Report object
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.actionCreateCustomer.triggered.connect(self.create_customer)
         self.actionCreateVisit.triggered.connect(self.show_visit_dialog)
         self.actionImportCsvFiles.triggered.connect(self.show_csv_import_dialog)
-        self.actionExit.triggered.connect(self.app_exit)
+        self.actionExit.triggered.connect(self.app_exit_slot)
         self.actionGetCatalogHttp.triggered.connect(self.show_http_products_dialog)
         self.actionGetCustomersHttp.triggered.connect(self.show_http_customers_dialog)
         self.actionMasterInfo.triggered.connect(self.show_master_data_page)
@@ -106,8 +106,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         # button on master data page
         self.btnArchiveMasterdata.clicked.connect(self.archive_customer)
         # buttons on contacts data page
-        self.btnArchiveContacts.clicked.connect(self.archive_contacts)
-        self.btnAddContact.clicked.connect(self.add_contact)
+        self.btnArchiveContacts.clicked.connect(self.archive_contacts_slot)
+        self.btnAddContact.clicked.connect(self.add_contact_slot)
         # button visit data page
         self.btnVisitDialog.clicked.connect(self.show_visit_dialog)
         # connect list changes
@@ -148,11 +148,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         intended use is warning about unsaved data
         """
         # TODO handle close event
-        self.app_exit()
+        self.app_exit_slot()
         pass
 
-    @pyqtSlot()
-    def app_exit(self):
+    @pyqtSlot(name="app_exit_slot")
+    def app_exit_slot(self):
         """
         Slot for exit triggered signal
         """
@@ -185,8 +185,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.widgetContactList.clear()
         items = []
         try:
-            self.contacts.contact_list = self._customers.active["customer_id"]
-            for c in self.contacts.contact_list:
+            self._contacts.contact_list = self._customers.active["customer_id"]
+            for c in self._contacts.contact_list:
                 item = QTreeWidgetItem([c["name"],
                                         c["department"],
                                         c["phone"],
@@ -227,7 +227,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
     def populate_visit_details_list(self):
         """
-        Populate the details list based on the active visit
+        Populate the details list based on the purchase_order_line visit
         """
         self.widgetVisitDetails.clear()
         self.txtPoNumber.setText("")
@@ -240,7 +240,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
         items = []
         try:
-            self.details.details_list = self._visits.active["visit_id"]
+            self._orderlines.order_lines = self._visits.active["visit_id"]
 
             self.txtPoNumber.setText(self._visits.active["po_number"])
             self.txtSas.setText(str(self._visits.active["po_sas"]))
@@ -250,7 +250,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             self.lblApproved.setText(utils.bool2dk(utils.int2bool(self._visits.active["po_approved"])))
             self.txtVisitInfoText.setText(self._visits.active["po_note"])
 
-            for detail in self.details.details_list:
+            for detail in self._orderlines.order_lines:
                 item = QTreeWidgetItem([detail["linetype"],
                                         str(detail["pcs"]),
                                         detail["sku"],
@@ -350,8 +350,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         # display known sync data
         self.display_sync_status()
 
-    @pyqtSlot()
-    def add_contact(self):
+    @pyqtSlot(name="add_contact_slot")
+    def add_contact_slot(self):
         """
         Save changes made to contacts
         """
@@ -362,8 +362,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                            "# TODO add new contact",
                            QMessageBox.Ok)
 
-    @pyqtSlot()
-    def archive_contacts(self):
+    @pyqtSlot(name="archive_contacts_slot")
+    def archive_contacts_slot(self):
         """
         Save changes made to contacts
         """
@@ -374,7 +374,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                            "# TODO save changes made to contacts",
                            QMessageBox.Ok)
 
-    @pyqtSlot()
+    @pyqtSlot(name="archive_customer")
     def archive_customer(self):
         """
         Slot for updateCustomer triggered signal
@@ -401,7 +401,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self._customers.active["modified"] = 1
         self._customers.update()
 
-    @pyqtSlot()
+    @pyqtSlot(name="create_customer")
     def create_customer(self):
         """
         Slot for createCustomer triggered signal
@@ -421,7 +421,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                self.txtNewPhone1.text(),
                                QMessageBox.Ok)
 
-    @pyqtSlot(QTreeWidgetItem, QTreeWidgetItem)
+    @pyqtSlot(QTreeWidgetItem, QTreeWidgetItem, name="on_customer_changed")
     def on_customer_changed(self, current, previous):
         """
         Slot for treewidget current item changed signal
@@ -465,7 +465,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.populate_visit_list()
         self.populate_visit_details_list()
 
-    @pyqtSlot()
+    @pyqtSlot(name="on_csv_import_done")
     def on_csv_import_done(self):
         """
         Slog for csv import done signal
@@ -475,7 +475,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                     "  ->on_csv_import_done")
         self.populate_customer_list()
 
-    @pyqtSlot()
+    @pyqtSlot(name="on_customers_done")
     def on_customers_done(self):
         """
         Slot for getCustomers finished signal
@@ -489,7 +489,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self._settings.active["lsc"] = lsc
         self._settings.update()
 
-    @pyqtSlot()
+    @pyqtSlot(name="on_products_done")
     def on_products_done(self):
         """
         Slot for getProducts finished signal
@@ -503,7 +503,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self._settings.active["lsp"] = lsp
         self._settings.update()
 
-    @pyqtSlot()
+    @pyqtSlot(name="on_settings_changed")
     def on_settings_changed(self):
         """
         load employee data
@@ -516,7 +516,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 "    -> settings.active = {}".format(self._settings.active))
         self._employees.load(self._settings.active["usermail"])
 
-    @pyqtSlot(QTreeWidgetItem, QTreeWidgetItem)
+    @pyqtSlot(QTreeWidgetItem, QTreeWidgetItem, name="on_visit_changed")
     def on_visit_changed(self, current, previous):
         """
         Response to current visit changed
@@ -541,7 +541,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                         "   ->KeyError: {}".format(k))
         self.populate_visit_details_list()
 
-    @pyqtSlot()
+    @pyqtSlot(name="data_export")
     def data_export(self):
         """
         Slot for dataExport triggered signal
@@ -553,7 +553,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                            "TODO: Opret CSV data backup",
                            QMessageBox.Ok)
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_about_qt")
     def show_about_qt(self):
         """
         Slot for aboutQt triggered signal
@@ -561,7 +561,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         msgbox = QMessageBox()
         msgbox.aboutQt(self, __appname__)
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_about_software")
     def show_about_software(self):
         """
         Slot for aboutSoftware triggered signal
@@ -571,14 +571,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                      "Bygget med Python 3.6 og Qt5<br/><br/>Frede Hundewadt (c) 2017<br/><br/>"
                      "<a href='https://www.gnu.org/licenses/agpl.html'>https://www.gnu.org/licenses/agpl.html</a>")
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_contact_data_page")
     def show_contact_data_page(self):
         """
         Slot for contactData triggered signal
         """
         self.widgetCustomerInfo.setCurrentIndex(1)
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_create_report_dialog")
     def show_create_report_dialog(self):
         """
         Slot for Report triggered signal
@@ -630,7 +630,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                    QMessageBox.Ok)
                 return False
 
-    @pyqtSlot()
+    @pyqtSlot(name="shoq_csv_import_dialog")
     def show_csv_import_dialog(self):
         """
         Slot for fileImport triggered signal
@@ -646,9 +646,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                            QMessageBox.Ok)
         # app, contact, customer, detail, employee, report, visit, tables
         import_dialog = CsvFileImportDialog(app,
-                                            contact=self.contacts,
+                                            contact=self._contacts,
                                             customer=self._customers,
-                                            detail=self.details,
+                                            detail=self._orderlines,
                                             employee=self._employees,
                                             report=self._reports,
                                             visit=self._visits,
@@ -656,7 +656,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_dialog.sig_done.connect(self.on_csv_import_done)
         import_dialog.exec_()
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_http_customers_dialog")
     def show_http_customers_dialog(self):
         """
         Slot for getCustomers triggered signal
@@ -668,7 +668,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_customers.sig_done.connect(self.on_customers_done)
         import_customers.exec_()
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_http_products_dialog")
     def show_http_products_dialog(self):
         """
         Slot for getProducts triggered signal
@@ -679,28 +679,28 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         import_product.sig_done.connect(self.on_products_done)
         import_product.exec_()
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_visit_data_page")
     def show_visit_data_page(self):
         """
         Slot for visitData triggered signal
         """
         self.widgetCustomerInfo.setCurrentIndex(2)
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_master_data_page")
     def show_master_data_page(self):
         """
         Slot for masterData triggered signal
         """
         self.widgetCustomerInfo.setCurrentIndex(0)
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_reports_dialog")
     def show_reports_dialog(self):
         """
         Slot for Report List triggered signal
         """
         pass
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_settings_dialog")
     def show_settings_dialog(self):
         """
         Slot for settingsDialog triggered signal
@@ -709,7 +709,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         settings_dialog.settings_changed.connect(self.on_settings_changed)
         settings_dialog.exec_()
 
-    @pyqtSlot()
+    @pyqtSlot(name="show_visit_dialog")
     def show_visit_dialog(self):
         """
         Slot for launching the visit dialog
@@ -734,22 +734,22 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                    QMessageBox.Ok)
                 return
             # Launch the visit dialog
-            visit_dialog = VisitDialog(customer=self._customers,
-                                       employee=self._employees,
-                                       product=self._products,
-                                       report=self._reports,
-                                       visit=self._visits)
+            visit_dialog = VisitDialog(customers=self._customers,
+                                       employees=self._employees,
+                                       products=self._products,
+                                       reports=self._reports,
+                                       visits=self._visits)
             if visit_dialog.exec_():
                 pass
 
-    @pyqtSlot()
+    @pyqtSlot(name="zero_database")
     def zero_database(self):
         """
         Slot for zeroDatabase triggered signal
         """
-        self.contacts.recreate_table()
+        self._contacts.recreate_table()
         self._customers.recreate_table()
-        self.details.recreate_table()
+        self._orderlines.recreate_table()
         self._visits.recreate_table()
         self._reports.recreate_table()
 
@@ -766,10 +766,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.display_sync_status()
 
         msgbox = QMessageBox()
-        msgbox.information(self,
-                           __appname__,
-                           "Salgsdata er nulstillet!",
-                           QMessageBox.Ok)
+        msgbox.information(self, __appname__, "Salgsdata er nulstillet!", QMessageBox.Ok)
 
 
 if __name__ == '__main__':
