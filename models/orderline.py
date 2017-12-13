@@ -9,7 +9,7 @@ Visit details module
 """
 
 from models.query import Query
-from util import utils
+from util import utils, printFn as p
 
 __module__ = "orderline"
 
@@ -31,41 +31,36 @@ class OrderLine:
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER DEFAULT 0",
                       "TEXT", "TEXT", "REAL", "INTEGER DEFAULT 0", "REAL DEFAULT 0", "TEXT", "TEXT")
         }
-        self._purchase_order_lines = []
-        self._purchase_order_line = {}
-        self._csv_record_lenght = 8
+        self._order_lines = []
+        self._order_line = {}
+        self._csv_record_length = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
             self.q.execute(sql)
 
     @property
-    def purchase_order_line(self):
+    def order_line(self):
         """
         Return the current focused purchase order line
         Returns:
              current
         """
-        return self._purchase_order_line
+        return self._order_line
 
-    @purchase_order_line.setter
-    def purchase_order_line(self, line_id):
+    @order_line.setter
+    def order_line(self, line_id):
         """
         Set the current focused purchase order line
         Args:
             line_id:
         """
         try:
-            d_id = self._purchase_order_line["detail_id"]
-            if not d_id == line_id:
-                self.find(orderline_id=line_id)
+            _ = self._order_line["detail_id"]
+            if not _ == line_id:
+                self.find(line_id=line_id)
         except KeyError:
-            self.find(orderline_id=line_id)
-
-    @property
-    def csv_field_count(self):
-        """The number of fields expected on csv import"""
-        return self._csv_record_lenght
+            self.find(line_id=line_id)
 
     @property
     def order_lines(self):
@@ -74,7 +69,7 @@ class OrderLine:
         Returns:
             List of details for a purchase order line
         """
-        return self._purchase_order_lines
+        return self._order_lines
 
     @order_lines.setter
     def order_lines(self, visit_id):
@@ -83,12 +78,18 @@ class OrderLine:
         Args:
             visit_id:
         """
+        p.debug("{}:{}({})".format(__module__, "order_lines", visit_id), "visit_id", visit_id)
         try:
-            vid = self.order_lines[0]["visit_id"]
+            vid = self._order_lines[0]
             if not vid == visit_id:
                 self.load(visit_id=visit_id)
         except (IndexError, KeyError):
             self.load(visit_id)
+
+    @property
+    def csv_record_length(self):
+        """The number of fields expected on csv import"""
+        return self._csv_record_length
 
     def add(self, visit_id, line_type):
         """
@@ -106,7 +107,7 @@ class OrderLine:
         """
         Clear internal variables
         """
-        self._purchase_order_line = {}
+        self._order_line = {}
         self.order_lines = []
 
     def delete(self, orderline_id):
@@ -125,24 +126,24 @@ class OrderLine:
             return True
         return False
 
-    def find(self, orderline_id):
+    def find(self, line_id):
         """
         Find the the order line with id
         Args:
-            orderline_id:
+            line_id:
         Returns:
             bool
         """
         filters = [(self.model["id"], "=")]
-        values = (orderline_id,)
+        values = (line_id,)
         sql = self.q.build("select", self.model, filters=filters)
         success, data = self.q.execute(sql, values=values)
         if success:
             try:
-                self._purchase_order_line = dict(zip(self.model["fields"], data[0]))
+                self._order_line = dict(zip(self.model["fields"], data[0]))
                 return True
             except IndexError:
-                self._purchase_order_line = {}
+                self._order_line = {}
         return False
 
     def import_csv(self, row):
@@ -181,14 +182,17 @@ class OrderLine:
         filters = [("visit_id", "=")]
         values = (visit_id,)
         sql = self.q.build("select", self.model, filters=filters)
+        p.debug("{}: {}({})".format(__module__, "load", visit_id), "sql", sql)
+        # exit(p.DEBUG)
+
         success, data = self.q.execute(sql, values=values)
         if success:
             try:
                 self.order_lines = [dict(zip(self.model["fields"], row)) for row in data]
-                self._purchase_order_line = self.order_lines[0]
+                self._order_line = self.order_lines[0]
                 return True
             except (IndexError, KeyError):
-                self._purchase_order_line = {}
+                self._order_line = {}
                 self.order_lines = []
         return False
 
@@ -206,11 +210,11 @@ class OrderLine:
         """
         Save the list of orderlines
         """
-        for order_line in self._purchase_order_lines:
+        for order_line in self._order_lines:
             if order_line[self.model["id"]] is None:
                 self.insert(order_line.values())
             else:
-                self._purchase_order_line = order_line
+                self._order_line = order_line
                 self.update()
 
     def update(self):
@@ -221,7 +225,7 @@ class OrderLine:
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-        values = self.q.values_to_update(self._purchase_order_line.values())
+        values = self.q.values_to_update(self._order_line.values())
         sql = self.q.build("update", self.model, update=fields, filters=filters)
         if sql.startswith("ERROR"):
             return None

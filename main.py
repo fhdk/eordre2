@@ -227,7 +227,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
     def populate_visit_details_list(self):
         """
-        Populate the details list based on the purchase_order_line visit
+        Populate the details list based on the order_line visit
         """
         self.widgetVisitDetails.clear()
         self.txtPoNumber.setText("")

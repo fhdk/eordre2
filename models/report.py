@@ -44,7 +44,7 @@ class Report:
         }
         self._reports = []
         self._report = {}
-        self._csv_record_lenght = 25
+        self._csv_record_length = 25
         self.q = Query()
         self.c = ReportCalculator()
         if not self.q.exist_table(self.model["name"]):
@@ -73,9 +73,9 @@ class Report:
             self.load_report(workdate=workdate)
 
     @property
-    def csv_field_count(self):
+    def csv_record_length(self):
         """The number of fields expected on csv import"""
-        return self._csv_record_lenght
+        return self._csv_record_length
 
     @property
     def report_list(self):

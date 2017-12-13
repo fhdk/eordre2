@@ -9,23 +9,11 @@
 """Worker module"""
 
 import csv
-import time
 
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, pyqtSlot
-
-from util import httpFn
-
-
-B_COLOR = "\033[1;30m"
-E_COLOR = "\033[0;m"
-DBG = False
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from util import httpFn, printFn as p
 
 __module__ = "worker"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Worker(QObject):
@@ -46,7 +34,7 @@ class Worker(QObject):
         self.__thread_id = thread_id
         self.__abort = False
 
-    @pyqtSlot()
+    @pyqtSlot(name="import_contacts_csv")
     def import_contacts_csv(self, contacts, filename, header):
         """
         Import contacts using csv file
@@ -64,7 +52,7 @@ class Worker(QObject):
             line = 0
             for row in reader:
                 self.__app.processEvents()
-                if not len(row) == contacts.csv_field_count:
+                if not len(row) == contacts.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
                 if header and line == 0:
@@ -76,7 +64,7 @@ class Worker(QObject):
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
         self.sig_done.emit(self.__thread_id)
 
-    @pyqtSlot()
+    @pyqtSlot(name="import_customers_csv")
     def import_customers_csv(self, customers, filename, header):
         """
         Import customers using csv file
@@ -95,7 +83,7 @@ class Worker(QObject):
             # self.progress_c.rowcount.emit(len(rows))
             for line, row in enumerate(rows):
                 self.__app.processEvents()
-                if not len(row) == customers.csv_field_count:
+                if not len(row) == customers.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
                 # self.progress_c.rowcount.emit(line)
@@ -107,7 +95,7 @@ class Worker(QObject):
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
         self.sig_done.emit(self.__thread_id)
 
-    @pyqtSlot()
+    @pyqtSlot(name="import_customers_http")
     def import_customers_http(self, customers, employees, settings):
         """
         Import customers using http
@@ -119,22 +107,14 @@ class Worker(QObject):
         self.sig_status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
         self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
         # fetch datafile from http server
-        if DBG:
-            printit(self.__thread_id)
-            printit(settings.active)
-            printit("{}".format(employees.active))
-            printit("{}".format(employees))
-            exit()
         data = httpFn.get_customers(settings, employees)
-        if DBG:
-            print(data)
         for row in data:  # data processing
             self.__app.processEvents()
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
-            customers.import_http(row)  # init_detail row to database
+            customers.import_http(row)         # init_detail row to database
         self.sig_done.emit(self.__thread_id)
 
-    @pyqtSlot()
+    @pyqtSlot(name="import_products_http")
     def import_products_http(self, products, settings):
         """
         Import products using http
@@ -142,17 +122,16 @@ class Worker(QObject):
         :param settings:
         """
         self.sig_status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
-        products.drop_table()  # drop product table
+        products.drop_table()                 # drop product table
         self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
-        # fetching datafile using http with settings
-        data = httpFn.get_products(settings)
-        for row in data:  # data processing
+        data = httpFn.get_products(settings)  # fetching datafile using http with settings
+        for row in data:                      # process the data
             self.__app.processEvents()
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
             products.insert(row)  # init_detail row to database
         self.sig_done.emit(self.__thread_id)
 
-    @pyqtSlot()
+    @pyqtSlot(name="import_reports_csv")
     def import_reports_csv(self, employeeid, reports, filename, header):
         """
         Import reports using csv file
@@ -172,7 +151,7 @@ class Worker(QObject):
             # self.progress_c.rowcount.emit(len(rows))
             for line, row in enumerate(rows):
                 self.__app.processEvents()
-                if not len(row) == reports.csv_field_count:
+                if not len(row) == reports.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
                 # self.progress_c.rowcount.emit(line)
@@ -184,7 +163,7 @@ class Worker(QObject):
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
         self.sig_done.emit(self.__thread_id)
 
-    @pyqtSlot()
+    @pyqtSlot(name="import_visits_csv")
     def import_visits_csv(self, visits, filename, header):
         """
         Import visits using csv file
@@ -200,80 +179,46 @@ class Worker(QObject):
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
-            # self.progress_c.rowcount.emit(len(rows))
-            for line, row in enumerate(rows):
+            for line, row in enumerate(rows):           # self.progress_c.rowcount.emit(len(rows))
                 self.__app.processEvents()
-                if not len(row) == visits.csv_field_count:
+                if not len(row) == visits.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
-                # self.progress_c.rowcount.emit(line)
-                if header and line == 0:
+                if header and line == 0:                # self.progress_c.rowcount.emit(line)
                     continue
                 self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
-                visits.import_csv(row)  # send row to database
+                visits.import_csv(row)                  # send row to database
 
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
         self.sig_done.emit(self.__thread_id)
 
-    @pyqtSlot()
-    def import_visit_details_csv(self, details, filename, header):
+    @pyqtSlot(name="import_order_lines_csv")
+    def import_orderlines_csv(self, orderlines, filename, header):
         """
-        Import visit details using csv file
-        :param details:
-        :param filename:
-        :param header:
+        Import orderlines using csv file
+        :param orderlines: OrderLine() class
+        :param filename: filename to read
+        :param header: bool if first line is header
         :return:
         """
         filename.encode("utf8")
         self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
-        details.recreate_table()
+        orderlines.recreate_table()
         ftext = ">>> Import er færdig!"
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
-            # self.progress_c.rowcount.emit(len(rows))
-            for line, row in enumerate(rows):
+            for line, row in enumerate(rows):           # self.progress_c.rowcount.emit(len(rows))
+                p.debug("{}: {}({}, {}, {})".format(
+                    __module__, "import_orderlines_csv", orderlines, filename, header), "import", row)
                 self.__app.processEvents()
-                if not len(row) == details.csv_field_count:
+                if not len(row) == orderlines.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
-                # self.progress_c.rowcount.emit(line)
-                if header and line == 0:
+                if header and line == 0:                # self.progress_c.rowcount.emit(line)
                     continue
                 self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
-                details.import_csv(row)  # send row to database
+                orderlines.import_csv(row)              # send row to database
 
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
         self.sig_done.emit(self.__thread_id)
-
-    @pyqtSlot()
-    def work_demo(self):
-        """
-        Pretend this worker method does work that takes a long time. During this time, the thread's
-        event loop is blocked, except if the application's processEvents() is called: this gives every
-        thread (incl. main) a chance to process events, which in this sample means processing signals
-        received from GUI (such as abort).
-        """
-        thread_name = QThread.currentThread().objectName()
-        thread_id = int(QThread.currentThreadId())  # cast to int() is necessary
-        self.sig_msg_demo.emit('Running worker #{} from thread "{}" (#{})'.format(self.__thread_id, thread_name, thread_id))
-
-        for step in range(100):
-            time.sleep(0.1)
-            self.sig_step_demo.emit(self.__thread_id, 'step ' + str(step))
-
-            # check if we need to abort the loop; need to process events to receive signals;
-            self.__app.processEvents()  # this could cause change to self.__abort
-            if self.__abort:
-                # note that "step" value will not necessarily be same for every thread
-                self.sig_msg_demo.emit('Worker #{} aborting work at step {}'.format(self.__thread_id, step))
-                break
-
-        self.sig_done_demo.emit(self.__thread_id)
-
-    def abort_work_demo(self):
-        """
-        Signal to abort work
-        """
-        self.sig_msg_demo.emit('Worker #{} notified to abort'.format(self.__thread_id))
-        self.__abort = True

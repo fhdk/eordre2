@@ -60,7 +60,7 @@ class Customer:
         self.lookup_by_id(customer_id=customer_id)
 
     @property
-    def csv_field_count(self):
+    def csv_record_length(self):
         """The number of fields expected on csv import"""
         return self._csv_record_length
 

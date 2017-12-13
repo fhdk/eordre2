@@ -26,7 +26,7 @@ class Contact:
         }
         self._contact = {}
         self._contacts = []
-        self._csv_record_len = 8
+        self._csv_record_length = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
@@ -57,9 +57,9 @@ class Contact:
         self.load_for_customer(customer_id=customer_id)
 
     @property
-    def csv_field_count(self):
+    def csv_record_length(self):
         """The number of fields expected on csv import"""
-        return self._csv_record_len
+        return self._csv_record_length
 
     def clear(self):
         """
