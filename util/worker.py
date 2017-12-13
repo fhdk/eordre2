@@ -20,11 +20,7 @@ class Worker(QObject):
     """
     Must derive from QObject in order to emit signals, connect slots to other signals, and operate in a QThread.
     """
-    # demo signals
-    sig_step_demo = pyqtSignal(int, str)  # worker id, step description: emitted every step through work() loop
-    sig_done_demo = pyqtSignal(int)  # worker id: emitted at end of work()
-    sig_msg_demo = pyqtSignal(str)  # message to be shown to user
-    # real world signals
+
     sig_status = pyqtSignal(int, str)  # worker id, progress: emitted every step through the file
     sig_done = pyqtSignal(int)  # worker id: emitted at end of the file
 
@@ -38,9 +34,9 @@ class Worker(QObject):
     def import_contacts_csv(self, contacts, filename, header):
         """
         Import contacts using csv file
-        :param contacts:
-        :param filename:
-        :param header:
+        :param contacts: object
+        :param filename: str
+        :param header: bool
         :return:
         """
         filename.encode("utf8")
@@ -51,14 +47,22 @@ class Worker(QObject):
             reader = csv.reader(csvdata, delimiter="|")
             line = 0
             for row in reader:
+
+                p.debug("{}: {}({}, {}, {})".format(
+                    __module__, "import_contacts_csv", contacts, filename, header), "import", row)
+
                 self.__app.processEvents()
+
                 if not len(row) == contacts.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
+
                 if header and line == 0:
                     line += 1
                     continue
+
                 self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
+
                 contacts.import_csv(row)  # send row to database
 
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
@@ -80,16 +84,22 @@ class Worker(QObject):
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
-            # self.progress_c.rowcount.emit(len(rows))
             for line, row in enumerate(rows):
+
+                p.debug("{}: {}({}, {}, {})".format(
+                    __module__, "import_customers_csv", customers, filename, header), "import", row)
+
                 self.__app.processEvents()
+
                 if not len(row) == customers.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
-                # self.progress_c.rowcount.emit(line)
+
                 if header and line == 0:
                     continue
+
                 self.sig_status.emit(self.__thread_id, "{} - {}".format(row[1].strip(), row[2].strip()))
+
                 customers.import_csv(row)  # send row to database
 
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
@@ -106,12 +116,49 @@ class Worker(QObject):
         """
         self.sig_status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
         self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
-        # fetch datafile from http server
-        data = httpFn.get_customers(settings, employees)
-        for row in data:  # data processing
+
+        data = httpFn.get_customers(settings, employees)     # fetch datafile from http server
+        for row in data:                                     # data processing
             self.__app.processEvents()
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
-            customers.import_http(row)         # init_detail row to database
+            customers.import_http(row)                       # init_detail row to database
+        self.sig_done.emit(self.__thread_id)
+
+    @pyqtSlot(name="import_order_lines_csv")
+    def import_orderlines_csv(self, orderlines, filename, header):
+        """
+        Import lines using csv file
+        :param orderlines: OrderLine() class
+        :param filename: filename to read
+        :param header: bool if first line is header
+        :return:
+        """
+        filename.encode("utf8")
+        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
+        orderlines.recreate_table()
+        ftext = ">>> Import er færdig!"
+        with open(filename) as csvdata:
+            reader = csv.reader(csvdata, delimiter="|")
+            rows = list(reader)
+            for line, row in enumerate(rows):
+
+                p.debug("{}: {}({}, {}, {})".format(
+                    __module__, "import_orderlines_csv", orderlines, filename, header), "import", row)
+
+                self.__app.processEvents()
+
+                if not len(row) == orderlines.csv_record_length:
+                    ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
+                    break
+
+                if header and line == 0:
+                    continue
+
+                self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
+
+                orderlines.import_csv(row)              # send row to database
+
+        self.sig_status.emit(self.__thread_id, "{}".format(ftext))
         self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot(name="import_products_http")
@@ -122,13 +169,13 @@ class Worker(QObject):
         :param settings:
         """
         self.sig_status.emit(self.__thread_id, "{}".format("Forbereder hentning ..."))
-        products.drop_table()                 # drop product table
+        products.drop_table()                               # drop product table
         self.sig_status.emit(self.__thread_id, "{}".format("Henter fra server ..."))
-        data = httpFn.get_products(settings)  # fetching datafile using http with settings
-        for row in data:                      # process the data
+        data = httpFn.get_products(settings)                # fetching datafile using http with settings
+        for row in data:                                    # process the data
             self.__app.processEvents()
             self.sig_status.emit(self.__thread_id, "{} - {}".format(row[0], row[1]))
-            products.insert(row)  # init_detail row to database
+            products.insert(row)                            # send row to database
         self.sig_done.emit(self.__thread_id)
 
     @pyqtSlot(name="import_reports_csv")
@@ -148,16 +195,23 @@ class Worker(QObject):
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
-            # self.progress_c.rowcount.emit(len(rows))
+
             for line, row in enumerate(rows):
+
+                p.debug("{}: {}({}, {}, {}, {})".format(
+                    __module__, "import_reports_csv", employeeid, reports, filename, header), "import", row)
+
                 self.__app.processEvents()
+
                 if not len(row) == reports.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
-                # self.progress_c.rowcount.emit(line)
+
                 if header and line == 0:
                     continue
+
                 self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
+
                 reports.import_csv(row, employeeid)  # send row to database
 
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
@@ -179,46 +233,23 @@ class Worker(QObject):
         with open(filename) as csvdata:
             reader = csv.reader(csvdata, delimiter="|")
             rows = list(reader)
-            for line, row in enumerate(rows):           # self.progress_c.rowcount.emit(len(rows))
+            for line, row in enumerate(rows):
+
+                p.debug("{}: {}({}, {}, {})".format(
+                    __module__, "import_visits_csv", visits, filename, header), "import", row)
+
                 self.__app.processEvents()
+
                 if not len(row) == visits.csv_record_length:
                     ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
                     break
-                if header and line == 0:                # self.progress_c.rowcount.emit(line)
+
+                if header and line == 0:
                     continue
+
                 self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
+
                 visits.import_csv(row)                  # send row to database
-
-        self.sig_status.emit(self.__thread_id, "{}".format(ftext))
-        self.sig_done.emit(self.__thread_id)
-
-    @pyqtSlot(name="import_order_lines_csv")
-    def import_orderlines_csv(self, orderlines, filename, header):
-        """
-        Import orderlines using csv file
-        :param orderlines: OrderLine() class
-        :param filename: filename to read
-        :param header: bool if first line is header
-        :return:
-        """
-        filename.encode("utf8")
-        self.sig_status.emit(self.__thread_id, "{}".format("Forbereder indlæsning ..."))
-        orderlines.recreate_table()
-        ftext = ">>> Import er færdig!"
-        with open(filename) as csvdata:
-            reader = csv.reader(csvdata, delimiter="|")
-            rows = list(reader)
-            for line, row in enumerate(rows):           # self.progress_c.rowcount.emit(len(rows))
-                p.debug("{}: {}({}, {}, {})".format(
-                    __module__, "import_orderlines_csv", orderlines, filename, header), "import", row)
-                self.__app.processEvents()
-                if not len(row) == orderlines.csv_record_length:
-                    ftext = "FEJL: Formatet i den valgte fil er ikke korrekt!"
-                    break
-                if header and line == 0:                # self.progress_c.rowcount.emit(line)
-                    continue
-                self.sig_status.emit(self.__thread_id, "{} - {}".format(row[2].strip(), row[3].strip()))
-                orderlines.import_csv(row)              # send row to database
 
         self.sig_status.emit(self.__thread_id, "{}".format(ftext))
         self.sig_done.emit(self.__thread_id)

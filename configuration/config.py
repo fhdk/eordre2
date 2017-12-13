@@ -27,7 +27,9 @@ LOCAL = "{}{}".format(HOME, "./appdata/local/innotec")
 APP_DATA = "./appdata"
 DBPATH = APP_DATA + "/app.db"
 LOGPATH = APP_DATA + "/app.log"
-CSV_TABLES = [("Kontakter", "contacts"), ("Kunder", "customers"),
-              ("Ordrelinjer", "orderlines"), ("Ordrer", "visits"),
-              ("Rapporter", "reports")]
+CSV_TABLES = [
+    ("Kontakter", "contacts"), ("Kunder", "customers"),
+    ("Ordrelinjer", "lines"), ("Rapporter", "reports"),
+    ("Ordrer", "visits")
+]
 HTTP_ENCODING = "ISO-8859-1"

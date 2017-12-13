@@ -21,7 +21,7 @@ class ReportCalculator:
         Initialize Calculator
         """
         self.model = {
-            "name": "report_calculations",
+            "name": "reportcalculations",
             "id": "calc_id",
             "fields": ("calc_id", "calc_date", "report_id", "employee_id", "reports_calculated",
                        "new_visit", "new_demo", "new_sale", "new_turnover",

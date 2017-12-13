@@ -57,14 +57,14 @@ class VisitDialog(QDialog, Ui_visitDialog):
         except KeyError:
             self.visit.add(self._reportid, self._employeeid, self._customerid, self._workdate)
             self.visit.active["visit_type"] = "R"
-            if customers.order_line["account"] == "NY":
+            if customers.line["account"] == "NY":
                 self.visit.active["visit_type"] = "N"
 
         p.debug("{} {}".format(__module__, "init"), "active visit", self.visit.active)
-
-        self._details = OrderLine()
-        self._details.load(self.visit.active["visit_id"])
-        for idx, detail in enumerate(self._details.order_lines):
+        exit(p.DEBUG)
+        self._orderlines = OrderLine()
+        self._orderlines.load_visit(self.visit.active["visit_id"])
+        for idx, detail in enumerate(self._orderlines.lines):
             # "pcs", "sku", "text", "price", "sas", "discount", "linetype", "extra"
             row_count = idx + 1
             self.widgetVisitDetails.setRowCount(row_count)
@@ -92,7 +92,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
             self.widgetVisitDetails.setItem(row_count, 9, w)
 
         # If customer needs special settings on prices
-        factor = customers.order_line["factor"]
+        factor = customers.line["factor"]
         if factor > 0.0:
             for item in self._products:
                 item["price"] = item["price"] * factor
@@ -119,7 +119,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(customers.order_line["company"])
+        self.txtCompany.setText(customers.line["company"])
         # connect to signals
         self.btnAppend.clicked.connect(self.button_add_line_action)
         self.btnClear.clicked.connect(self.button_clear_line_action)

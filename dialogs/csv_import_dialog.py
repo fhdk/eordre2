@@ -22,17 +22,17 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
     """
     sig_done = pyqtSignal()
 
-    def __init__(self, app, contact, customer, detail, employee, report, visit, tables):
+    def __init__(self, app, contacts, customers, employees, orderlines, reports, tables, visits):
         """Initialize Dialog"""
         super(CsvFileImportDialog, self).__init__()
         self.setupUi(self)
         self.__app = app
-        self.contacts = contact
-        self.customers = customer
-        self.details = detail
-        self.employees = employee
-        self.reports = report
-        self.visits = visit
+        self._contacts = contacts
+        self._customers = customers
+        self._orderlines = orderlines
+        self._employees = employees
+        self._reports = reports
+        self._visits = visits
 
         self.file_dialog = QFileDialog()
         self.progressBar.setRange(0, 1)
@@ -84,7 +84,7 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
 
         if self.selectedFile:
             # import selected file to contact table
-            if self.selectedTable == "contact":
+            if self.selectedTable == "contacts":
                 worker = Worker(1, self.__app)
                 thread = QThread(self)
                 thread.setObjectName("contacts_csv")
@@ -95,13 +95,13 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 try:
                     thread.started.connect(
                         worker.import_contacts_csv(
-                            self.contacts, self.selectedFile, header=headers))
+                            self._contacts, self.selectedFile, header=headers))
                     thread.start()
                 except TypeError:
                     pass
 
             # import selected file to customer table
-            if self.selectedTable == "customer":
+            if self.selectedTable == "customers":
                 worker = Worker(2, self.__app)
                 thread = QThread(self)
                 thread.setObjectName("customers_csv")
@@ -112,33 +112,16 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 try:
                     thread.started.connect(
                         worker.import_customers_csv(
-                            self.customers, self.selectedFile, header=headers))
+                            self._customers, self.selectedFile, header=headers))
                     thread.start()
                 except TypeError:
                     pass
 
-            # import selected file to visit table
-            if self.selectedTable == "visit":
-                worker = Worker(3, self.__app)
-                thread = QThread(self)
-                thread.setObjectName("visits_csv")
-                self.__threads.append((thread, worker))
-                worker.moveToThread(thread)
-                worker.sig_status.connect(self.on_status)
-                worker.sig_done.connect(self.on_done)
-                try:
-                    thread.started.connect(
-                        worker.import_visits_csv(
-                            self.visits, self.selectedFile, header=headers))
-                    thread.start()
-                except TypeError:
-                    pass
-
-            # import selected file to detail table
-            if self.selectedTable == "detail":
+            # import selected file to lines table
+            if self.selectedTable == "lines":
                 worker = Worker(4, self.__app)
                 thread = QThread(self)
-                thread.setObjectName("details_csv")
+                thread.setObjectName("orderlines_csv")
                 self.__threads.append((thread, worker))
                 worker.moveToThread(thread)
                 worker.sig_status.connect(self.on_status)
@@ -146,13 +129,13 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 try:
                     thread.started.connect(
                         worker.import_orderlines_csv(
-                            self.details, self.selectedFile, header=headers))
+                            self._orderlines, self.selectedFile, header=headers))
                     thread.start()
                 except TypeError:
                     pass
 
             # import selected file to report table
-            if self.selectedTable == "report":
+            if self.selectedTable == "reports":
                 worker = Worker(5, self.__app)
                 thread = QThread(self)
                 thread.setObjectName("reports_csv")
@@ -163,7 +146,24 @@ class CsvFileImportDialog(QDialog, Ui_csvFileImportDialog, QObject):
                 try:
                     thread.started.connect(
                         worker.import_reports_csv(
-                            self.employees.active["employee_id"], self.reports, self.selectedFile, header=headers))
+                            self._employees.active["employee_id"], self._reports, self.selectedFile, header=headers))
+                    thread.start()
+                except TypeError:
+                    pass
+
+            # import selected file to visit table
+            if self.selectedTable == "visits":
+                worker = Worker(3, self.__app)
+                thread = QThread(self)
+                thread.setObjectName("visits_csv")
+                self.__threads.append((thread, worker))
+                worker.moveToThread(thread)
+                worker.sig_status.connect(self.on_status)
+                worker.sig_done.connect(self.on_done)
+                try:
+                    thread.started.connect(
+                        worker.import_visits_csv(
+                            self._visits, self.selectedFile, header=headers))
                     thread.start()
                 except TypeError:
                     pass

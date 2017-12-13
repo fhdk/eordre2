@@ -53,8 +53,7 @@ class Employee:
             values:
         """
         sql = self.q.build("insert", self.model)
-
-        success, data = self.q.execute(sql, values=values)
+        self.q.execute(sql, values=values)
 
     def load(self, email):
         """

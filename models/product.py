@@ -104,7 +104,7 @@ class Product:
     def drop_table(self):
         """Drop the product table
         The table can be safely recreated.
-        An internal pointer to a specific product id is not used as orderline will contain the product sku etc
+        An internal pointer to a specific product id is not used as line will contain the product sku etc
         This approach also eliminates and outstanding issue with deprecated product
         """
         self._product = []

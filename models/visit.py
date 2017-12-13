@@ -24,7 +24,7 @@ class Visit:
         Initialize current class
         """
         self.model = {
-            "name": "visit",
+            "name": "visits",
             "id": "visit_id",
             "fields": ("visit_id", "report_id", "employee_id", "customer_id",
                        "visit_date", "po_sent",

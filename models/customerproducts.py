@@ -23,12 +23,13 @@ class CustomerProducts:
         """
         self.model = {
             "name": "customerproducts",
-            "id": "prod_id",
-            "fields": ("prod_id", "cust_id", "item", "sku", "pcs"),
+            "id": "cp_id",
+            "fields": ("cp_id", "customer_id", "item", "sku", "pcs"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "TEXT NOT NULL",
                       "TEXT NOT NULL", "INTEGER DEFAULT 0")
         }
         self._products = []
+        self._product = {}
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
@@ -43,11 +44,11 @@ class CustomerProducts:
         return self._products
 
     @cust_prod_list.setter
-    def cust_prod_list(self, cust_id):
+    def cust_prod_list(self, customer_id):
         """
         Load customers into primary list
         """
-        self.load(cust_id)
+        self.load(customer_id)
 
     def clear(self):
         """
@@ -55,19 +56,19 @@ class CustomerProducts:
         """
         self._products = []
 
-    def add(self, cust_id, item, sku, pcs):
+    def add(self, customer_id, item, sku, pcs):
         """
         Create a new customer
         Args:
-            cust_id:
+            customer_id:
             item:
             sku:
             pcs:
         Returns:
             bool
         """
-        self.insert((None, cust_id, item, sku, pcs))
-        self.load(cust_id)
+        self.insert((None, customer_id, item, sku, pcs))
+        self.load(customer_id)
 
     def insert(self, values):
         """
@@ -83,14 +84,16 @@ class CustomerProducts:
             return data
         return False
 
-    def load(self, cust_id):
+    def load(self, customer_id):
         """
         Load products
+        Args:
+            customer_id
         Returns:
             bool
         """
-        filters = [("cust_id", "=")]
-        values = (cust_id,)
+        filters = [("customer_id", "=")]
+        values = (customer_id,)
         sql = self.q.build("select", self.model, filters=filters)
         success, data = self.q.execute(sql, values=values)
         if success:
@@ -101,27 +104,27 @@ class CustomerProducts:
                 self._products = []
         return False
 
-    def refresh(self, cust_id):
+    def refresh(self, customer_id):
         """
         Refresh customers product list
         Args:
-            cust_id
+            customer_id
         Returns:
             bool
         """
         visit = Visit()
-        selection = ("cust_id",)
-        filters = [("cust_id", "=")]
-        values = (cust_id,)
+        selection = ("customer_id",)
+        filters = [("customer_id", "=")]
+        values = (customer_id,)
         sql = self.q.build("select", visit.model, selection=selection, filters=filters)
         success, data = self.q.execute(sql, values=values)
         if success:
             try:
                 v_ids = data[0]
-                sql = "SELECT orderlines.sku, sum(pcs) AS pcs, product.item " \
-                      "FROM orderlines " \
-                      "INNER JOIN product ON product.sku = orderlines.sku " \
-                      "WHERE cust_id IN ? GROUP BY orderlines.sku"
+                sql = "SELECT lines.sku, sum(pcs) AS pcs, product.item " \
+                      "FROM lines " \
+                      "INNER JOIN product ON product.sku = lines.sku " \
+                      "WHERE cust_id IN ? GROUP BY lines.sku"
                 success, data = self.q.execute(sql, v_ids)
                 if success:
                     try:

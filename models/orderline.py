@@ -11,7 +11,7 @@ Visit details module
 from models.query import Query
 from util import utils, printFn as p
 
-__module__ = "orderline"
+__module__ = "line"
 
 
 class OrderLine:
@@ -24,15 +24,15 @@ class OrderLine:
         Initialize OrderLines class
         """
         self.model = {
-            "name": "orderlines",
+            "name": "lines",
             "id": "line_id",
             "fields": ("line_id", "visit_id", "pcs", "sku", "text", "price", "sas", "discount",
                        "linetype", "extra"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "INTEGER NOT NULL", "INTEGER DEFAULT 0",
                       "TEXT", "TEXT", "REAL", "INTEGER DEFAULT 0", "REAL DEFAULT 0", "TEXT", "TEXT")
         }
-        self._order_lines = []
-        self._order_line = {}
+        self._line = {}
+        self._lines = []
         self._csv_record_length = 8
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
@@ -40,51 +40,51 @@ class OrderLine:
             self.q.execute(sql)
 
     @property
-    def order_line(self):
+    def line(self):
         """
         Return the current focused purchase order line
         Returns:
              current
         """
-        return self._order_line
+        return self._line
 
-    @order_line.setter
-    def order_line(self, line_id):
+    @line.setter
+    def line(self, line_id):
         """
         Set the current focused purchase order line
         Args:
             line_id:
         """
         try:
-            _ = self._order_line["detail_id"]
+            _ = self._line["line_id"]
             if not _ == line_id:
                 self.find(line_id=line_id)
         except KeyError:
             self.find(line_id=line_id)
 
     @property
-    def order_lines(self):
+    def lines(self):
         """
         All purchase order lines
         Returns:
             List of details for a purchase order line
         """
-        return self._order_lines
+        return self._lines
 
-    @order_lines.setter
-    def order_lines(self, visit_id):
+    @lines.setter
+    def lines(self, visit_id):
         """
-        Visit details setter. Load purchase order lines for visit_id
+        Orderlines setter. Load purchase order lines for visit_id
         Args:
             visit_id:
         """
-        p.debug("{}:{}({})".format(__module__, "order_lines", visit_id), "visit_id", visit_id)
+        p.debug("{}:{}({})".format(__module__, "lines", visit_id), "visit_id", visit_id)
         try:
-            vid = self._order_lines[0]
+            vid = self._lines[0]
             if not vid == visit_id:
-                self.load(visit_id=visit_id)
+                self.load_visit(visit_id=visit_id)
         except (IndexError, KeyError):
-            self.load(visit_id)
+            self.load_visit(visit_id)
 
     @property
     def csv_record_length(self):
@@ -107,12 +107,12 @@ class OrderLine:
         """
         Clear internal variables
         """
-        self._order_line = {}
-        self.order_lines = []
+        self._line = {}
+        self.lines = []
 
     def delete(self, orderline_id):
         """
-        Delete orderline with id
+        Delete line with id
         Args:
             orderline_id:
         Returns:
@@ -140,10 +140,10 @@ class OrderLine:
         success, data = self.q.execute(sql, values=values)
         if success:
             try:
-                self._order_line = dict(zip(self.model["fields"], data[0]))
+                self._line = dict(zip(self.model["fields"], data[0]))
                 return True
             except IndexError:
-                self._order_line = {}
+                self._line = {}
         return False
 
     def import_csv(self, row):
@@ -159,7 +159,7 @@ class OrderLine:
 
     def insert(self, values):
         """
-        Insert a new orderline with values
+        Insert a new line with values
         Args:
             values:
         Returns:
@@ -171,7 +171,7 @@ class OrderLine:
             return data
         return None
 
-    def load(self, visit_id):
+    def load_visit(self, visit_id):
         """
         Load order lines for visit_id
         Args:
@@ -182,18 +182,15 @@ class OrderLine:
         filters = [("visit_id", "=")]
         values = (visit_id,)
         sql = self.q.build("select", self.model, filters=filters)
-        p.debug("{}: {}({})".format(__module__, "load", visit_id), "sql", sql)
-        # exit(p.DEBUG)
-
         success, data = self.q.execute(sql, values=values)
         if success:
             try:
-                self.order_lines = [dict(zip(self.model["fields"], row)) for row in data]
-                self._order_line = self.order_lines[0]
+                self._lines = [dict(zip(self.model["fields"], row)) for row in data]
+                self._line = self.lines[0]
                 return True
             except (IndexError, KeyError):
-                self._order_line = {}
-                self.order_lines = []
+                self._line = {}
+                self._lines = []
         return False
 
     def recreate_table(self):
@@ -208,24 +205,24 @@ class OrderLine:
 
     def save_all(self):
         """
-        Save the list of orderlines
+        Save the list of lines
         """
-        for order_line in self._order_lines:
-            if order_line[self.model["id"]] is None:
-                self.insert(order_line.values())
+        for line in self._lines:
+            if line[self.model["id"]] is None:
+                self.insert(line.values())
             else:
-                self._order_line = order_line
+                self._line = line
                 self.update()
 
     def update(self):
         """
-        Update orderline data in database
+        Update line data in database
         Returns:
             rownumber or None
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-        values = self.q.values_to_update(self._order_line.values())
+        values = self.q.values_to_update(self._line.values())
         sql = self.q.build("update", self.model, update=fields, filters=filters)
         if sql.startswith("ERROR"):
             return None
