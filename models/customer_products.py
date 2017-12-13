@@ -9,6 +9,8 @@
 from models.query import Query
 from models.visit import Visit
 
+__module__ = "customer_products"
+
 
 class CustomerProduct:
     """
