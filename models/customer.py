@@ -31,7 +31,7 @@ class Customer:
         Initialize Customer class
         """
         self.model = {
-            "name": "customer",
+            "name": "customers",
             "id": "customer_id",
             "fields": ("customer_id", "account", "company",
                        "address1", "address2", "zipcode", "city", "country",
@@ -46,7 +46,7 @@ class Customer:
         }
         self._customers = []
         self._customer = {}
-        self._csv_field_count = len(self.model["fields"])
+        self._csv_record_length = 20
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
@@ -71,7 +71,7 @@ class Customer:
     @property
     def csv_field_count(self):
         """The number of fields expected on csv import"""
-        return self._csv_field_count
+        return self._csv_record_length
 
     @property
     def customer_list(self):
