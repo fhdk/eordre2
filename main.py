@@ -75,8 +75,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.details = Detail()  # Initialize Detail object
         self._employees = Employee()  # Initialize Employee object
         self._products = Product()  # Initialize Product object
-        self.reports = Report()  # Initialize Report object
-        self.visits = Visit()  # Initialize Visit object
+        self._reports = Report()  # Initialize Report object
+        self._visits = Visit()  # Initialize Visit object
         self._settings = Settings()  # Initialize Settings object
 
         # connect menu trigger signals
@@ -123,7 +123,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.widgetVisitDetails.setColumnWidth(4, 60)
         self.widgetVisitDetails.setColumnWidth(5, 40)
         # load report for workdate if exist
-        self.reports.load_report(self.txtWorkdate.text())
+        self._reports.load_report(self.txtWorkdate.text())
         # display customerlist
         self.populate_customer_list()
         # set latest customer active
@@ -240,15 +240,15 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
         items = []
         try:
-            self.details.details_list = self.visits.active["visit_id"]
+            self.details.details_list = self._visits.active["visit_id"]
 
-            self.txtPoNumber.setText(self.visits.active["po_number"])
-            self.txtSas.setText(str(self.visits.active["po_sas"]))
-            self.txtSale.setText(str(self.visits.active["po_sale"]))
-            self.txtTotal.setText(str(self.visits.active["po_total"]))
-            self.lblSent.setText(utils.bool2dk(utils.int2bool(self.visits.active["po_sent"])))
-            self.lblApproved.setText(utils.bool2dk(utils.int2bool(self.visits.active["po_approved"])))
-            self.txtVisitInfoText.setText(self.visits.active["po_note"])
+            self.txtPoNumber.setText(self._visits.active["po_number"])
+            self.txtSas.setText(str(self._visits.active["po_sas"]))
+            self.txtSale.setText(str(self._visits.active["po_sale"]))
+            self.txtTotal.setText(str(self._visits.active["po_total"]))
+            self.lblSent.setText(utils.bool2dk(utils.int2bool(self._visits.active["po_sent"])))
+            self.lblApproved.setText(utils.bool2dk(utils.int2bool(self._visits.active["po_approved"])))
+            self.txtVisitInfoText.setText(self._visits.active["po_note"])
 
             for detail in self.details.details_list:
                 item = QTreeWidgetItem([detail["linetype"],
@@ -282,8 +282,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.widgetVisitList.setColumnWidth(0, 0)
         items = []
         try:
-            self.visits.visit_list_customer = self._customers.active["customer_id"]
-            for visit in self.visits.visit_list_customer:
+            self._visits.visit_list_customer = self._customers.active["customer_id"]
+            for visit in self._visits.visit_list_customer:
                 item = QTreeWidgetItem([str(visit["visit_id"]),
                                         visit["visit_date"],
                                         visit["po_buyer"],
@@ -528,7 +528,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             if DBG:
                 printit("  ->active_visit_changed\n"
                         "   ->visit_id: {}".format(current.text(0)))
-            self.visits.active = current.text(0)
+            self._visits.active = current.text(0)
         except AttributeError as a:
             if DBG:
                 printit("  ->active_visit_changed\n"
@@ -586,14 +586,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         try:
             # check the report date
             # no report triggers KeyError which in turn launches the CreateReportDialog
-            repdate = self.reports.active["rep_date"]
+            repdate = self._reports.active["rep_date"]
             if not repdate == self.txtWorkdate.text():
                 # if active report is not the same replace it with workdate
-                self.reports.load_report(self.txtWorkdate.text())
+                self._reports.load_report(self.txtWorkdate.text())
                 # trigger a KeyError if no report is current which launches the CreateReportDialog
-                repdate = self.reports.active["rep_date"]
+                repdate = self._reports.active["rep_date"]
                 # check if the report is sent
-                if self.reports.active["sent"] == 1:
+                if self._reports.active["sent"] == 1:
                     # we do not allow visits to be created on a report which is closed
                     self.buttonCreateVisit.setEnabled(False)
                 else:
@@ -610,14 +610,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                 # user chosed to create a report
                 self.txtWorkdate.setText(create_report_dialog.workdate)
                 # try load a report for that date
-                self.reports.load_report(self.txtWorkdate.text())
+                self._reports.load_report(self.txtWorkdate.text())
                 try:
                     # did the user choose an existing report
-                    _ = self.reports.active["rep_date"]
+                    _ = self._reports.active["rep_date"]
                     infotext = "Eksisterende rapport hentet: {}".format(self.txtWorkdate.text())
                 except KeyError:
                     # create the report
-                    self.reports.create(self._employees.active, self.txtWorkdate.text())
+                    self._reports.create(self._employees.active, self.txtWorkdate.text())
                     infotext = "Rapport oprettet for: {}".format(self.txtWorkdate.text())
                 msgbox = QMessageBox()
                 msgbox.information(self, __appname__, infotext, QMessageBox.Ok)
@@ -650,8 +650,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
                                             customer=self._customers,
                                             detail=self.details,
                                             employee=self._employees,
-                                            report=self.reports,
-                                            visit=self.visits,
+                                            report=self._reports,
+                                            visit=self._visits,
                                             tables=config.CSV_TABLES)
         import_dialog.sig_done.connect(self.on_csv_import_done)
         import_dialog.exec_()
@@ -716,13 +716,13 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         """
         try:
             # do we have a report
-            _ = self.reports.active["rep_date"]
+            _ = self._reports.active["rep_date"]
             active_report = True
         except KeyError:
             active_report = self.show_create_report_dialog()
 
         if active_report:
-            self.reports.load_report(self.txtWorkdate.text())
+            self._reports.load_report(self.txtWorkdate.text())
             try:
                 # do we have a customer
                 _ = self._customers.active["company"]
@@ -737,8 +737,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
             visit_dialog = VisitDialog(customer=self._customers,
                                        employee=self._employees,
                                        product=self._products,
-                                       report=self.reports,
-                                       visit=self.visits)
+                                       report=self._reports,
+                                       visit=self._visits)
             if visit_dialog.exec_():
                 pass
 
@@ -750,8 +750,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.contacts.recreate_table()
         self._customers.recreate_table()
         self.details.recreate_table()
-        self.visits.recreate_table()
-        self.reports.recreate_table()
+        self._visits.recreate_table()
+        self._reports.recreate_table()
 
         self.populate_contact_list()
         self.populate_visit_details_list()
