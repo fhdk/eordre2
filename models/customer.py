@@ -9,16 +9,7 @@
 from models.query import Query
 from util import utils
 
-B_COLOR = "\033[0;33m"
-E_COLOR = "\033[0;m"
-DBG = False
-
 __module__ = "customer"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
 
 
 class Customer:
