@@ -16,24 +16,14 @@ from models.builders.build_insert_query import build_insert_query
 from models.builders.build_select_query import build_select_query
 from models.builders.build_update_query import build_update_query
 
-B_COLOR = "\033[0;36m"
-E_COLOR = "\033[0;m"
-DBG = False
-
-__module__ = "query"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
-
 
 class Query:
     """
     Query Build and Execute
     """
 
-    def build(self, query_type, model_def, selection=None, update=None, aggregates=None, filters=None, orderby=None):
+    @staticmethod
+    def build(query_type, model_def, selection=None, update=None, aggregates=None, filters=None, orderby=None):
         """
         Builds a sql query from definition
 
@@ -111,10 +101,6 @@ class Query:
         Returns:
             list with result of the query - may be an empty list
         """
-        if config.DEBUG_QUERY:
-            printit(" ->execute\n"
-                    "  ->sql: {}\n"
-                    "  ->values: {}".format(sql_query, values))
         # query types: create, drop, delete, insert, select, update
         # specifically the select and insert query has to return the result
         select = sql_query.startswith("SELECT")  # returns data
@@ -134,17 +120,13 @@ class Query:
                 if insert:
                     result = cur.lastrowid
             except (sqlite3.OperationalError, sqlite3.ProgrammingError) as e:
-                if config.DEBUG_QUERY:
-                    printit("  -> exception: {}".format(e))
                 return False, e
-        if config.DEBUG_QUERY:
-            printit("  ->r esult: {}\r".format(result))
         return True, result
 
     @staticmethod
-    def values_to_arg(values):
+    def values_to_update(values):
         """
-        Moves the id field from first to last element
+        Moves the id field from first to last element for passing to sql update
         Args:
             values:
 
