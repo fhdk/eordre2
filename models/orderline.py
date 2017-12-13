@@ -78,10 +78,10 @@ class OrderLine:
         Args:
             visit_id:
         """
-        p.debug("{}:{}({})".format(__module__, "lines", visit_id), "visit_id", visit_id)
+        p.debug("{}:{}({})".format(__module__, "visit_id=", visit_id), "visit_id", visit_id)
         try:
-            vid = self._lines[0]
-            if not vid == visit_id:
+            v_id = self._lines[0]
+            if not v_id == visit_id:
                 self.load_visit(visit_id=visit_id)
         except (IndexError, KeyError):
             self.load_visit(visit_id)
@@ -108,7 +108,7 @@ class OrderLine:
         Clear internal variables
         """
         self._line = {}
-        self.lines = []
+        self._lines = []
 
     def delete(self, orderline_id):
         """
