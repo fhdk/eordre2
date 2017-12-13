@@ -12,17 +12,7 @@ from models.query import Query
 from models.settings import Settings
 from util import httpFn, rules
 
-B_COLOR = "\033[0;34m"
-E_COLOR = "\033[0;m"
-DBG = True
-
-__module__ = "models.employee.py"
-
-
-def printit(string):
-    """Print a variable string for debug purposes"""
-    if DBG:
-        print("{}\n{}{}{}".format(__module__, B_COLOR, string, E_COLOR))
+__module__ = "employee"
 
 
 class Employee:
@@ -35,7 +25,7 @@ class Employee:
         Initialize Employee class
         """
         self.model = {
-            "name": "employee",
+            "name": "employees",
             "id": "employee_id",
             "fields": ("employee_id", "salesrep", "fullname", "email", "country", "sas"),
             "types": ("INTEGER PRIMARY KEY NOT NULL", "TEXT", "TEXT", "TEXT", "TEXT", "INTEGER DEFAULT 0")
@@ -44,13 +34,8 @@ class Employee:
         self.q = Query()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
-            success, data = self.q.execute(sql)
-            printit(" ->init_detail table\n"
-                    "  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
+            self.q.execute(sql)
         self.s = Settings()
-        if DBG:
-            printit(self.s.active)
         if rules.check_settings(self.s.active):
             self.load(self.s.active["usermail"])
 
@@ -69,16 +54,7 @@ class Employee:
         """
         sql = self.q.build("insert", self.model)
 
-        if DBG:
-            printit(" ->insert\n"
-                    "  ->sql: {}\n"
-                    "  ->values: {}".format(sql, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  -->data: {}".format(success, data))
 
     def load(self, email):
         """
@@ -123,19 +99,8 @@ class Employee:
         """
         fields = list(self.model["fields"])[1:]
         filters = [(self.model["id"], "=")]
-        values = self.q.values_to_arg(self._employee.values())
+        values = self.q.values_to_update(self._employee.values())
 
         sql = self.q.build("update", self.model, update=fields, filters=filters)
 
-        # if DBG:
-        #     printit(" ->update\n"
-        #             "  ->fields: {}\n"
-        #             "  ->filters: {}\n"
-        #             "  ->values: {}\n"
-        #             "  ->sql: {}".format(sql, fields, filters, values))
-
         success, data = self.q.execute(sql, values=values)
-
-        if DBG:
-            printit("  ->success: {}\n"
-                    "  ->data: {}".format(success, data))
