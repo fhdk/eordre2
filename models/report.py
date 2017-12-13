@@ -8,7 +8,7 @@
 
 from datetime import datetime
 
-from models.calculator import Calculator
+from models.reportcalculator import ReportCalculator
 from models.query import Query
 from util import utils
 
@@ -46,7 +46,7 @@ class Report:
         self._report = {}
         self._csv_record_lenght = 25
         self.q = Query()
-        self.c = Calculator()
+        self.c = ReportCalculator()
         if not self.q.exist_table(self.model["name"]):
             sql = self.q.build("create", self.model)
             self.q.execute(sql)
