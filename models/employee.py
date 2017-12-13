@@ -103,4 +103,4 @@ class Employee:
 
         sql = self.q.build("update", self.model, update=fields, filters=filters)
 
-        success, data = self.q.execute(sql, values=values)
+        self.q.execute(sql, values=values)
