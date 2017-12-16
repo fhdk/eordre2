@@ -42,7 +42,7 @@ class ReportCalculator:
             self.q.execute(sql)
 
     @property
-    def active(self):
+    def result(self):
         """
         Totals
         Returns:
@@ -50,8 +50,8 @@ class ReportCalculator:
         """
         return self._totals
 
-    @active.setter
-    def active(self, date_employee):
+    @result.setter
+    def result(self, date_employee):
         """
         Sets the current totals
         :param date_employee: tuple with date and employee

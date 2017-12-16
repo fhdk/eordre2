@@ -50,7 +50,7 @@ class Visit:
             self.q.execute(sql)
 
     @property
-    def active(self):
+    def visit(self):
         """
         Visit
         Returns:
@@ -58,8 +58,8 @@ class Visit:
         """
         return self._visit
 
-    @active.setter
-    def active(self, visit_id):
+    @visit.setter
+    def visit(self, visit_id):
         """
         Set a visit
         :param visit_id:
@@ -73,7 +73,7 @@ class Visit:
         return self._csv_record_length
 
     @property
-    def visit_list_customer(self):
+    def list_customer(self):
         """
         The list of visits for a customer
         Returns:
@@ -81,8 +81,8 @@ class Visit:
         """
         return self._customer_visits
 
-    @visit_list_customer.setter
-    def visit_list_customer(self, customer_id):
+    @list_customer.setter
+    def list_customer(self, customer_id):
         """
         Load the list of visits for a customer_id
         Args:
@@ -91,7 +91,7 @@ class Visit:
         self.load_for_customer(customer_id)
 
     @property
-    def visit_list_report(self):
+    def list_report(self):
         """
         Report Visit List
         Returns:
@@ -99,8 +99,8 @@ class Visit:
         """
         return self._report_visits
 
-    @visit_list_report.setter
-    def visit_list_report(self, report_id):
+    @list_report.setter
+    def list_report(self, report_id):
         """
         Load visits for the requested report_id
         Args:

@@ -44,14 +44,14 @@ class Customer:
             self.q.execute(sql)
 
     @property
-    def active(self):
+    def customer(self):
         """
         Return active customer
         """
         return self._customer
 
-    @active.setter
-    def active(self, customer_id):
+    @customer.setter
+    def customer(self, customer_id):
         """
         Set active customer
         Args:
@@ -65,7 +65,7 @@ class Customer:
         return self._csv_record_length
 
     @property
-    def customer_list(self):
+    def list_(self):
         """
         Load customers into primary list
         """

@@ -36,15 +36,15 @@ class CustomerProducts:
             self.q.execute(sql)
 
     @property
-    def cust_prod_list(self):
+    def list_(self):
         """
         Customer products
         :return:
         """
         return self._products
 
-    @cust_prod_list.setter
-    def cust_prod_list(self, customer_id):
+    @list_.setter
+    def list_(self, customer_id):
         """
         Load customers into primary list
         """

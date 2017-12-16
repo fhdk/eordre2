@@ -39,7 +39,7 @@ class Settings:
             self.q.execute(sql)
 
     @property
-    def active(self):
+    def setting(self):
         """
         current
         Returns:
@@ -52,8 +52,8 @@ class Settings:
 
         return self._settings
 
-    @active.setter
-    def active(self, settings):
+    @setting.setter
+    def setting(self, settings):
         """
         Pushing new current settings
         Args:

@@ -63,7 +63,7 @@ class OrderLine:
             self.find(line_id=line_id)
 
     @property
-    def lines(self):
+    def list_(self):
         """
         All purchase order lines
         Returns:
@@ -71,8 +71,8 @@ class OrderLine:
         """
         return self._lines
 
-    @lines.setter
-    def lines(self, visit_id):
+    @list_.setter
+    def list_(self, visit_id):
         """
         Orderlines setter. Load purchase order lines for visit_id
         Args:
@@ -185,7 +185,7 @@ class OrderLine:
         if success:
             try:
                 self._lines = [dict(zip(self.model["fields"], row)) for row in data]
-                self._line = self.lines[0]
+                self._line = self.list_[0]
                 return True
             except (IndexError, KeyError):
                 self._line = {}

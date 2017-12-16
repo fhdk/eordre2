@@ -52,7 +52,7 @@ class Report:
             self.q.execute(sql)
 
     @property
-    def active(self):
+    def report(self):
         """
         Report
         Returns:
@@ -60,8 +60,8 @@ class Report:
         """
         return self._report
 
-    @active.setter
-    def active(self, workdate):
+    @report.setter
+    def report(self, workdate):
         """
         Set reportid to workdate
         Args:
@@ -78,7 +78,7 @@ class Report:
         return self._csv_record_length
 
     @property
-    def report_list(self):
+    def list_(self):
         """
         Report List
         Returns:
@@ -86,8 +86,8 @@ class Report:
         """
         return self._reports
 
-    @report_list.setter
-    def report_list(self, year=None, month=None):
+    @list_.setter
+    def list_(self, year=None, month=None):
         """
         Set the current list of reports to specified filter
         Args:

@@ -33,15 +33,15 @@ class Contact:
             self.q.execute(sql)
 
     @property
-    def active(self):
+    def contact(self):
         """
         Active contact
         :return:
         """
         return self._contact
 
-    @active.setter
-    def active(self, contact_id):
+    @contact.setter
+    def contact(self, contact_id):
         """
         Set contact
         :return:
@@ -49,11 +49,11 @@ class Contact:
         self.find(contact_id)
 
     @property
-    def contact_list(self):
+    def list_(self):
         return self._contacts
 
-    @contact_list.setter
-    def contact_list(self, customer_id):
+    @list_.setter
+    def list_(self, customer_id):
         self.load_for_customer(customer_id=customer_id)
 
     @property

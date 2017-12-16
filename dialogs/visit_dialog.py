@@ -35,11 +35,11 @@ class VisitDialog(QDialog, Ui_visitDialog):
         """
         super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
-        self._customerid = customers.active["customer_id"]
-        self._employeeid = employees.active["employee_id"]
-        self._reportid = reports.active["report_id"]
-        self._workdate = reports.active["rep_date"]
-        self._products = products.product_list
+        self._customerid = customers.visit["customer_id"]
+        self._employeeid = employees.employee["employee_id"]
+        self._reportid = reports.visit["report_id"]
+        self._workdate = reports.visit["rep_date"]
+        self._products = products.list_
         self.txtVisitDate.setText(self._workdate)
 
         # p.debug("{} {}".format(__module__, "init"), "products", self._products)
@@ -52,19 +52,19 @@ class VisitDialog(QDialog, Ui_visitDialog):
             load visits for workdata
             """
             self.visit.load_for_customer(self._customerid, self._workdate)
-            _ = self.visit.active["visit_id"]
+            _ = self.visit.visit["visit_id"]
 
         except KeyError:
             self.visit.add(self._reportid, self._employeeid, self._customerid, self._workdate)
-            self.visit.active["visit_type"] = "R"
-            if customers.line["account"] == "NY":
-                self.visit.active["visit_type"] = "N"
+            self.visit.visit["visit_type"] = "R"
+            if customers.visit["account"] == "NY":
+                self.visit.visit["visit_type"] = "N"
 
-        p.debug("{} {}".format(__module__, "init"), "active visit", self.visit.active)
+        p.debug("{} {}".format(__module__, "init"), "active visit", self.visit.visit)
         exit(p.DEBUG)
         self._orderlines = OrderLine()
-        self._orderlines.load_visit(self.visit.active["visit_id"])
-        for idx, detail in enumerate(self._orderlines.lines):
+        self._orderlines.load_visit(self.visit.visit["visit_id"])
+        for idx, detail in enumerate(self._orderlines.list_):
             # "pcs", "sku", "text", "price", "sas", "discount", "linetype", "extra"
             row_count = idx + 1
             self.widgetVisitDetails.setRowCount(row_count)
@@ -156,20 +156,20 @@ class VisitDialog(QDialog, Ui_visitDialog):
         Slot for saving the visit
         """
         # save visit head contents
-        self.visit.active["po_buyer"] = self.txtPoBuyer.text()
-        self.visit.active["po_number"] = self.txtPoNumber.text()
-        self.visit.active["po_company"] = self.txtPoCompany.text()
-        self.visit.active["po_address1"] = self.txtPoAddress1.text()
-        self.visit.active["po_address2"] = self.txtPoAddress2.text()
-        self.visit.active["po_postcode"] = self.txtPoPostcode.text()
-        self.visit.active["po_postofffice"] = self.txtPoPostoffice.text()
-        self.visit.active["po_country"] = self.txtPoCountry.text()
-        self.visit.active["info_text"] = self.txtInfoText.toPlainText()
-        self.visit.active["prod_demo"] = self.txtProductDemo.text()
-        self.visit.active["prod_sale"] = self.txtProductSale.text()
-        self.visit.active["sas"] = self.txtVisitSas.text()
-        self.visit.active["sale"] = self.txtVisitSale.text()
-        self.visit.active["total"] = self.txtVisitTotal.text()
+        self.visit.employee["po_buyer"] = self.txtPoBuyer.text()
+        self.visit.employee["po_number"] = self.txtPoNumber.text()
+        self.visit.employee["po_company"] = self.txtPoCompany.text()
+        self.visit.employee["po_address1"] = self.txtPoAddress1.text()
+        self.visit.employee["po_address2"] = self.txtPoAddress2.text()
+        self.visit.employee["po_postcode"] = self.txtPoPostcode.text()
+        self.visit.employee["po_postofffice"] = self.txtPoPostoffice.text()
+        self.visit.employee["po_country"] = self.txtPoCountry.text()
+        self.visit.employee["info_text"] = self.txtInfoText.toPlainText()
+        self.visit.employee["prod_demo"] = self.txtProductDemo.text()
+        self.visit.employee["prod_sale"] = self.txtProductSale.text()
+        self.visit.employee["sas"] = self.txtVisitSas.text()
+        self.visit.employee["sale"] = self.txtVisitSale.text()
+        self.visit.employee["total"] = self.txtVisitTotal.text()
 
         # TODO: save visitdetails
 
