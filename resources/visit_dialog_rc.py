@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'visit_dialog.ui'
 #
-# Created by: PyQt5 UI code generator 5.9
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -155,7 +155,7 @@ class Ui_visitDialog(object):
         self.txtCompany.setObjectName("txtCompany")
         self.gridCustomerVisit.addWidget(self.txtCompany, 0, 0, 1, 1)
         self.gridLayoutWidget_3 = QtWidgets.QWidget(visitDialog)
-        self.gridLayoutWidget_3.setGeometry(QtCore.QRect(10, 280, 780, 41))
+        self.gridLayoutWidget_3.setGeometry(QtCore.QRect(10, 280, 780, 51))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.gridLayoutWidget_3.setFont(font)
@@ -296,13 +296,6 @@ class Ui_visitDialog(object):
         self.cboProduct.setFont(font)
         self.cboProduct.setEditable(True)
         self.cboProduct.setObjectName("cboProduct")
-        self.cboProduct.addItem("")
-        self.cboProduct.addItem("")
-        self.cboProduct.addItem("")
-        self.cboProduct.addItem("")
-        self.cboProduct.addItem("")
-        self.cboProduct.addItem("")
-        self.cboProduct.addItem("")
         self.gridLayout.addWidget(self.cboProduct, 1, 2, 1, 1)
         self.lblPrice = QtWidgets.QLabel(self.gridLayoutWidget_5)
         font = QtGui.QFont()
@@ -362,9 +355,6 @@ class Ui_visitDialog(object):
         self.cboSku.setFont(font)
         self.cboSku.setEditable(True)
         self.cboSku.setObjectName("cboSku")
-        self.cboSku.addItem("")
-        self.cboSku.addItem("")
-        self.cboSku.addItem("")
         self.gridLayout.addWidget(self.cboSku, 1, 3, 1, 1)
         self.lblSku = QtWidgets.QLabel(self.gridLayoutWidget_5)
         font = QtGui.QFont()
@@ -484,23 +474,14 @@ class Ui_visitDialog(object):
         self.txtPoCountry.setPlaceholderText(_translate("visitDialog", "Lev. land"))
         self.lblOrderInfo.setText(_translate("visitDialog", "Ordre notat:"))
         self.lblVisitInfo.setText(_translate("visitDialog", "Sælger notat:"))
-        self.cboProduct.setItemText(0, _translate("visitDialog", "dbo"))
-        self.cboProduct.setItemText(1, _translate("visitDialog", "sslsh"))
-        self.cboProduct.setItemText(2, _translate("visitDialog", "speeda"))
-        self.cboProduct.setItemText(3, _translate("visitDialog", "mfcps"))
-        self.cboProduct.setItemText(4, _translate("visitDialog", "htwpro6"))
-        self.cboProduct.setItemText(5, _translate("visitDialog", "rpcfsg"))
-        self.cboProduct.setItemText(6, _translate("visitDialog", "as1500"))
         self.lblPrice.setText(_translate("visitDialog", "Pris"))
         self.lblPcs.setText(_translate("visitDialog", "Antal"))
+        self.cboDnst.setToolTip(_translate("visitDialog", "Demo|Ny|Salg|Tekst"))
         self.cboDnst.setItemText(0, _translate("visitDialog", "D"))
         self.cboDnst.setItemText(1, _translate("visitDialog", "N"))
         self.cboDnst.setItemText(2, _translate("visitDialog", "S"))
         self.cboDnst.setItemText(3, _translate("visitDialog", "T"))
         self.lblDemoNotSold.setText(_translate("visitDialog", "D.N.S.T"))
-        self.cboSku.setItemText(0, _translate("visitDialog", "02,3450,0005"))
-        self.cboSku.setItemText(1, _translate("visitDialog", "02,0135"))
-        self.cboSku.setItemText(2, _translate("visitDialog", "02,3100,5000"))
         self.lblSku.setText(_translate("visitDialog", "Varenr"))
         self.lblProduct.setText(_translate("visitDialog", "Produkt"))
         self.lblText.setText(_translate("visitDialog", "Tekst"))

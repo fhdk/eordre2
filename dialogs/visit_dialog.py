@@ -35,35 +35,33 @@ class VisitDialog(QDialog, Ui_visitDialog):
         """
         super(VisitDialog, self).__init__(parent)
         self.setupUi(self)
-        self._customerid = customers.visit["customer_id"]
+        self._customerid = customers.customer["customer_id"]
         self._employeeid = employees.employee["employee_id"]
-        self._reportid = reports.visit["report_id"]
-        self._workdate = reports.visit["rep_date"]
+        self._reportid = reports.report["report_id"]
+        self._workdate = reports.report["rep_date"]
         self._products = products.list_
         self.txtVisitDate.setText(self._workdate)
 
         # p.debug("{} {}".format(__module__, "init"), "products", self._products)
         # exit(p.DEBUG)
 
-        self.visit = visits
-        self.visit.clear()
+        self._visits = visits
+        self._visits.clear()
         try:
             """
             load visits for workdata
             """
-            self.visit.load_for_customer(self._customerid, self._workdate)
-            _ = self.visit.visit["visit_id"]
+            self._visits.load_for_customer(self._customerid, self._workdate)
+            _ = self._visits.visit["visit_id"]
 
         except KeyError:
-            self.visit.add(self._reportid, self._employeeid, self._customerid, self._workdate)
-            self.visit.visit["visit_type"] = "R"
-            if customers.visit["account"] == "NY":
-                self.visit.visit["visit_type"] = "N"
+            self._visits.add(self._reportid, self._employeeid, self._customerid, self._workdate)
+            self._visits.visit["visit_type"] = "R"
+            if customers.customer["account"] == "NY":
+                self._visits.customer["visit_type"] = "N"
 
-        p.debug("{} {}".format(__module__, "init"), "active visit", self.visit.visit)
-        exit(p.DEBUG)
         self._orderlines = OrderLine()
-        self._orderlines.load_visit(self.visit.visit["visit_id"])
+        self._orderlines.load_visit(self._visits.visit["visit_id"])
         for idx, detail in enumerate(self._orderlines.list_):
             # "pcs", "sku", "text", "price", "sas", "discount", "linetype", "extra"
             row_count = idx + 1
@@ -92,7 +90,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
             self.widgetVisitDetails.setItem(row_count, 9, w)
 
         # If customer needs special settings on prices
-        factor = customers.line["factor"]
+        factor = customers.customer["factor"]
         if factor > 0.0:
             for item in self._products:
                 item["price"] = item["price"] * factor
@@ -119,7 +117,7 @@ class VisitDialog(QDialog, Ui_visitDialog):
                 if not item["net"] == 0.0:
                     item["net"] = item["net"] * factor
         # Set info banner
-        self.txtCompany.setText(customers.line["company"])
+        self.txtCompany.setText(customers.customer["company"])
         # connect to signals
         self.btnAppend.clicked.connect(self.button_add_line_action)
         self.btnClear.clicked.connect(self.button_clear_line_action)
@@ -156,20 +154,20 @@ class VisitDialog(QDialog, Ui_visitDialog):
         Slot for saving the visit
         """
         # save visit head contents
-        self.visit.employee["po_buyer"] = self.txtPoBuyer.text()
-        self.visit.employee["po_number"] = self.txtPoNumber.text()
-        self.visit.employee["po_company"] = self.txtPoCompany.text()
-        self.visit.employee["po_address1"] = self.txtPoAddress1.text()
-        self.visit.employee["po_address2"] = self.txtPoAddress2.text()
-        self.visit.employee["po_postcode"] = self.txtPoPostcode.text()
-        self.visit.employee["po_postofffice"] = self.txtPoPostoffice.text()
-        self.visit.employee["po_country"] = self.txtPoCountry.text()
-        self.visit.employee["info_text"] = self.txtInfoText.toPlainText()
-        self.visit.employee["prod_demo"] = self.txtProductDemo.text()
-        self.visit.employee["prod_sale"] = self.txtProductSale.text()
-        self.visit.employee["sas"] = self.txtVisitSas.text()
-        self.visit.employee["sale"] = self.txtVisitSale.text()
-        self.visit.employee["total"] = self.txtVisitTotal.text()
+        self._visits.visit["po_buyer"] = self.txtPoBuyer.text()
+        self._visits.visit["po_number"] = self.txtPoNumber.text()
+        self._visits.visit["po_company"] = self.txtPoCompany.text()
+        self._visits.visit["po_address1"] = self.txtPoAddress1.text()
+        self._visits.visit["po_address2"] = self.txtPoAddress2.text()
+        self._visits.visit["po_postcode"] = self.txtPoPostcode.text()
+        self._visits.visit["po_postofffice"] = self.txtPoPostoffice.text()
+        self._visits.visit["po_country"] = self.txtPoCountry.text()
+        self._visits.visit["info_text"] = self.txtInfoText.toPlainText()
+        self._visits.visit["prod_demo"] = self.txtProductDemo.text()
+        self._visits.visit["prod_sale"] = self.txtProductSale.text()
+        self._visits.visit["sas"] = self.txtVisitSas.text()
+        self._visits.visit["sale"] = self.txtVisitSale.text()
+        self._visits.visit["total"] = self.txtVisitTotal.text()
 
         # TODO: save visitdetails
 
@@ -177,12 +175,13 @@ class VisitDialog(QDialog, Ui_visitDialog):
     def dnst_changed_action(self):
         """
         Changed linetype
+        `D`emo `N`ysalg `S`alg `T`ekst
         :return: nothing
         """
         if self.cboDnst.currentText() == "T":
             self.set_input_enabled(False)
             return
-        self.set_input(True)
+        self.set_input_enabled(True)
 
     def set_input_enabled(self, arg: bool):
         """Enable inputs"""
