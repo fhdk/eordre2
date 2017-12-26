@@ -24,7 +24,7 @@ class OrderLine:
         Initialize OrderLine class
         """
         self.model = {
-            "name": "lines",
+            "name": "orderlines",
             "id": "line_id",
             "fields": ("line_id", "visit_id", "pcs", "sku", "text", "price", "sas", "discount",
                        "linetype", "extra"),
